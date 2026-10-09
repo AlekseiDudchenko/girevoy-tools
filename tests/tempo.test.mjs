@@ -9,7 +9,7 @@ import {
   goalError, goalReps, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
   secPerRep, serializeState, setMinute, toMode, toSegments, withMinutes,
 } from '../src/lib/tempo.js';
-import { barChart, cumChart, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
+import { barChart, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
 
 const total = (reps) => reps.reduce((a, r) => a + r, 0);
 
@@ -235,7 +235,7 @@ test('неверные параметры заменяются значения�
 test('графики: цвет — классами, столбики — ползунки с клавиатуры', () => {
   for (const st of [defaultState(), parseState('?ex=snatch&min=60')]) {
     const bars = barChart(st);
-    for (const svg of [bars, cumChart(st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
+    assert.doesNotMatch(bars, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
     assert.equal(bars.match(/role="slider"/g).length, st.min);
     assert.equal(bars.match(/tabindex="0"/g).length, 1, 'в порядке табуляции один столбик');
   }
@@ -260,7 +260,6 @@ test('страница собрана: пример по умолчанию бе
   const html = readFileSync(join(out, 'tempo', 'index.html'), 'utf8');
   assert.match(html, /<h1>Калькулятор темпа<\/h1>/);
   assert.match(html, /<svg class="chart" id="chart-bars"/);
-  assert.match(html, /<svg class="chart" id="chart-cum"/);
   assert.match(html, /7, 7, 8 × 7, 10/);
   assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6,0<\/td><td class="n total">80<\/td>/);
   assert.match(html, /<div class="table-wrap">/);

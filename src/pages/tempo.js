@@ -2,7 +2,7 @@
 // что и браузер: без JavaScript видны графики и таблица для примера из задачи —
 // длинный цикл, 10 минут, цель 80, запас на финиш.
 import { D_MAX, D_MIN, EXERCISES, MINUTES, STRATEGIES, defaultState, planText, repsOf } from '../lib/tempo.js';
-import { barChart, barLegend, cumChart, cumLegend, summary, tableBody, tableFoot, tableHead } from '../lib/tempo-view.js';
+import { barChart, barLegend, summary, tableBody, tableFoot, tableHead } from '../lib/tempo-view.js';
 
 const options = (items, selected) => items
   .map(({ id, name }) => `<option value="${id}"${id === selected ? ' selected' : ''}>${name}</option>`)
@@ -79,13 +79,10 @@ export default {
 
 <p class="readout" id="summary" aria-live="polite">${summary(st)}</p>
 
-<section class="panel chart-panel" aria-label="Графики">
+<section class="panel chart-panel" aria-label="График">
   <h2>Темп по минутам</h2>
   <div class="chart-box" id="box-bars">${barChart(st)}</div>
   <div id="legend-bars">${barLegend(st)}</div>
-  <h2>Нарастающий итог</h2>
-  <div class="chart-box" id="box-cum">${cumChart(st)}</div>
-  <div id="legend-cum">${cumLegend(st)}</div>
 </section>
 
 <section class="panel metro js-only" aria-labelledby="metro-title">

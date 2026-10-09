@@ -1,4 +1,4 @@
-// Разметка калькулятора темпа: графики SVG, легенды, итог плана, отрезки, таблица.
+// Разметка калькулятора темпа: график SVG, легенды, итог плана, отрезки, таблица.
 // Чистые функции «состояние → строка HTML»: страница рисует ими состояние по
 // умолчанию при сборке, браузер — после каждого изменения. Пользовательский текст
 // сюда не попадает: только числа из состояния и постоянные подписи.
@@ -106,39 +106,6 @@ export function barChart(state, size = chartSize(900), opts = {}) {
   return svg(size, 'chart-bars', 'role="group" aria-label="Темп по минутам: столбики можно тянуть или менять стрелками"', s);
 }
 
-// ------------------------------------------------------------- нарастающий итог
-
-const CUM_PAD = { left: 40, right: 14, top: 22, bottom: 26 };
-
-/** Нарастающий итог плана против прямой ровного темпа. */
-export function cumChart(state, size = chartSize(900)) {
-  const data = rows(state);
-  const n = data.length;
-  const total = data[n - 1].cum;
-  const axis = niceAxis(total * 1.08, 6);
-  const plotW = size.width - CUM_PAD.left - CUM_PAD.right;
-  const plotH = size.height - CUM_PAD.top - CUM_PAD.bottom;
-  const x = (m) => r1(CUM_PAD.left + (m / n) * plotW);
-  const y = (v) => r1(CUM_PAD.top + plotH - (v / axis.max) * plotH);
-  let s = '';
-  for (let v = 0; v <= axis.max; v += axis.tick) {
-    s += `<line class="grid" x1="${x(0)}" x2="${x(n)}" y1="${y(v)}" y2="${y(v)}"/>`;
-    s += `<text x="${CUM_PAD.left - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
-  }
-  const step = minuteStep(n);
-  for (let m = 0; m <= n; m += step) s += `<text x="${x(m)}" y="${y(0) + 17}" text-anchor="middle">${m}</text>`;
-  s += `<line class="axis" x1="${x(0)}" x2="${x(n)}" y1="${y(0)}" y2="${y(0)}"/>`;
-  s += `<text class="axis-label" x="${CUM_PAD.left - 6}" y="${CUM_PAD.top - 10}">подъёмов с начала</text>`;
-  s += `<text class="axis-label" x="${x(n)}" y="${y(0) - 6}" text-anchor="end">минута</text>`;
-  if (state.ex === 'snatch') s += `<line class="guide" x1="${x(state.hand)}" x2="${x(state.hand)}" y1="${CUM_PAD.top}" y2="${y(0)}"/>`;
-  s += `<line class="ln ln-even" x1="${x(0)}" y1="${y(0)}" x2="${x(n)}" y2="${y(total)}"/>`;
-  const points = [`${x(0)},${y(0)}`, ...data.map((r) => `${x(r.minute)},${y(r.cum)}`)].join(' ');
-  s += `<polyline class="ln ln-plan" points="${points}"/>`;
-  if (n <= 10) for (const r of data) s += `<circle class="dot dot-plan" cx="${x(r.minute)}" cy="${y(r.cum)}" r="3.5"/>`;
-  s += `<text class="mark-label" x="${x(n) - 6}" y="${y(total) - 8}" text-anchor="end">${total}</text>`;
-  return svg(size, 'chart-cum', `role="img" aria-label="Нарастающий итог: ${total} ${plural(total, REPS)} за ${n} ${plural(n, MINS)}"`, s);
-}
-
 // ------------------------------------------------------------- легенды и итог
 
 const lineKey = (cls, text) => `<li><svg class="key" viewBox="0 0 22 8" aria-hidden="true"><line class="${cls}" x1="1" y1="4" x2="21" y2="4"/></svg>${text}</li>`;
@@ -151,9 +118,6 @@ export function barLegend(state) {
   return `<ul class="legend">${hands}${lineKey('even', 'ровный темп того же итога')}<li class="legend-hint">столбик можно тянуть или менять стрелками ↑/↓</li></ul>`;
 }
 
-export function cumLegend() {
-  return `<ul class="legend">${lineKey('ln ln-plan', 'план')}${lineKey('ln ln-even', 'ровный темп')}</ul>`;
-}
 
 /** «Итог плана: 80 подъёмов за 10 минут, в среднем 8 в минуту. По минутам: 7, 7, 8 × 7, 10.» */
 export function summary(state) {

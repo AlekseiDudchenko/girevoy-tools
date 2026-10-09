@@ -5,7 +5,7 @@ import {
   editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
-  barAxis, barChart, barGeometry, barLegend, chartSize, cumChart, cumLegend, paceSum, segmentRows, summary,
+  barAxis, barChart, barGeometry, barLegend, chartSize, paceSum, segmentRows, summary,
   tableBody, tableFoot, tableHead,
 } from './lib/tempo-view.js';
 
@@ -17,8 +17,8 @@ const el = {
   goal: $('goal'), strategy: $('strategy'), dField: $('d-field'), d: $('d'),
   goalError: $('goal-error'), strategyHint: $('strategy-hint'),
   segs: $('segs'), segAdd: $('seg-add'), segError: $('seg-error'), paceSum: $('pace-sum'),
-  summary: $('summary'), boxBars: $('box-bars'), boxCum: $('box-cum'),
-  legendBars: $('legend-bars'), legendCum: $('legend-cum'),
+  summary: $('summary'), boxBars: $('box-bars'),
+  legendBars: $('legend-bars'),
   head: $('table-head'), body: $('table-body'), foot: $('table-foot'), status: $('status'),
   metroStart: $('metro-start'), metroNow: $('metro-now'), voice: $('voice'),
   tabs: [...document.querySelectorAll('[role="tab"]')],
@@ -38,10 +38,9 @@ function html(node, value) {
 
 const size = () => chartSize(el.boxBars.clientWidth || 900);
 
-function renderCharts() {
+function renderChart() {
   const focused = el.boxBars.contains(document.activeElement);
   html(el.boxBars, barChart(state, size(), { focus: focusIdx, now: metro.minute, axis: drag?.axis }));
-  html(el.boxCum, cumChart(state, size()));
   if (focused) el.boxBars.querySelector(`[data-i="${focusIdx}"]`)?.focus();
 }
 
@@ -82,9 +81,8 @@ function render(skip) {
   }
 
   html(el.summary, summary(state));
-  renderCharts();
+  renderChart();
   html(el.legendBars, barLegend(state));
-  html(el.legendCum, cumLegend(state));
   html(el.head, tableHead(state));
   html(el.body, tableBody(state, metro.minute));
   html(el.foot, tableFoot(state));
@@ -250,7 +248,7 @@ el.boxBars.addEventListener('keydown', (e) => {
   } else if (move !== undefined) {
     e.preventDefault();
     focusIdx = Math.min(reps.length - 1, Math.max(0, move));
-    renderCharts();
+    renderChart();
     el.boxBars.querySelector(`[data-i="${focusIdx}"]`)?.focus();
   }
 });
@@ -354,7 +352,7 @@ const metro = {
       this.minute = m;
       speak(announce(state, m));
       html(el.body, tableBody(state, m));
-      renderCharts();
+      renderChart();
     }
     const reps = repsOf(state)[m];
     const text = `${clock(Math.max(0, now))} · минута ${m + 1} из ${state.min} · ${reps} в минуту`;
@@ -386,7 +384,7 @@ new ResizeObserver(() => {
   const w = el.boxBars.clientWidth;
   if (w && w !== lastWidth) {
     lastWidth = w;
-    renderCharts();
+    renderChart();
   }
 }).observe(el.boxBars);
 
