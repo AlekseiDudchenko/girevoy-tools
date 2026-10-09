@@ -1,6 +1,5 @@
 import {esc} from '../html.js';
 import {FEDERATIONS, FORMATS, REGIONS} from '../lib/calendar.js';
-import {split} from '../lib/calendar-series.js';
 import {countryName,featureCard,seriesCards,renderBrowse} from '../lib/calendar-view.js';
 import {EVENTS as events, SERIES as series, BUILD_DAY as today} from '../calendar-data.js';
 const option=(value,text)=>`<option value="${esc(value)}">${esc(text)}</option>`;
@@ -10,12 +9,9 @@ export default {
     const select=(key,options)=>`<label>${esc(L.t(`calendar.${key}`))}<select name="${key}">${option('',L.t('calendar.all'))}${options}</select></label>`;
     const countries=[...new Set(events.map(e=>e.country).filter(Boolean))].sort((a,b)=>countryName(L,a).localeCompare(countryName(L,b),L.lang));
     const browse=renderBrowse(L,events,{},{today,series});
-    const {upcoming}=split(events,today);
-    const stat=(id,n,label)=>`<div class="cal-stat"><span class="cal-tile-n" id="${id}">${L.num(n,0)}</span><span class="cal-tile-label">${esc(L.t(label))}</span></div>`;
     const tab=(value,label,n)=>`<label class="cal-tab"><input type="radio" name="when" value="${value}"${value?'':' checked'}><span>${esc(L.t(label))} <span class="cal-tab-n" data-when="${value||'upcoming'}">${L.num(n,0)}</span></span></label>`;
     return `<section class="cal">
-      <header class="cal-hero"><div><h1>${esc(L.t('calendar.title'))}</h1><p class="lead">${esc(L.t('calendar.lead'))}</p>
-      <div class="cal-stats">${stat('stat-upcoming',upcoming.length,'calendar.upcoming')}${stat('stat-countries',new Set(upcoming.map(e=>e.country).filter(Boolean)).size,'calendar.countries')}${stat('stat-series',series.length,'calendar.series.title')}</div></div>
+      <header class="cal-hero"><div><h1>${esc(L.t('calendar.title'))}</h1><p class="lead">${esc(L.t('calendar.lead'))}</p></div>
       <div id="cal-next">${featureCard(L,events,today,series)}</div></header>
       <section class="cal-section"><h2>${esc(L.t('calendar.series.title'))}</h2><p class="cal-section-lead">${esc(L.t('calendar.series.intro'))}</p><div class="cal-series-grid">${seriesCards(L,series,events,today)}</div></section>
       <section class="cal-section" id="list"><h2 class="sr">${esc(L.t('calendar.list'))}</h2>

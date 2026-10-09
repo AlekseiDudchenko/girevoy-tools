@@ -114,17 +114,13 @@ export function renderBrowse(L,events,filters,{today,series=[]}) {
 /** Тело посадочной страницы серии. */
 export function seriesBody(L,s,events,today,series) {
   const own=split(seriesEvents(s,events),today);
-  const all=[...own.upcoming,...own.past];
-  const countries=new Set(all.map(e=>e.country).filter(Boolean));
-  const first=[...all].sort((a,b)=>a.startDate.localeCompare(b.startDate))[0];
-  const stat=(n,label)=>`<div class="cal-stat"><span class="cal-tile-n">${esc(n)}</span><span class="cal-tile-label">${esc(L.t(label))}</span></div>`;
+  const all=[...own.upcoming,...own.past].sort((a,b)=>b.startDate.localeCompare(a.startDate));
   const edition=e=>`<li class="cal-edition${isLive(e,today)?' is-live':''}" id="${esc(e.id)}"><span class="cal-edition-year">${esc(e.startDate.slice(0,4))}</span>
     <div class="cal-edition-main"><strong>${esc(e.title)}</strong><span>${esc(rangeLabel(L,e))}</span><span class="cal-place">${esc(placeLabel(L,e))}</span>
     <span class="cal-source"><span>${esc(L.t('calendar.sources'))}: ${sourceLinks(L,e)}</span></span></div>
     ${e.endDate>=today?`<span class="cal-edition-when">${esc(relative(L,e,today))}</span>`:''}</li>`;
   return `<section class="cal cal-series-page"><nav class="crumbs"><a href="${calendarHref(L)}">${esc(L.t('calendar.nav'))}</a> › <span>${esc(s.name)}</span></nav>
-    <header class="cal-hero"><div><p class="cal-kicker">${esc(s.federation)}</p><h1>${esc(s.name)}</h1><p class="lead">${esc(L.t('calendar.series.lead',{name:s.name,federation:s.federation}))}</p>
-    <div class="cal-stats">${stat(L.num(all.length,0),'calendar.series.statEditions')}${stat(L.num(countries.size,0),'calendar.series.statCountries')}${stat(first.startDate.slice(0,4),'calendar.series.statSince')}</div></div>
+    <header class="cal-hero"><div><p class="cal-kicker">${esc(s.federation)}</p><h1>${esc(s.name)}</h1><p class="lead">${esc(L.t('calendar.series.lead',{name:s.name,federation:s.federation}))}</p></div>
     <div id="cal-next">${featureCard(L,own.upcoming,today,series)}</div></header>
     <h2>${esc(L.t('calendar.series.editions'))}</h2><ol class="cal-editions">${all.map(edition).join('')}</ol>
     <p class="cal-more"><a href="${calendarHref(L,`?federation=${s.federation}`)}#list">${esc(L.t('calendar.series.federation',{federation:s.federation}))}</a> · <a href="${calendarHref(L)}">${esc(L.t('calendar.series.back'))}</a></p>
