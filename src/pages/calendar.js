@@ -1,6 +1,7 @@
 import {esc} from '../html.js';
 import {FEDERATIONS, FORMATS, REGIONS} from '../lib/calendar.js';
-import {countryName,featureCard,seriesCards,renderBrowse} from '../lib/calendar-view.js';
+import {countryName,featureCard,seriesCards,renderBrowse,filterSubscribe,feedList} from '../lib/calendar-view.js';
+import {SITE_URL as site} from '../brand.js';
 import {EVENTS as events, SERIES as series, BUILD_DAY as today} from '../calendar-data.js';
 const option=(value,text)=>`<option value="${esc(value)}">${esc(text)}</option>`;
 export default {
@@ -25,8 +26,9 @@ export default {
       <label>${esc(L.t('calendar.from'))}<input type="date" name="from"></label><label>${esc(L.t('calendar.to'))}<input type="date" name="to"></label>
       </div>
       <div class="calendar-filter-actions"><p id="calendar-count" role="status" aria-live="polite">${esc(L.t('calendar.count',{n:L.num(browse.shown,0)}))}</p><button class="btn" type="reset">${esc(L.t('calendar.reset'))}</button></div>
+      <div id="calendar-subscribe" class="calendar-subscribe">${filterSubscribe(L,site,{},events)}</div>
       </form><noscript><p>${esc(L.t('calendar.noscript'))}</p></noscript>
-      <div id="calendar-events">${browse.html}</div></section><p class="calendar-note">${esc(L.t('calendar.note'))}</p>
-      <script type="application/json" id="calendar-data">${JSON.stringify({events,series}).replaceAll('<','\\u003c')}</script></section>`;
+      <div id="calendar-events">${browse.html}</div></section><section class="cal-section">${feedList(L,site,events,series)}</section><p class="calendar-note">${esc(L.t('calendar.note'))}</p>
+      <script type="application/json" id="calendar-data">${JSON.stringify({events,series,site}).replaceAll('<','\\u003c')}</script></section>`;
   },
 };
