@@ -286,10 +286,20 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 
 .tempo > .readout { margin: 0 0 1rem; }
 .chart-panel h2 { font-size: 1.05rem; margin: 0.2rem 0 0.4rem; }
+.chart-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 1rem; }
+/* Кнопка редактирования — только на сенсорных экранах: мышью столбики тянутся всегда. */
+.bars-edit { display: none; }
+@media (pointer: coarse) {
+  :root.js .bars-edit { display: inline-block; }
+}
+.bars-edit[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+/* Вне режима редактирования график не перехватывает палец: страница прокручивается. */
+.tempo .chart-box.locked { touch-action: auto; }
+.js .chart-box.locked .bar { cursor: default; }
+.chart-box.editing { outline: 2px dashed var(--accent); outline-offset: 4px; border-radius: 4px; }
 .chart-panel h2 + .chart-box { margin-top: 0.2rem; }
 .bar { fill: var(--s1); }
 .bar-h2 { fill: var(--s2); }
-.bar.now { fill: var(--accent); }
 .js .bar { cursor: ns-resize; }
 .bar:focus-visible { outline: none; stroke: var(--ink); stroke-width: 2; }
 .chart .bar-label { fill: var(--ink-2); font-family: "PT Mono", ui-monospace, monospace; font-size: 11px; }
@@ -298,49 +308,6 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 .legend .key .bar, .legend .key .guide { cursor: default; }
 .legend .key .guide { stroke: var(--accent); stroke-dasharray: 3 3; }
 
-.metro h2 { margin: 0 0 0.6rem; font-size: 1.1rem; }
-.metro-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem; }
-.btn-main { font-size: 1rem; font-weight: 700; min-width: 6rem; padding: 0.45rem 1rem; }
-.btn-main[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
-.metro-now { margin: 0; font-size: 1.05rem; color: var(--ink); white-space: normal; }
-.check { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--ink-2); font-size: 0.92rem; }
-.btn-full { margin-left: auto; }
-.count-field { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--ink-2); font-size: 0.92rem; }
-.metro.full .count-field { font-size: 1.05rem; }
-
-/* Табло метронома на весь экран: видно с помоста, крупные кнопки под палец. */
-.board { display: none; }
-.metro-full body { overflow: hidden; }
-.metro.full {
-  position: fixed; inset: 0; z-index: 100; margin: 0; border: 0; border-radius: 0;
-  display: flex; flex-direction: column; background: var(--paper);
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
-    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-}
-.metro.full:fullscreen { background: var(--paper); }
-.metro.full h2, .metro.full .hint, .metro.full .metro-now { display: none; }
-.metro.full .board {
-  flex: 1; min-height: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; text-align: center; gap: 1vmin;
-}
-.board p { margin: 0; line-height: 1.05; }
-.board-clock { font-size: clamp(3.5rem, 24vmin, 16rem); font-weight: 700; color: var(--ink); }
-.board-clock.count { color: var(--accent); }
-.board-rate { color: var(--accent); }
-.board-rate .n { font-size: clamp(3rem, 18vmin, 12rem); font-weight: 700; }
-.board-unit { font-size: clamp(1.2rem, 4.5vmin, 2.6rem); }
-.board-minute { font-size: clamp(1.2rem, 5vmin, 3rem); color: var(--ink); }
-.board-next { font-size: clamp(1rem, 3.6vmin, 2rem); color: var(--ink-2); }
-.metro.full .metro-row { justify-content: center; gap: 1rem 2rem; }
-.metro.full .btn-main { font-size: clamp(1.2rem, 4vmin, 2rem); min-width: 10rem; padding: 0.6rem 2rem; }
-.metro.full .check { font-size: 1.05rem; }
-.metro.full .check input { width: 1.3rem; height: 1.3rem; }
-.metro.full .btn-full { margin-left: 0; font-size: 1.05rem; padding: 0.55rem 1.2rem; }
-@media (orientation: landscape) and (max-height: 500px) {
-  .board-clock { font-size: 20vmin; }
-  .board-rate .n { font-size: 16vmin; }
-}
-
 .tempo-table th, .tempo-table td { padding: 0.3rem 0.7rem; text-align: right; border-bottom: 1px solid var(--rule-soft); }
 .tempo-table th { color: var(--ink-3); font-weight: 400; font-size: 0.85rem; vertical-align: bottom; line-height: 1.3; }
 .tempo-table th.total { color: var(--ink); font-weight: 700; }
@@ -348,7 +315,6 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 .tempo-table tfoot th { font-size: 1rem; }
 .tempo-table tfoot th, .tempo-table tfoot td { border-bottom: 0; border-top: 2px solid var(--rule); color: var(--ink); font-weight: 700; }
 .tempo-table tr.switch td { border-top: 2px solid var(--s2); }
-.tempo-table tr.now td { background: var(--rule-soft); box-shadow: inset 0 2px 0 var(--accent), inset 0 -2px 0 var(--accent); }
 .table-panel .table-controls .actions { margin-left: 0; }
 
 /* ------------------------------------------------------------- печать
@@ -356,7 +322,7 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 @media print {
   :root { --paper: #fff; --surface: #fff; --ink: #000; --rule: #999; --rule-soft: #ccc; --accent-soft: #fff; }
   header.site, footer.foot, nav, .lead, noscript, .bells, .calc-panel, .chart-panel, .table-controls, .table-panel .hint,
-  .setup, .mode-panel, .metro { display: none !important; }
+  .setup, .mode-panel, .bars-edit { display: none !important; }
   .tempo > .readout { background: none; padding: 0; }
   .tempo-table { font-size: 11pt; }
   .tempo-table th { color: var(--ink); }

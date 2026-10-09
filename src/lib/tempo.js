@@ -303,40 +303,6 @@ export function planText(reps) {
   return parts.join(', ');
 }
 
-// ------------------------------------------------------------- метроном
-
-/** Обратный отсчёт перед стартом, секунд: выбор в метрономе. */
-export const COUNTDOWNS = [5, 10];
-export const DEFAULT_COUNTDOWN = 10;
-/** Секунд между предварительными тиками и сигналом подъёма: меньше самого короткого
- *  промежутка между подъёмами (60 / RATE_MAX = 2 с), чтобы сигналы не налезали. */
-export const PRE_GAP = 0.4;
-
-/**
- * Сигналы метронома: t — секунда от старта (отсчёт — до нуля, с минусом), kind —
- * count (тик отсчёта), go (старт), pre (предварительный тик), rep (подъём), minute — с 0.
- * Отсчёт — тик каждую секунду, на нуле долгий сигнал старта. Подъёмы минуты делят её
- * поровну, сигнал подъёма — в конце своего промежутка: последний в минуте — ровно на
- * её конце. Перед каждым подъёмом — два коротких тика через PRE_GAP.
- */
-export function clicks(reps, countdown = 0) {
-  const out = [];
-  for (let s = countdown; s >= 1; s -= 1) out.push({ t: -s, kind: 'count' });
-  out.push({ t: 0, kind: 'go' });
-  reps.forEach((r, minute) => {
-    for (let k = 1; k <= r; k += 1) {
-      const t = 60 * minute + (60 * k) / r;
-      out.push({ t: t - 2 * PRE_GAP, kind: 'pre', minute }, { t: t - PRE_GAP, kind: 'pre', minute }, { t, kind: 'rep', minute });
-    }
-  });
-  return out;
-}
-
-/** Время на часах метронома: 135 → «2:15», отсчёт до старта — с минусом: −4,2 → «−0:05». */
-export const clock = (sec) => (sec < 0
-  ? `−${clock(Math.ceil(-sec))}`
-  : `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`);
-
 // ------------------------------------------------------------- состояние и адрес
 
 export function defaultState() {
