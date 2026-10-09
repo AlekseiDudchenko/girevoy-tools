@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ikmf-world-part2-2026",
+    "title": "IKMF World Championship 2026 Part 2",
+    "startDate": "2026-11-13",
+    "endDate": "2026-11-15",
+    "country": "GB",
+    "city": "",
+    "organizer": "IKMF",
+    "federations": [
+      "IKMF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/London",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IKMF",
+        "url": "https://www.ikmf-world.com/calendars/ikmf-international-competitions/",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  }
+]

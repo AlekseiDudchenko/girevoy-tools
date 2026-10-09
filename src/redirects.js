@@ -18,7 +18,8 @@ export function redirects() {
   ];
   for (const t of readyTools()) {
     const to = langPath(OLD_LANG, `${t.slug}/`);
-    lines.push(`/${t.slug} ${to} 301`, `/${t.slug}/ ${to} 301`, `/${t.slug}/* ${to}:splat 301`);
+    lines.push(`/${t.slug} ${to} 301`, `/${t.slug}/ ${to} 301`);
+    if (t.slug !== 'calendar') lines.push(`/${t.slug}/* ${to}:splat 301`);
   }
   return `${lines.join('\n')}\n`;
 }

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "iukl-world-riga-2026",
+    "title": "IUKL World Championship Riga 2026",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-18",
+    "country": "LV",
+    "city": "Riga",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Riga",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  }
+]

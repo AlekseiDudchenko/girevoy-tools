@@ -2,9 +2,11 @@
 // из src/i18n/ — в /<язык>/<slug>/index.html; файлы из assets/ — как есть в корень;
 // чистые функции src/lib/ — в dist/lib/, словари src/i18n/ — в dist/i18n/: браузер
 // импортирует те же модули, что проверяют тесты.
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { readFileSync, cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { schemaErrors } from '../src/lib/calendar-schema.js';
+import { validateEvents, eventICS } from '../src/lib/calendar.js';
 import { layout } from '../src/layout.js';
 import { SITE_URL } from '../src/brand.js';
 import { LANGS, locale } from '../src/i18n/index.js';
@@ -29,6 +31,14 @@ for (const lang of LANGS) {
     writeFileSync(file, layout(L, page));
   }
 }
+
+const events = validateEvents(JSON.parse(readFileSync(join(root, 'data/calendar/events.json'), 'utf8')));
+const eventSchema = JSON.parse(readFileSync(join(root, 'data/calendar/event.schema.json'), 'utf8'));
+for (const event of events) { const errors = schemaErrors(event, eventSchema); if (errors.length) throw new Error(errors.join(', ')); }
+mkdirSync(join(dist, 'calendar/ics'), {recursive:true});
+cpSync(join(root, 'data/calendar/event.schema.json'), join(dist, 'calendar/event.schema.json'));
+writeFileSync(join(dist, 'calendar/events.json'), JSON.stringify(events));
+for (const event of events) writeFileSync(join(dist, 'calendar/ics', event.id + '.ics'), eventICS(event));
 
 // sitemap: каждая версия со ссылками на остальные языки.
 const loc = (lang, slug) => `${SITE_URL}${langPath(lang, slug)}`;

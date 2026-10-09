@@ -336,3 +336,34 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
   .coef-table tr.on td, .coef-table tr.on td.score { background: none; color: var(--ink); box-shadow: none; }
   .coef-table tr { break-inside: avoid; }
 }
+
+/* Competition calendar */
+.calendar { padding-block: 2rem; }
+.calendar-top { display:flex; flex-wrap:wrap; gap:.7rem 1.5rem; margin-block:1.5rem; }
+.calendar-top span,.calendar-note { color:var(--ink-2); }
+.calendar-filters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; padding:1.2rem; border:1px solid var(--rule); background:var(--surface); }
+.calendar-filters label { display:flex; flex-direction:column; gap:.35rem; min-width:0; }
+.calendar-filters input,.calendar-filters select { width:100%; min-width:0; padding:.6rem; color:var(--ink); background:var(--paper); border:1px solid var(--rule); border-radius:4px; font:inherit; }
+.calendar-filter-actions { display:flex; flex-wrap:wrap; gap:.7rem; grid-column:1/-1; }
+.calendar-month { font-size:1.3rem; margin-block:2rem .5rem; text-transform:capitalize; }
+.calendar-event { display:grid; grid-template-columns:12rem minmax(0,1fr); gap:1.5rem; padding:1.5rem 0; border-top:1px solid var(--rule); }
+.calendar-date { font-weight:700; }
+.calendar-date small { display:block; font-weight:400; color:var(--ink-2); margin-top:.4rem; }
+.calendar-info { min-width:0; overflow-wrap:anywhere; }
+.calendar-info h2 { margin:0; font-size:1.25rem; }
+.calendar-place { margin:.5rem 0; color:var(--ink-2); }
+.calendar-badges { display:flex; flex-wrap:wrap; gap:.5rem; margin:.8rem 0; }
+.calendar-badges span { border:1px solid var(--rule); border-radius:4px; padding:.1rem .5rem; font-size:.85rem; background:var(--surface); }
+.calendar-info dl { display:grid; grid-template-columns: minmax(6rem,auto) 1fr; gap:.25rem 1rem; font-size:.9rem; }
+.calendar-info dt { color:var(--ink-2); }
+.calendar-info dd { margin:0; }
+.calendar-actions { display:flex; flex-wrap:wrap; gap:.7rem 1.2rem; margin-block:1rem; }
+.calendar-sources { padding-left:1.2rem; font-size:.85rem; }
+.calendar-sources li span { color:var(--ink-2); margin-left:.6rem; }
+.calendar-info summary { cursor:pointer; color:var(--ink-2); }
+@media(max-width:600px) {
+  .calendar-filters { grid-template-columns:repeat(2,minmax(0,1fr)); padding:.8rem; gap:.7rem; }
+  .calendar-event { grid-template-columns:1fr; gap:.5rem; }
+  .calendar-info dl { grid-template-columns:1fr; gap:0; }
+  .calendar-info dd { margin-bottom:.5rem; }
+}

@@ -161,6 +161,8 @@ test('_redirects: корень и старые адреса без языка �
   const rules = file.split('\n').filter((l) => l && !l.startsWith('#')).map((l) => l.split(' '));
   assert.deepEqual(rules, [
     ['/', '/ru/', '302'],
+    ['/calendar', '/ru/calendar/', '301'],
+    ['/calendar/', '/ru/calendar/', '301'],
     ['/tempo', '/ru/tempo/', '301'],
     ['/tempo/', '/ru/tempo/', '301'],
     ['/tempo/*', '/ru/tempo/:splat', '301'],
@@ -173,7 +175,7 @@ test('_redirects: корень и старые адреса без языка �
     assert.doesNotMatch(`${from} ${to}`, /\?/);
     // Цель существует, источник — нет: правило не перекрывает страницы и файлы сайта.
     assert.ok(existsSync(join(out, to.replace(':splat', ''), 'index.html')), to);
-    if (from !== '/') assert.ok(!existsSync(join(out, from.replace('*', ''))), from);
+    if (from !== '/' && !from.endsWith('*')) assert.ok(!existsSync(join(out, from, 'index.html')), from);
     assert.ok(!LANGS.some((l) => from.startsWith(`/${l}/`)), `${from}: без петли`);
   }
 });

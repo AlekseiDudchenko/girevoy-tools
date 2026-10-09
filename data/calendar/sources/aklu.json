@@ -1,0 +1,127 @@
+[
+  {
+    "id": "all-american-open-2026",
+    "title": "All American Kettlebell Open 2026",
+    "startDate": "2026-10-09",
+    "endDate": "2026-10-11",
+    "country": "US",
+    "city": "Atlantic City",
+    "organizer": "All American Kettlebell Open",
+    "federations": [
+      "AKLU"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": "https://allamericankettlebellopen.com",
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "America/New_York",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "AKLU",
+        "url": "https://www.aklu.net/sanctioned-events",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "westshore-open-2026",
+    "title": "Westshore Kettlebell Open 2026",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "country": "CA",
+    "city": "Victoria",
+    "organizer": "Westshore Warehouse",
+    "federations": [
+      "AKLU",
+      "IKO"
+    ],
+    "format": "hybrid",
+    "status": "confirmed",
+    "disciplines": [
+      "biathlon",
+      "long-cycle",
+      "snatch",
+      "jerk",
+      "half-marathon",
+      "military-snatch"
+    ],
+    "registrationUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdXd69I4nwqVMH6-GZMgOp-3A369kkjYfL79Bmc-S1Up1DpCg/viewform",
+    "registrationDeadline": "2026-10-31",
+    "organizerUrl": null,
+    "timeZone": "America/Vancouver",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "AKLU",
+        "url": "https://www.aklu.net/sanctioned-events",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      },
+      {
+        "organization": "IKO",
+        "url": "https://docs.google.com/forms/d/e/1FAIpQLSdXd69I4nwqVMH6-GZMgOp-3A369kkjYfL79Bmc-S1Up1DpCg/viewform",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "jingle-bells-open-2026",
+    "title": "Jingle Bells Kettlebell Open 2026",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "country": "US",
+    "city": "Marietta",
+    "organizer": "Rise Up Fitness",
+    "federations": [
+      "AKLU"
+    ],
+    "format": "hybrid",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": "https://forms.gle/P6P1o2pCsMpvNe5Y6",
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "America/New_York",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "AKLU",
+        "url": "https://www.aklu.net/sanctioned-events",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "luva-bells-open-2027",
+    "title": "Luva Bells Kettlebell Sport Open 2027",
+    "startDate": "2027-02-20",
+    "endDate": "2027-02-20",
+    "country": "US",
+    "city": "Las Vegas",
+    "organizer": "Luva Bells Kettlebell Sport Open",
+    "federations": [
+      "AKLU"
+    ],
+    "format": "online",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfCyTTYBi5aNIm_fA0In8ztsVGVfn5WcBXPyMXo9fzMiwGOig/viewform",
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "America/Los_Angeles",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "AKLU",
+        "url": "https://www.aklu.net/sanctioned-events",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  }
+]
