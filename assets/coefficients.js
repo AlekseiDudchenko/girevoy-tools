@@ -58,7 +58,7 @@ function render(skip) {
   el.chipHeavy.textContent = kg(L, state.heavy);
   el.light.value = String(state.light);
   el.heavy.value = String(state.heavy);
-  if (skip !== 'k') el.k.value = state.k.toFixed(2);
+  if (skip !== 'k') el.k.value = L.num(state.k, 2);
   el.range.max = String(sliderMax(state));
   if (skip !== 'range') el.range.value = String(state.k);
   // Второй ползунок — в строке пересчёта; оба меняют один и тот же k.
@@ -127,12 +127,14 @@ el.heavy.addEventListener('change', () => {
   update({ light, heavy, k: defaultK(light, heavy) });
 });
 
+// Коэффициент — текстовое поле: число с десятичным знаком языка страницы,
+// ввод принимает и запятую, и точку.
 el.k.addEventListener('input', () => {
-  const k = Number(el.k.value.replace(',', '.'));
+  const k = parseNumber(el.k.value);
   if (Number.isFinite(k) && k >= K_MIN && k <= K_MAX) update({ k: round2(k) }, 'k');
 });
 el.k.addEventListener('change', () => {
-  const k = Number(el.k.value.replace(',', '.'));
+  const k = parseNumber(el.k.value);
   update({ k: Number.isFinite(k) ? clampK(round2(k)) : state.k });
 });
 

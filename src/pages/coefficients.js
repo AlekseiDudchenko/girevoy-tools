@@ -2,7 +2,7 @@
 // теми же функциями, что и браузер: без JavaScript видны графики и таблица для
 // 24 и 32 кг с коэффициентом по весу гири.
 import { esc } from '../html.js';
-import { DEFAULT_TABLE, K_MAX, K_MIN, STEPS, WEIGHTS, defaultState, sliderMax } from '../lib/coefficients.js';
+import { DEFAULT_TABLE, K_MIN, STEPS, WEIGHTS, defaultState, sliderMax } from '../lib/coefficients.js';
 import {
   calcLabels, calcNote, calcText, calcValues, colorVars, equivChart, equivLegend, kg, ratioHint, readout, scoreChart,
   scoreLegend, tableBody, tableHead,
@@ -75,7 +75,7 @@ export default {
     </div>
     <div class="field js-only">
       <label for="k">${t('k')}</label>
-      <input id="k" class="n" type="number" inputmode="decimal" min="${K_MIN}" max="${K_MAX}" step="0.01" value="${st.k.toFixed(2)}">
+      <input id="k" class="n" type="text" inputmode="decimal" autocomplete="off" value="${L.num(st.k, 2)}">
     </div>
     <input id="k-range" class="k-range js-only" type="range" min="${K_MIN}" max="${sliderMax(st)}" step="0.01" value="${st.k}" aria-label="${t('kRange')}">
     <p class="hint" id="ratio-hint">${ratioHint(L, st)}</p>

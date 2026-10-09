@@ -139,7 +139,7 @@ select, input[type="number"] {
   font: inherit; color: var(--ink); background: var(--surface);
   border: 1px solid var(--rule); border-radius: 6px; padding: 0.25rem 0.5rem;
 }
-input[type="number"] { width: 6rem; }
+input[type="number"], .bell #k { width: 6rem; }
 .btn {
   font: inherit; font-size: 0.92rem; color: var(--accent); background: var(--surface);
   border: 1px solid var(--rule); border-radius: 6px; padding: 0.3rem 0.7rem; cursor: pointer;
@@ -256,6 +256,9 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
   .tempo .tabs [role="tab"] { font-size: 0.85rem; }
   .tempo-table th, .tempo-table td { padding-inline: 0.3rem; }
   .actions { margin-left: 0; }
+  /* Шапка на телефоне: знак и языки в первой строке, меню инструментов — во второй. */
+  .site .langs { order: 2; }
+  .site .tools-nav { order: 3; width: 100%; }
 }
 
 /* ------------------------------------------------------------- темп
