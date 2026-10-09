@@ -301,7 +301,7 @@ const SOUND = {
 };
 
 const metro = {
-  on: false, ctx: null, t0: 0, count: 0, list: [], idx: 0, minute: -1, timer: 0, shown: '', lock: null,
+  on: false, starting: false, ctx: null, t0: 0, count: 0, list: [], sounding: [], idx: 0, minute: -1, timer: 0, shown: '', lock: null,
 
   async start() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -309,8 +309,11 @@ const metro = {
       say(L.t('tempo.metro.noAudio'));
       return;
     }
+    if (this.starting) return; // второе нажатие, пока звук включается
+    this.starting = true;
     this.ctx ||= new AC();
     await this.ctx.resume();
+    this.starting = false;
     this.on = true;
     this.count = Number(el.countdown.value);
     this.t0 = this.ctx.currentTime + 0.4 + this.count;
@@ -328,6 +331,9 @@ const metro = {
     if (!this.on) return;
     this.on = false;
     clearInterval(this.timer);
+    // Уже запланированные сигналы (долгий старт, подъём) не доигрывают после «Стоп».
+    for (const osc of this.sounding) osc.stop();
+    this.sounding = [];
     this.minute = -1;
     this.shown = '';
     this.lock?.release().catch(() => {});
@@ -361,6 +367,8 @@ const metro = {
     osc.connect(gain).connect(ctx.destination);
     osc.start(at);
     osc.stop(at + dur + 0.01);
+    this.sounding.push(osc);
+    osc.onended = () => { this.sounding = this.sounding.filter((o) => o !== osc); };
   },
 
   tick() {
@@ -383,11 +391,12 @@ const metro = {
       renderChart();
     }
     const reps = repsOf(state)[m];
-    const text = metroText(L, clock(Math.min(now, state.min * 60)), m + 1, state.min, reps);
+    const shown = Math.min(Math.max(now, -this.count), state.min * 60);
+    const text = metroText(L, clock(shown), m + 1, state.min, reps);
     if (text !== this.shown) {
       this.shown = text;
       el.metroNow.textContent = text;
-      html(el.board, metroBoard(L, state, Math.min(now, state.min * 60)));
+      html(el.board, metroBoard(L, state, shown));
     }
   },
 };
