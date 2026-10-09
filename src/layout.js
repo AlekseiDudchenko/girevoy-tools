@@ -55,8 +55,8 @@ ${alternates}
 ${page.body(L)}
 </main>
 <footer class="foot"><div class="inner">
-<p>${L.t('site.foot.calc', { archive: `${ARCHIVE_URL}/` })}</p>
-<p>${esc(L.t('site.foot.privacy'))}</p>
+<p>${L.t(page.key === 'calendar' ? 'calendar.foot' : 'site.foot.calc', { archive: `${ARCHIVE_URL}/` })}</p>
+<p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : 'site.foot.privacy'))}</p>
 </div></footer>
 ${scripts.map((s) => `<script type="module" src="${esc(s)}"></script>`).join('\n')}
 </body>

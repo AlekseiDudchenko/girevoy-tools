@@ -1,0 +1,31 @@
+name: Calendar event or correction
+description: Propose an event or correct a listing. Maintainers verify the source before publication.
+title: '[Calendar] '
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Request
+      options: [New event, Correction, Cancellation or postponement]
+    validations:
+      required: true
+  - type: input
+    id: event
+    attributes:
+      label: Event title or calendar event ID
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source URL
+      description: Public organizer or federation announcement. Do not include personal registration data.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Dates, place, federation, format and correction
+      description: Include start/end dates, country/city, organizer and registration URL/deadline if known.
+    validations:
+      required: true

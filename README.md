@@ -12,3 +12,8 @@ npm run preview  # сборка и сервер на http://localhost:8081/ru/
 ```
 
 Зависимостей нет, нужен Node 22. Правила работы — `CLAUDE.md`.
+
+Международный календарь: `/ru/calendar/`, `/en/calendar/`, `/de/calendar/`.
+Проверенные вручную события из официальных источников, фильтры и ICS.
+Обновление и модерация: [`docs/calendar-sources.md`](docs/calendar-sources.md).
+`npm run calendar:review` создаёт отчёт, автоматически данные не публикует.
