@@ -1,6 +1,7 @@
 // Public English dictionary. Same keys as de.js; placeholders are {name}; a word that
 // changes with the number is an object keyed by Intl.PluralRules('en') categories.
 export default {
+  'site.socialImageAlt': 'VseGiri tools logo and {title}',
   "calendar.title": "Kettlebell sport competition calendar",
   "calendar.seoTitle": "Kettlebell Sport Competition Calendar",
   "calendar.nav": "Calendar",

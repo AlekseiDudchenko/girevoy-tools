@@ -50,6 +50,11 @@
   вручную обновить назначение на подходящую английскую страницу.
 - SEO-title — ключ `<page.key>.seoTitle`; страницы серий задают `title(L)`.
   Итоговый `<title>` — «<SEO-заголовок> | VseGiri»; заголовки интерфейса задаются отдельно.
+- Open Graph и Twitter используют те же title/description и чистый canonical.
+  Локализованные PNG-превью — `assets/social/`; при новой странице, смене заголовка
+  или логотипа пересобрать `node scripts/social-cards.mjs` и осмотреть изображения.
+  Генератор — только для подготовки ассетов, сборке Python не нужен.
+  Подробности и зависимости генератора — `docs/social-previews.md`.
 - Бренд «VseGiri» не переводится. Упражнения: en long cycle / jerk / snatch,
   de Long Cycle / Stoßen / Reißen.
 
@@ -61,6 +66,7 @@ README.md               быстрый старт
 src/brand.js            бренд, адрес сайта, шаблон <title>
 src/tools.js            перечень инструментов: главная, навигация, статус ready/planned
 src/layout.js           оболочка страницы: head с hreflang, шапка с переключателем языка, подвал
+src/social.js           локализованные данные и стабильные адреса социальных PNG-превью
 src/html.js             esc() — всё, что вставляется в шаблоны
 src/redirects.js        _redirects Cloudflare Pages: старые адреса без языка и /ru/… → /en/…
 src/i18n/<язык>.js      публичные словари en, de: весь текст страниц, title и description
