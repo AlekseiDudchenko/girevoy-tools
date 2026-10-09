@@ -106,37 +106,54 @@ export function barChart(state, size = chartSize(900), opts = {}) {
   return svg(size, 'chart-bars', 'role="group" aria-label="Темп по минутам: столбики можно тянуть или менять стрелками"', s);
 }
 
-// ------------------------------------------------------------- нарастающий итог
+// ------------------------------------------------------------- отклонение от ровного
 
-const CUM_PAD = { left: 40, right: 14, top: 22, bottom: 26 };
+const DEV_PAD = { left: 40, right: 14, top: 22, bottom: 26 };
 
-/** Нарастающий итог плана против прямой ровного темпа. */
-export function cumChart(state, size = chartSize(900)) {
+/**
+ * Нарастающий итог плана против ровного темпа — разностью: на сколько подъёмов
+ * план впереди (+) или позади (−) ровной раскладки того же итога после каждой
+ * минуты. Те же числа, что в колонке таблицы; ноль — ровный темп. Сами итоги
+ * (80 и 78) на общей шкале сливаются, разница в 1–2 подъёма видна только так.
+ */
+export function devChart(state, size = chartSize(900)) {
   const data = rows(state);
   const n = data.length;
   const total = data[n - 1].cum;
-  const axis = niceAxis(total * 1.08, 6);
-  const plotW = size.width - CUM_PAD.left - CUM_PAD.right;
-  const plotH = size.height - CUM_PAD.top - CUM_PAD.bottom;
-  const x = (m) => r1(CUM_PAD.left + (m / n) * plotW);
-  const y = (v) => r1(CUM_PAD.top + plotH - (v / axis.max) * plotH);
+  const peak = Math.max(2, ...data.map((r) => Math.abs(r.dev)));
+  // Запас в одно деление: подписи точек на краю не налезают на номера минут.
+  const axis = niceAxis(peak + 1, 3);
+  const plotW = size.width - DEV_PAD.left - DEV_PAD.right;
+  const plotH = size.height - DEV_PAD.top - DEV_PAD.bottom;
+  const x = (m) => r1(DEV_PAD.left + (m / n) * plotW);
+  const y = (v) => r1(DEV_PAD.top + ((axis.max - v) / (2 * axis.max)) * plotH);
+  const bottom = DEV_PAD.top + plotH;
   let s = '';
-  for (let v = 0; v <= axis.max; v += axis.tick) {
+  for (let v = -axis.max; v <= axis.max; v += axis.tick) {
     s += `<line class="grid" x1="${x(0)}" x2="${x(n)}" y1="${y(v)}" y2="${y(v)}"/>`;
-    s += `<text x="${CUM_PAD.left - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+    s += `<text x="${DEV_PAD.left - 6}" y="${y(v) + 4}" text-anchor="end">${signed(v)}</text>`;
   }
   const step = minuteStep(n);
-  for (let m = 0; m <= n; m += step) s += `<text x="${x(m)}" y="${y(0) + 17}" text-anchor="middle">${m}</text>`;
-  s += `<line class="axis" x1="${x(0)}" x2="${x(n)}" y1="${y(0)}" y2="${y(0)}"/>`;
-  s += `<text class="axis-label" x="${CUM_PAD.left - 6}" y="${CUM_PAD.top - 10}">подъёмов с начала</text>`;
-  s += `<text class="axis-label" x="${x(n)}" y="${y(0) - 6}" text-anchor="end">минута</text>`;
-  if (state.ex === 'snatch') s += `<line class="guide" x1="${x(state.hand)}" x2="${x(state.hand)}" y1="${CUM_PAD.top}" y2="${y(0)}"/>`;
-  s += `<line class="ln ln-even" x1="${x(0)}" y1="${y(0)}" x2="${x(n)}" y2="${y(total)}"/>`;
-  const points = [`${x(0)},${y(0)}`, ...data.map((r) => `${x(r.minute)},${y(r.cum)}`)].join(' ');
-  s += `<polyline class="ln ln-plan" points="${points}"/>`;
-  if (n <= 10) for (const r of data) s += `<circle class="dot dot-plan" cx="${x(r.minute)}" cy="${y(r.cum)}" r="3.5"/>`;
-  s += `<text class="mark-label" x="${x(n) - 6}" y="${y(total) - 8}" text-anchor="end">${total}</text>`;
-  return svg(size, 'chart-cum', `role="img" aria-label="Нарастающий итог: ${total} ${plural(total, REPS)} за ${n} ${plural(n, MINS)}"`, s);
+  for (let m = 0; m <= n; m += step) s += `<text x="${x(m)}" y="${bottom + 17}" text-anchor="middle">${m}</text>`;
+  s += `<text class="axis-label" x="${x(0) + 6}" y="${DEV_PAD.top + 13}">впереди</text>`;
+  s += `<text class="axis-label" x="${x(0) + 6}" y="${bottom - 6}">позади</text>`;
+  s += `<text class="axis-label" x="${DEV_PAD.left - 6}" y="${DEV_PAD.top - 10}">подъёмов к ровному темпу</text>`;
+  if (state.ex === 'snatch') s += `<line class="guide" x1="${x(state.hand)}" x2="${x(state.hand)}" y1="${DEV_PAD.top}" y2="${bottom}"/>`;
+  s += `<line class="even" x1="${x(0)}" x2="${x(n)}" y1="${y(0)}" y2="${y(0)}"/>`;
+  const pts = [[0, 0], ...data.map((r) => [r.minute, r.dev])];
+  const line = pts.map(([m, v]) => `${x(m)},${y(v)}`).join(' ');
+  s += `<polygon class="dev-area" points="${x(0)},${y(0)} ${line} ${x(n)},${y(0)}"/>`;
+  s += `<polyline class="ln ln-plan" points="${line}"/>`;
+  if (n <= 10) {
+    for (const r of data) {
+      s += `<circle class="dot dot-plan" cx="${x(r.minute)}" cy="${y(r.dev)}" r="3.5"/>`;
+      if (r.dev) s += `<text class="mark-label" x="${x(r.minute)}" y="${y(r.dev) + (r.dev > 0 ? -9 : 17)}" text-anchor="middle">${signed(r.dev)}</text>`;
+    }
+  }
+  const worst = data.reduce((a, r) => (r.dev < a.dev ? r : a), data[0]);
+  const best = data.reduce((a, r) => (r.dev > a.dev ? r : a), data[0]);
+  const label = `Отклонение от ровного темпа по минутам: от ${signed(worst.dev)} после ${worst.minute}-й минуты до ${signed(best.dev)} после ${best.minute}-й; итог ${total} ${plural(total, REPS)} за ${n} ${plural(n, MINS)}`;
+  return svg(size, 'chart-dev', `role="img" aria-label="${label}"`, s);
 }
 
 // ------------------------------------------------------------- легенды и итог
@@ -151,8 +168,9 @@ export function barLegend(state) {
   return `<ul class="legend">${hands}${lineKey('even', 'ровный темп того же итога')}<li class="legend-hint">столбик можно тянуть или менять стрелками ↑/↓</li></ul>`;
 }
 
-export function cumLegend() {
-  return `<ul class="legend">${lineKey('ln ln-plan', 'план')}${lineKey('ln ln-even', 'ровный темп')}</ul>`;
+export function devLegend(state) {
+  const hand = state.ex === 'snatch' ? lineKey('guide', 'смена руки') : '';
+  return `<ul class="legend">${lineKey('ln ln-plan', 'план: впереди (+) или позади (−)')}${lineKey('even', 'ровный темп того же итога')}${hand}</ul>`;
 }
 
 /** «Итог плана: 80 подъёмов за 10 минут, в среднем 8 в минуту. По минутам: 7, 7, 8 × 7, 10.» */
