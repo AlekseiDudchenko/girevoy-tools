@@ -6,7 +6,7 @@
 // переводится в целые сотые: так 50 × 1,6 даёт ровно 80, а не 80,000…01.
 import { parseNumber } from './format.js';
 
-export { fmt, parseNumber, plural } from './format.js';
+export { parseNumber } from './format.js';
 
 export const WEIGHTS = [8, 12, 16, 20, 24, 28, 32];
 export const STEPS = [5, 10];

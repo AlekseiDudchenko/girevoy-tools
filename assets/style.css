@@ -92,6 +92,15 @@ a:hover { text-decoration-thickness: 2px; }
 .site nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.1rem; font-size: 0.92rem; }
 .site nav a { color: var(--ink-2); text-decoration: none; }
 .site nav a.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
+/* Переключатель языка: коды RU/EN/DE, полное название — для экранных чтецов. */
+.site .langs { gap: 0.15rem; margin-left: auto; font-family: "PT Mono", ui-monospace, monospace; font-size: 0.8rem; }
+.site .langs a { padding: 0.1rem 0.3rem; color: var(--ink-3); }
+.site .langs a:hover { color: var(--ink); }
+.site .langs a.on { color: var(--ink); }
+.sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ------------------------------------------------------------- страница */
 main { padding-block: 1.5rem 3rem; }
@@ -130,7 +139,7 @@ select, input[type="number"] {
   font: inherit; color: var(--ink); background: var(--surface);
   border: 1px solid var(--rule); border-radius: 6px; padding: 0.25rem 0.5rem;
 }
-input[type="number"] { width: 6rem; }
+input[type="number"], .bell #k { width: 6rem; }
 .btn {
   font: inherit; font-size: 0.92rem; color: var(--accent); background: var(--surface);
   border: 1px solid var(--rule); border-radius: 6px; padding: 0.3rem 0.7rem; cursor: pointer;
@@ -247,6 +256,9 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
   .tempo .tabs [role="tab"] { font-size: 0.85rem; }
   .tempo-table th, .tempo-table td { padding-inline: 0.3rem; }
   .actions { margin-left: 0; }
+  /* Шапка на телефоне: знак и языки в первой строке, меню инструментов — во второй. */
+  .site .langs { order: 2; }
+  .site .tools-nav { order: 3; width: 100%; }
 }
 
 /* ------------------------------------------------------------- темп

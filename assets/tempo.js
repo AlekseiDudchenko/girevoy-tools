@@ -1,15 +1,18 @@
-// Поведение страницы /tempo/. Расчёт и разметка — чистые функции из /lib/,
+// Поведение страницы /<язык>/tempo/. Расчёт и разметка — чистые функции из /lib/,
 // здесь только события, поля, метроном и адрес страницы.
 import {
-  ANNOUNCE_END, D_MAX, D_MIN, RATE_MAX, STRATEGIES, addSegment, announce, canAddSegment, clicks, clock,
+  D_MAX, D_MIN, RATE_MAX, addSegment, canAddSegment, clicks, clock,
   editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
-  barAxis, barChart, barGeometry, barLegend, chartSize, paceSum, segmentRows, summary,
+  announce, barAxis, barChart, barGeometry, barLegend, chartSize, errorText, metroText, paceSum, segmentRows, summary,
   tableBody, tableFoot, tableHead,
 } from './lib/tempo-view.js';
+import { SPEECH_LANG } from './lib/locale.js';
+import { pageLocale, replaceSearch } from './page.js';
 
 document.documentElement.classList.add('js');
+const L = await pageLocale();
 
 const $ = (id) => document.getElementById(id);
 const el = {
@@ -40,7 +43,7 @@ const size = () => chartSize(el.boxBars.clientWidth || 900);
 
 function renderChart() {
   const focused = el.boxBars.contains(document.activeElement);
-  html(el.boxBars, barChart(state, size(), { focus: focusIdx, now: metro.minute, axis: drag?.axis }));
+  html(el.boxBars, barChart(L, state, size(), { focus: focusIdx, now: metro.minute, axis: drag?.axis }));
   if (focused) el.boxBars.querySelector(`[data-i="${focusIdx}"]`)?.focus();
 }
 
@@ -67,28 +70,28 @@ function render(skip) {
   el.strategy.value = state.strategy;
   el.dField.hidden = state.strategy === 'even';
   if (skip !== 'd') el.d.value = String(state.d);
-  el.strategyHint.textContent = STRATEGIES.find((s) => s.id === state.strategy).hint;
+  el.strategyHint.textContent = L.t(`tempo.s.${state.strategy}.hint`);
 
   if (state.mode === 'pace') {
     // Пока вводят число в отрезок, строки не перерисовываются — только остаток минут.
     if (skip === 'seg') $('seg-rest').textContent = String(state.seg[state.seg.length - 1].n);
     else {
-      html(el.segs, segmentRows(state));
+      html(el.segs, segmentRows(L, state));
       el.segError.textContent = '';
     }
-    html(el.paceSum, paceSum(state));
+    html(el.paceSum, paceSum(L, state));
     el.segAdd.disabled = !canAddSegment(state.seg);
   }
 
-  html(el.summary, summary(state));
+  html(el.summary, summary(L, state));
   renderChart();
-  html(el.legendBars, barLegend(state));
-  html(el.head, tableHead(state));
-  html(el.body, tableBody(state, metro.minute));
-  html(el.foot, tableFoot(state));
+  html(el.legendBars, barLegend(L, state));
+  html(el.head, tableHead(L, state));
+  html(el.body, tableBody(L, state, metro.minute));
+  html(el.foot, tableFoot(L, state));
   if (!metro.on) el.metroNow.textContent = metroIdle();
   metro.resync();
-  history.replaceState(null, '', location.pathname + serializeState(state) + location.hash);
+  replaceSearch(serializeState(state));
 }
 
 function update(next, skip) {
@@ -143,7 +146,7 @@ function tryGoal(patch, skip) {
   const next = { ...state, ...patch };
   const error = goalError(next.goal, next.min, next.strategy, next.d);
   if (error) {
-    el.goalError.textContent = error;
+    el.goalError.textContent = errorText(L, error);
     el.goal.setAttribute('aria-invalid', 'true');
     return false;
   }
@@ -176,7 +179,7 @@ el.segs.addEventListener('input', (e) => {
   for (const other of el.segs.querySelectorAll('input')) other.removeAttribute('aria-invalid');
   if (res.error) {
     input.setAttribute('aria-invalid', 'true');
-    el.segError.textContent = res.error;
+    el.segError.textContent = errorText(L, res.error);
     return;
   }
   el.segError.textContent = '';
@@ -266,13 +269,13 @@ el.voice.addEventListener('change', () => {
 function speak(text) {
   if (!el.voice.checked || !('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ru-RU';
+  u.lang = SPEECH_LANG[L.lang];
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
 
 /** Строка метронома до старта: время, первая минута и её темп. */
-const metroIdle = () => `0:00 · минута 1 из ${state.min} · ${repsOf(state)[0]} в минуту`;
+const metroIdle = () => metroText(L, '0:00', 1, state.min, repsOf(state)[0]);
 
 const LOOKAHEAD = 0.15; // секунд: щелчки планируются заранее, таймер может опаздывать
 
@@ -282,7 +285,7 @@ const metro = {
   async start() {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) {
-      say('Браузер не умеет воспроизводить звук');
+      say(L.t('tempo.metro.noAudio'));
       return;
     }
     this.ctx ||= new AC();
@@ -293,7 +296,7 @@ const metro = {
     this.idx = 0;
     this.minute = -1;
     this.timer = setInterval(() => this.tick(), 25);
-    el.metroStart.textContent = 'Стоп';
+    el.metroStart.textContent = L.t('tempo.metro.stop');
     el.metroStart.setAttribute('aria-pressed', 'true');
     try { this.lock = await navigator.wakeLock?.request('screen'); } catch { /* экран может погаснуть */ }
     this.tick();
@@ -307,9 +310,9 @@ const metro = {
     this.shown = '';
     this.lock?.release().catch(() => {});
     this.lock = null;
-    el.metroStart.textContent = 'Старт';
+    el.metroStart.textContent = L.t('tempo.metro.start');
     el.metroStart.setAttribute('aria-pressed', 'false');
-    if (finished) speak(ANNOUNCE_END);
+    if (finished) speak(L.t('tempo.say.stop'));
     else if ('speechSynthesis' in window) speechSynthesis.cancel();
     render();
   },
@@ -350,12 +353,12 @@ const metro = {
     const m = Math.max(0, Math.floor(now / 60));
     if (now >= 0 && m !== this.minute) {
       this.minute = m;
-      speak(announce(state, m));
-      html(el.body, tableBody(state, m));
+      speak(announce(L, state, m));
+      html(el.body, tableBody(L, state, m));
       renderChart();
     }
     const reps = repsOf(state)[m];
-    const text = `${clock(Math.max(0, now))} · минута ${m + 1} из ${state.min} · ${reps} в минуту`;
+    const text = metroText(L, clock(Math.max(0, now)), m + 1, state.min, reps);
     if (text !== this.shown) {
       this.shown = text;
       el.metroNow.textContent = text;
@@ -370,9 +373,9 @@ el.metroStart.addEventListener('click', () => (metro.on ? metro.stop() : metro.s
 $('copy-link').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(location.href);
-    say('Ссылка скопирована');
+    say(L.t('common.copied'));
   } catch {
-    say('Скопируйте адрес из строки браузера');
+    say(L.t('common.copyFailed'));
   }
 });
 $('print').addEventListener('click', () => window.print());

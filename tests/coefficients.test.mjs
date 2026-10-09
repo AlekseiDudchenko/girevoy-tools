@@ -5,10 +5,13 @@ import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  K_MAX, convert, defaultK, defaultState, equivalentK, fmt, heavyReps, parseNumber, parseState, plural,
+  K_MAX, convert, defaultK, defaultState, equivalentK, heavyReps, parseNumber, parseState,
   scoreOf, serializeState, sliderMax, tableRows, validCalc, validTable,
 } from '../src/lib/coefficients.js';
 import { calcNote, bellColor, colorVars, niceAxis, readout, scoreChart, equivChart, tableBody } from '../src/lib/coefficients-view.js';
+import { locale } from '../src/i18n/index.js';
+
+const L = locale('ru');
 
 // ------------------------------------------------------------- расчёт
 
@@ -71,12 +74,12 @@ test('k из равноценных подъёмов и по весу гири',
 });
 
 test('формат: десятичная запятая и склонение', () => {
-  assert.equal(fmt(1.6, 2), '1,60');
-  assert.equal(fmt(80, 1), '80,0');
-  assert.equal(plural(1, ['подъём', 'подъёма', 'подъёмов']), 'подъём');
-  assert.equal(plural(22, ['подъём', 'подъёма', 'подъёмов']), 'подъёма');
-  assert.equal(plural(11, ['подъём', 'подъёма', 'подъёмов']), 'подъёмов');
-  assert.equal(plural(80, ['подъём', 'подъёма', 'подъёмов']), 'подъёмов');
+  assert.equal(L.num(1.6, 2), '1,60');
+  assert.equal(L.num(80, 1), '80,0');
+  assert.equal(L.plural(1, 'reps'), 'подъём');
+  assert.equal(L.plural(22, 'reps'), 'подъёма');
+  assert.equal(L.plural(11, 'reps'), 'подъёмов');
+  assert.equal(L.plural(80, 'reps'), 'подъёмов');
 });
 
 // ------------------------------------------------------------- адрес
@@ -145,8 +148,8 @@ test('пересчёт: проверка ввода', () => {
 
 test('пояснение пересчёта показывает исходные числа', () => {
   const st = { ...defaultState(), calc: { field: 'heavy', value: 61 } };
-  assert.match(calcNote(st), /61 × 1,33 = 81,13/);
-  assert.match(calcNote(st), /нужно <span class="n">82<\/span> подъёма/);
+  assert.match(calcNote(L, st), /61 × 1,33 = 81,13/);
+  assert.match(calcNote(L, st), /нужно <span class="n">82<\/span> подъёма/);
 });
 
 test('состояние → адрес → состояние без потерь', () => {
@@ -195,7 +198,7 @@ test('неверные параметры заменяются значения�
 // ------------------------------------------------------------- разметка
 
 test('расшифровка под графиком', () => {
-  const html = readout({ ...defaultState(), k: 1.6 });
+  const html = readout(L, { ...defaultState(), k: 1.6 });
   const text = html.replace(/<[^>]+>/g, '').replace(/ /g, ' ');
   assert.equal(text, 'Зачётный результат 80: 80 подъёмов на 24 кг или 50 на 32 кг (50 × 1,60 = 80,0)');
 });
@@ -208,7 +211,7 @@ test('цвета гирь — токены: гиря 24/32/16 своим цве�
   assert.equal(bellColor(28, 'heavy').color, 'var(--s2)');
   assert.doesNotMatch(colorVars(defaultState()), /#[0-9a-f]{3,6}/i);
   const st = defaultState();
-  for (const svg of [scoreChart(st), equivChart(st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
+  for (const svg of [scoreChart(L, st), equivChart(L, st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
 });
 
 test('шкала графика', () => {
@@ -226,7 +229,7 @@ test('выбранная строка таблицы отмечена', () => {
 test('страница собрана: таблица по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-coef-'));
   execFileSync('node', ['scripts/build.mjs', out]);
-  const html = readFileSync(join(out, 'coefficients', 'index.html'), 'utf8');
+  const html = readFileSync(join(out, 'ru', 'coefficients', 'index.html'), 'utf8');
   assert.match(html, /<h1>Коэффициенты для гирь разного веса<\/h1>/);
   assert.match(html, /role="tablist"/);
   assert.match(html, /<svg class="chart" id="chart-score"/);
@@ -238,6 +241,6 @@ test('страница собрана: таблица по умолчанию б
   assert.ok(existsSync(join(out, 'lib', 'coefficients-view.js')));
   const script = readFileSync(join(out, 'coefficients.js'), 'utf8');
   for (const [, path] of script.matchAll(/from '\.\/(lib\/[^']+)'/g)) assert.ok(existsSync(join(out, path)), path);
-  const home = readFileSync(join(out, 'index.html'), 'utf8');
-  assert.match(home, /href="\/coefficients\/"/);
+  const home = readFileSync(join(out, 'ru', 'index.html'), 'utf8');
+  assert.match(home, /href="\/ru\/coefficients\/"/);
 });
