@@ -1,3 +1,4 @@
+import { coefficientsGuide } from './guides.js';
 // Коэффициенты для гирь разного веса (#1). Сборка рисует состояние по умолчанию
 // теми же функциями, что и браузер: без JavaScript видны графики и таблица для
 // 24 и 32 кг с коэффициентом по весу гири.
@@ -20,7 +21,8 @@ function calcPanel(L, st) {
   const field = (name, mode) => `<div class="field calc-${name}${st.calc.field === name ? ' src' : ''}">
       <label for="calc-${name}" id="calc-${name}-label">${labels[name]}</label>
       <input id="calc-${name}" class="n" type="text" inputmode="${mode}" autocomplete="off" value="${calcText(L, values[name])}">
-    </div>`;
+    </div>
+${coefficientsGuide(L)}`;
   return `<section class="panel calc-panel js-only" aria-labelledby="calc-title">
   <h2 id="calc-title">${L.t('coef.calc.title')}</h2>
   <p class="hint calc-intro">${L.t('coef.calc.intro')}</p>
