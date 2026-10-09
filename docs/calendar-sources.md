@@ -32,6 +32,7 @@ and IUKL Riga cross-listings merge under explicitly assigned canonical IDs.
   dates, allowed countries, HTTP(S) URLs, time zones and start/end ordering.
 - `data/calendar/sources/<organization>.json`: one manual source adapter snapshot.
   Entries use the canonical schema; `sources[].checkedAt` is a real human check date.
+  Check dates are moderation data and are not shown on the public page.
 - `events.json`: **reviewed public state**, read by the build. Import never replaces it
   automatically. The public JSON lives at `/calendar/events.json`.
 - Event ID remains stable through rescheduling/status changes. Match explicit IDs or
