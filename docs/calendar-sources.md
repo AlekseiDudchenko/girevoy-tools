@@ -20,8 +20,12 @@ manual transcription, but robots/terms/feed permissions have **not** been establ
 check those before implementing and enabling each remote adapter. No authentication,
 CAPTCHA bypass, bulk descriptions, images, PDFs or personal registration data.
 
-Initial coverage: nine upcoming/ongoing events from five independent official sources.
-Selection is not exhaustive. Country codes are ISO 3166-1 alpha-2; Scotland maps to GB
+Coverage: upcoming and past events (from 2024) from five independent official sources.
+Selection is not exhaustive. Past events are kept: they show where and when a series
+was held and are listed under “Past” and on series pages. A past event needs exact
+dates printed by an official source (announcement, application or post-event report);
+an event whose sources disagree on dates is left out until resolved (on 2026-10-09:
+WKSF Oceania Open Cup 2026, WKSF South & North America 2026). Country codes are ISO 3166-1 alpha-2; Scotland maps to GB
 without inventing a city. Unknown optional data remains null/empty. WKSF European
 and IUKL Riga cross-listings merge under explicitly assigned canonical IDs.
 
@@ -33,6 +37,12 @@ and IUKL Riga cross-listings merge under explicitly assigned canonical IDs.
 - `data/calendar/sources/<organization>.json`: one manual source adapter snapshot.
   Entries use the canonical schema; `sources[].checkedAt` is a real human check date.
   Check dates are moderation data and are not shown on the public page.
+- `data/calendar/series.json`: recurring events with a landing page
+  `/<lang>/calendar/<slug>/`. Membership is by event ID prefix (`idPrefix`), not by
+  title; a series needs at least two events of its federation, and an event belongs to
+  at most one series (`validateSeries`). The series `name` is a proper name, not translated.
+- Upcoming/past is decided by the day: the build uses the build date (or
+  `CALENDAR_TODAY`), the browser re-renders with its own date. Rebuild at least weekly.
 - `events.json`: **reviewed public state**, read by the build. Import never replaces it
   automatically. The public JSON lives at `/calendar/events.json`.
 - Event ID remains stable through rescheduling/status changes. Match explicit IDs or

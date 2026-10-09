@@ -1,0 +1,8 @@
+[
+  {"slug": "iukl-world-championship", "name": "IUKL World Championship", "federation": "IUKL", "idPrefix": "iukl-world-"},
+  {"slug": "iukl-european-championship", "name": "IUKL European Championship", "federation": "IUKL", "idPrefix": "iukl-european-"},
+  {"slug": "iukl-asian-championship", "name": "IUKL Asian Championship", "federation": "IUKL", "idPrefix": "iukl-asian-"},
+  {"slug": "ikmf-world-championship", "name": "IKMF World Championship", "federation": "IKMF", "idPrefix": "ikmf-world-"},
+  {"slug": "wksf-european-open-championship", "name": "WKSF European Open Championship", "federation": "WKSF", "idPrefix": "wksf-european-"},
+  {"slug": "weihnachts-snatch-berlin", "name": "Weihnachts-Snatch Berlin", "federation": "BVDKS", "idPrefix": "berlin-christmas-snatch-"}
+]

@@ -6,7 +6,8 @@ import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {normalizeEvent,validateEvent,validateEvents,deduplicate,diffEvents,applyReviewed,filterEvents,parseFilters,eventICS,isDate} from '../src/lib/calendar.js';
 import {schemaErrors} from '../src/lib/calendar-schema.js';
-import {renderEvents} from '../src/lib/calendar-view.js';
+import {renderEvents,renderBrowse,relative} from '../src/lib/calendar-view.js';
+import {validateSeries,split,nextEvent} from '../src/lib/calendar-series.js';
 import {importSources} from '../scripts/calendar-import.mjs';
 import {locale} from '../src/i18n/index.js';
 import {redirects} from '../src/redirects.js';
@@ -131,4 +132,22 @@ test('verification timestamps compare instants across offsets, not lexicographic
   }
   const report=importSources([{id:'WKSF',method:'manual',frequencyDays:7,url:'https://example.com'}],()=>[b,{...a,id:'another-event'}],new Date('2026-10-16T14:15:00Z'));
   assert.ok(report.notices.some(n=>n.kind==='stale'));
+});
+test('series: every series has at least two editions of its federation, each event is in at most one series',()=>{
+  const series=read('data/calendar/series.json');
+  assert.equal(validateSeries(series,events),series);
+  assert.throws(()=>validateSeries([{slug:'x',name:'X',federation:'IUKL',idPrefix:'no-such-'}],events),/fewer than 2/);
+  assert.throws(()=>validateSeries([...series,{...series[0],slug:'copy'}],events),/several series/);
+});
+test('upcoming and past split on the given day; a running event is upcoming and live',()=>{
+  const today='2026-10-09';const {upcoming,past}=split(events,today);
+  assert.equal(upcoming.length+past.length,events.length);
+  assert.ok(upcoming.every(e=>e.endDate>=today)&&past.every(e=>e.endDate<today));
+  assert.ok(past.every((e,i)=>!i||past[i-1].startDate>=e.startDate),'past: newest first');
+  assert.equal(nextEvent(events,today).id,'iukl-world-new-delhi-2026');
+  assert.equal(relative(locale('en'),nextEvent(events,today),today),'Happening now');
+  assert.equal(relative(locale('ru'),{startDate:'2026-10-23',endDate:'2026-10-25'},today),'через 14 дней');
+  const browse=renderBrowse(locale('en'),events,{when:'past',federation:'BVDKS'},{today,series:read('data/calendar/series.json')});
+  assert.ok(browse.html.includes('rhein-main-cup-2026')&&!browse.html.includes('bremen-open-2026'));
+  assert.equal(browse.shown,browse.past);
 });
