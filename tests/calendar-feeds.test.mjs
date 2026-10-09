@@ -4,7 +4,7 @@ import {readFileSync, existsSync, mkdtempSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {FEDERATIONS, REGIONS, REGION_COUNTRIES, validateEvents, filterEvents} from '../src/lib/calendar.js';
+import {FEDERATIONS, REGIONS, REGION_COUNTRIES, validateEvents, filterEvents, icsText} from '../src/lib/calendar.js';
 import {validateSeries, isPast, seriesEvents} from '../src/lib/calendar-series.js';
 import {feeds, feedICS, feedFor, feedCountries, subscribeLinks} from '../src/lib/calendar-feeds.js';
 import {filterSubscribe} from '../src/lib/calendar-view.js';
@@ -73,7 +73,10 @@ test('a feed is a valid calendar even when empty: name, refresh, CRLF, folded li
     assert.match(ics, /END:VCALENDAR\r\n$/);
     assert.doesNotMatch(ics, /[^\r]\n/);
     for (const line of ics.split('\r\n')) assert.ok(new TextEncoder().encode(line).length <= 75, line);
-    assert.match(unfold(ics), /\r\nX-WR-CALNAME:VseGiri — /);
+    const properties = unfold(ics);
+    const name = properties.match(/^NAME:(.+)\r$/m)?.[1];
+    assert.ok(name?.startsWith('VseGiri — '));
+    assert.equal(properties.match(/^X-WR-CALNAME:(.+)\r$/m)?.[1], name);
     assert.match(ics, /\r\nREFRESH-INTERVAL;VALUE=DURATION:PT12H\r\n/);
   }
   assert.doesNotMatch(feedICS(empty, events, '2099-01-01', SITE), /BEGIN:VEVENT/);
@@ -107,18 +110,32 @@ test('subscribe links: webcal for Apple and Outlook, Google by cid, https to cop
   assert.deepEqual(subscribeLinks(SITE, 'all'), {
     https: 'https://tools.vsegiri.com/calendar/feeds/all.ics',
     webcal: 'webcal://tools.vsegiri.com/calendar/feeds/all.ics',
-    google: 'https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Ftools.vsegiri.com%2Fcalendar%2Ffeeds%2Fall.ics',
+    google: 'https://calendar.google.com/calendar/render?cid=https%3A%2F%2Ftools.vsegiri.com%2Fcalendar%2Ffeeds%2Fall.ics',
   });
 });
 
 test('the build writes every feed and serves them as text/calendar; the sitemap lists no feeds', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-feeds-'));
   execFileSync('node', ['scripts/build.mjs', out], {env: {...process.env, CALENDAR_TODAY: TODAY}});
-  for (const f of feeds(events, series)) assert.ok(existsSync(join(out, 'calendar/feeds', `${f.path}.ics`)), f.path);
+  for (const f of feeds(events, series)) {
+    const file = join(out, 'calendar/feeds', `${f.path}.ics`);
+    assert.ok(existsSync(file), f.path);
+    const properties = unfold(readFileSync(file, 'utf8'));
+    const name = icsText(`VseGiri — ${f.name}`);
+    assert.equal(properties.match(/^NAME:(.+)\r$/m)?.[1], name, f.path);
+    assert.equal(properties.match(/^X-WR-CALNAME:(.+)\r$/m)?.[1], name, f.path);
+    const links = subscribeLinks(SITE, f.path);
+    assert.equal(new URL(links.google).searchParams.get('cid'), links.https, f.path);
+    assert.equal(links.webcal.replace(/^webcal:/, 'https:'), links.https, f.path);
+  }
   assert.match(readFileSync(join(out, '_headers'), 'utf8'), /\/calendar\/feeds\/\*\n {2}Content-Type: text\/calendar; charset=utf-8/);
   assert.doesNotMatch(readFileSync(join(out, 'sitemap.xml'), 'utf8'), /\.ics/);
   const page = readFileSync(join(out, 'en/calendar/index.html'), 'utf8');
   assert.match(page, /href="webcal:\/\/tools\.vsegiri\.com\/calendar\/feeds\/federation\/iukl\.ics"/);
   assert.match(page, /Subscribe to calendar/);
+  assert.match(page, /href="https:\/\/calendar\.google\.com\/calendar\/render\?cid=https%3A%2F%2Ftools\.vsegiri\.com%2Fcalendar%2Ffeeds%2Fall\.ics"/);
+  const germany = unfold(readFileSync(join(out, 'calendar/feeds/country/de.ics'), 'utf8'));
+  assert.match(germany, /\r\nNAME:VseGiri — Kettlebell Competitions in Germany\r\n/);
+  assert.match(germany, /\r\nX-WR-CALNAME:VseGiri — Kettlebell Competitions in Germany\r\n/);
   assert.match(readFileSync(join(out, `de/calendar/${series[0].slug}/index.html`), 'utf8'), new RegExp(`feeds/series/${series[0].slug}\\.ics`));
 });

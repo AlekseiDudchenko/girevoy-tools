@@ -2,9 +2,9 @@ name: Build and deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:
   # Ежедневная пересборка: ленты подписки и страница календаря без JavaScript делят
   # турниры на предстоящие и прошедшие по дате сборки — без неё прошедшие остаются в лентах.

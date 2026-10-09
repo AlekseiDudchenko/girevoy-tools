@@ -2,7 +2,8 @@
 // из src/i18n/ — в /<язык>/<slug>/index.html; файлы из assets/ — как есть в корень;
 // чистые функции src/lib/ — в dist/lib/, словари src/i18n/ — в dist/i18n/: браузер
 // импортирует те же модули, что проверяют тесты.
-import { readFileSync, cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { readFileSync, readdirSync, cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { schemaErrors } from '../src/lib/calendar-schema.js';
@@ -26,12 +27,21 @@ cpSync(join(root, 'src', 'lib'), join(dist, 'lib'), { recursive: true });
 mkdirSync(join(dist, 'i18n'), { recursive: true });
 for (const lang of LANGS) cpSync(join(root, 'src', 'i18n', `${lang}.js`), join(dist, 'i18n', `${lang}.js`));
 
+const files = (dir, ext) => readdirSync(join(root, dir)).filter((f) => f.endsWith(ext)).sort();
+const libFiles = files('src/lib', '.js');
+const hash = createHash('sha256');
+for (const f of [...files('assets', '.js'), ...files('assets', '.css')]) hash.update(readFileSync(join(root, 'assets', f)));
+for (const f of libFiles) hash.update(readFileSync(join(root, 'src/lib', f)));
+for (const lang of LANGS) hash.update(readFileSync(join(root, 'src/i18n', `${lang}.js`)));
+const version = hash.digest('hex').slice(0, 10);
+const modules = [...libFiles.map((f) => `/lib/${f}`), '/page.js', ...LANGS.map((lang) => `/i18n/${lang}.js`)];
+
 for (const lang of LANGS) {
   const L = locale(lang);
   for (const page of PAGES) {
     const file = join(dist, langPath(lang, page.slug), 'index.html');
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, layout(L, page));
+    writeFileSync(file, layout(L, page, {version, modules}));
   }
 }
 

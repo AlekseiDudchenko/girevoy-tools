@@ -8,7 +8,11 @@ import { socialCard, SOCIAL_WIDTH, SOCIAL_HEIGHT, SOCIAL_LOCALES } from './socia
 // Оболочка страницы: <head>, шапка, подвал. Стили и скрипты — файлами из assets/,
 // в HTML встроены только данные конкретной страницы. Весь текст — из словаря
 // языка L; адрес страницы — /<язык>/<slug>.
-export function layout(L, page) {
+export function layout(L, page, {version = '', modules = []} = {}) {
+  const v = (url) => version ? `${url}?v=${version}` : url;
+  const importMap = (page.scripts || []).length && modules.length
+    ? `<script type="importmap">${JSON.stringify({imports: Object.fromEntries(modules.map((m) => [m, v(m)]))})}</script>\n`
+    : '';
   const { lang } = L;
   const product = L.t('site.product');
   const path = langPath(lang, page.slug);
@@ -35,7 +39,7 @@ export function layout(L, page) {
     })
     .join('');
   const scripts = page.scripts || [];
-  const preload = scripts.length ? `\n<link rel="modulepreload" href="/i18n/${lang}.js">` : '';
+  const preload = scripts.length ? `\n<link rel="modulepreload" href="${v(`/i18n/${lang}.js`)}">` : '';
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -64,7 +68,7 @@ ${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternat
 <meta name="twitter:image:alt" content="${esc(card.alt)}">
 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
 <link rel="stylesheet" href="/fonts.css">
-<link rel="stylesheet" href="/style.css">${preload}
+<link rel="stylesheet" href="${v('/style.css')}">${preload}
 </head>
 <body>
 <header class="site"><div class="inner">
@@ -79,7 +83,7 @@ ${page.body(L)}
 <p>${L.t(page.key === 'calendar' ? 'calendar.foot' : 'site.foot.calc')}</p>
 <p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : 'site.foot.privacy'))}</p>
 </div></footer>
-${scripts.map((s) => `<script type="module" src="${esc(s)}"></script>`).join('\n')}
+${importMap}${scripts.map((s) => `<script type="module" src="${esc(v(s))}"></script>`).join('\n')}
 </body>
 </html>
 `;

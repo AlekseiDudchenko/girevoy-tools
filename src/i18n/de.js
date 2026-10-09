@@ -145,6 +145,8 @@ export default {
   'coef.k': 'Koeffizient',
   'coef.kRange': 'Koeffizient der schwereren Kettlebell',
   'coef.ratioHint': 'Die gestrichelte Linie in den Diagrammen steht für „nach Gewicht“: {ratio}. Das ist Arithmetik, keine Empfehlung.',
+  'coef.calc.summary': '{lightN} {lightReps} mit {light} und {heavyN} {heavyReps} mit {heavy} — mindestens {score} Wertungspunkte.',
+  'coef.calc.rounded': 'Wiederholungen werden aufgerundet.',
   'coef.calc.title': 'Umrechnung',
   'coef.calc.intro': 'Geben Sie in ein beliebiges Feld eine Zahl ein – die beiden anderen werden mit dem gewählten Koeffizienten umgerechnet.',
   'coef.calc.or': 'oder',

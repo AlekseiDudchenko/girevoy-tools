@@ -144,6 +144,8 @@ export default {
   'coef.k': 'Coefficient',
   'coef.kRange': 'Heavier kettlebell coefficient',
   'coef.ratioHint': 'The dashed line on the charts is “by kettlebell weight”: {ratio}. This is arithmetic, not a recommendation.',
+  'coef.calc.summary': '{lightN} {lightReps} at {light} and {heavyN} {heavyReps} at {heavy} — a score of at least {score}.',
+  'coef.calc.rounded': 'Reps are rounded up.',
   'coef.calc.title': 'Converter',
   'coef.calc.intro': 'Enter a number in any field and the other two are recalculated with the chosen coefficient.',
   'coef.calc.or': 'or',

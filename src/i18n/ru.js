@@ -116,6 +116,8 @@ export default {
   'coef.k': 'Коэффициент',
   'coef.kRange': 'Коэффициент тяжёлой гири',
   'coef.ratioHint': 'Пунктир на графиках — «по весу гири»: {ratio}. Это арифметика, а не рекомендация.',
+  'coef.calc.summary': '{lightN} {lightReps} на {light} и {heavyN} {heavyReps} на {heavy} — зачётный результат не меньше {score}.',
+  'coef.calc.rounded': 'Подъёмы округлены вверх.',
   'coef.calc.title': 'Пересчёт',
   'coef.calc.intro': 'Введите число в любое поле — два других пересчитаются по выбранному коэффициенту.',
   'coef.calc.or': 'или',

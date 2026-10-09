@@ -5,7 +5,7 @@ import { coefficientsGuide } from './guides.js';
 import { esc } from '../html.js';
 import { DEFAULT_TABLE, K_MIN, STEPS, WEIGHTS, defaultState, sliderMax } from '../lib/coefficients.js';
 import {
-  calcLabels, calcNote, calcText, calcValues, colorVars, equivChart, equivLegend, kg, ratioHint, readout, scoreChart,
+  calcLabels, calcNote, calcProducts, calcText, calcValues, colorVars, equivChart, equivLegend, kg, ratioHint, readout, scoreChart,
   scoreLegend, tableBody, tableHead,
 } from '../lib/coefficients-view.js';
 
@@ -18,22 +18,22 @@ const options = (L, values, selected, skip) => values
 function calcPanel(L, st) {
   const values = calcValues(st);
   const labels = calcLabels(L, st);
-  const field = (name, mode) => `<div class="field calc-${name}${st.calc.field === name ? ' src' : ''}">
+  const products = calcProducts(L, st);
+  const field = (name, mode) => `<div class="calc-cell calc-${name}${st.calc.field === name ? ' src' : ''}">
       <label for="calc-${name}" id="calc-${name}-label">${labels[name]}</label>
       <input id="calc-${name}" class="n" type="text" inputmode="${mode}" autocomplete="off" value="${calcText(L, values[name])}">
+      <span class="calc-prod n" id="calc-${name}-prod">${products[name]}</span>
     </div>`;
   return `<section class="panel calc-panel js-only" aria-labelledby="calc-title">
   <h2 id="calc-title">${L.t('coef.calc.title')}</h2>
   <p class="hint calc-intro">${L.t('coef.calc.intro')}</p>
   <div class="calc-row">
     ${field('light', 'numeric')}
-    <span class="calc-sep" aria-hidden="true">${L.t('coef.calc.or')}</span>
     ${field('heavy', 'numeric')}
-    <span class="calc-sep" aria-hidden="true">→</span>
     ${field('score', 'decimal')}
   </div>
   <div class="calc-k">
-    <label for="k-range-calc">${L.t('coef.calc.k')} <span id="calc-k-bell">${kg(L, st.heavy)}</span> <b class="n" id="calc-k-value">× ${L.num(st.k, 2)}</b></label>
+    <label for="k-range-calc">${L.t('coef.calc.k')} <span class="chip chip-sm chip-heavy" id="calc-k-bell">${kg(L, st.heavy)}</span> <b class="n" id="calc-k-value">× ${L.num(st.k, 2)}</b></label>
     <input id="k-range-calc" class="k-range" type="range" min="${K_MIN}" max="${sliderMax(st)}" step="0.01" value="${st.k}">
   </div>
   <p class="hint calc-note" id="calc-note" aria-live="polite">${calcNote(L, st)}</p>
@@ -83,6 +83,8 @@ export default {
   </div>
 </section>
 
+${calcPanel(L, st)}
+
 <section class="panel chart-panel" aria-label="${t('chartPanel')}">
   <div class="tabs" role="tablist" aria-label="${t('chartTabs')}">
     <button type="button" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">${t('score')}</button>
@@ -107,8 +109,6 @@ export default {
   </div>
   <p class="hint">${t('oneK')}</p>
 </section>
-
-${calcPanel(L, st)}
 
 <section class="panel table-panel" aria-label="${t('tablePanel')}">
   <div class="table-controls">

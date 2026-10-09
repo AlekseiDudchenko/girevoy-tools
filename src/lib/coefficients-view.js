@@ -201,22 +201,30 @@ export const calcValues = (state) => convert(state.k, state.calc.field, state.ca
 /** Число для поля ввода: целое как есть, дробное — до сотых с десятичным знаком языка. */
 export const calcText = (L, v) => (Number.isInteger(v) ? String(v) : L.num(v, 2));
 
-/** Подписи полей пересчёта: меняются вместе с гирями. */
+/** Labels share the bell chips used in the weight selector. */
 export const calcLabels = (L, state) => ({
-  light: L.t('coef.repsOn', { w: kg(L, state.light) }),
-  heavy: L.t('coef.repsOn', { w: kg(L, state.heavy) }),
+  light: L.t('coef.repsOn', {w: `<span class="chip chip-sm chip-light">${kg(L, state.light)}</span>`}),
+  heavy: L.t('coef.repsOn', {w: `<span class="chip chip-sm chip-heavy">${kg(L, state.heavy)}</span>`}),
   score: L.t('coef.score'),
 });
 
-/** Пояснение под строкой пересчёта: как получено каждое число. */
+export function calcProducts(L, state) {
+  const {light, heavy} = calcValues(state);
+  return {
+    light: `× ${L.num(1, 2)} = ${calcText(L, light)}`,
+    heavy: `× ${L.num(state.k, 2)} = ${calcText(L, scoreOf(heavy, state.k))}`,
+    score: '',
+  };
+}
+
 export function calcNote(L, state) {
-  const { light, heavy, score } = calcValues(state);
-  const lightLine = L.t('coef.calc.line', { calc: `<span class="n">${light} × ${L.num(1, 2)} = ${light}</span>`, w: kg(L, state.light) });
-  const heavyLine = L.t('coef.calc.line', { calc: `<span class="n">${heavy} × ${L.num(state.k, 2)} = ${L.num(scoreOf(heavy, state.k), 2)}</span>`, w: kg(L, state.heavy) });
-  if (state.calc.field === 'heavy') {
-    return L.t('coef.calc.fromHeavy', { heavyLine, light: kg(L, state.light), n: `<span class="n">${light}</span>`, reps: L.plural(light, 'reps') });
-  }
-  return L.t('coef.calc.fromTarget', { target: `<span class="n">${calcText(L, score)}</span>`, lightLine, heavyLine });
+  const {light, heavy, score} = calcValues(state);
+  const exact = light === score && scoreOf(heavy, state.k) === score;
+  return L.t('coef.calc.summary', {
+    lightN: `<span class="n">${L.num(light)}</span>`, lightReps: L.plural(light, 'reps'), light: kg(L, state.light),
+    heavyN: `<span class="n">${L.num(heavy)}</span>`, heavyReps: L.plural(heavy, 'reps'), heavy: kg(L, state.heavy),
+    score: `<span class="n">${calcText(L, score)}</span>`,
+  }) + (exact ? '' : ` ${L.t('coef.calc.rounded')}`);
 }
 
 // ------------------------------------------------------------- таблица

@@ -283,7 +283,7 @@ test('страница собрана: пример по умолчанию бе
   // Только планирование: без старта и метронома; столбики на телефоне — по кнопке.
   assert.match(html, /<button type="button" class="btn bars-edit js-only" id="bars-edit" aria-pressed="false"[^>]*>Edit bars</);
   assert.doesNotMatch(html, /metro|Старт|Метроном/i);
-  assert.match(html, /<script type="module" src="\/tempo.js"><\/script>/);
+  assert.match(html, /<script type="module" src="\/tempo.js\?v=[0-9a-f]{10}"><\/script>/);
   for (const f of ['tempo.js', 'lib/tempo.js', 'lib/tempo-view.js', 'lib/format.js']) assert.ok(existsSync(join(out, f)), f);
   for (const file of ['tempo.js', 'lib/tempo.js', 'lib/tempo-view.js', 'lib/coefficients.js']) {
     const script = readFileSync(join(out, file), 'utf8');

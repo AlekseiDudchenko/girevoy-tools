@@ -5,7 +5,7 @@ import {
   serializeState, sliderMax, validCalc, validTable,
 } from './lib/coefficients.js';
 import {
-  calcLabels, calcNote, calcText, calcValues, chartInverse, chartSize, colorVars, equivChart, equivLegend, kg, ratioHint,
+  calcLabels, calcNote, calcProducts, calcText, calcValues, chartInverse, chartSize, colorVars, equivChart, equivLegend, kg, ratioHint,
   readout, scoreChart, scoreLegend, tableBody, tableHead,
 } from './lib/coefficients-view.js';
 import { pageLocale, replaceSearch } from './page.js';
@@ -91,10 +91,12 @@ function render(skip) {
 function renderCalc(skip) {
   const values = calcValues(state);
   const labels = calcLabels(L, state);
+  const products = calcProducts(L, state);
   for (const name of CALC_FIELDS) {
     const input = $(`calc-${name}`);
-    $(`calc-${name}-label`).textContent = labels[name];
-    input.closest('.field').classList.toggle('src', name === state.calc.field);
+    html($(`calc-${name}-label`), labels[name]);
+    html($(`calc-${name}-prod`), products[name]);
+    input.closest('.calc-cell').classList.toggle('src', name === state.calc.field);
     if (skip === `calc-${name}`) continue;
     input.value = calcText(L, values[name]);
     input.removeAttribute('aria-invalid');
