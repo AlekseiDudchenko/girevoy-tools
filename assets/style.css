@@ -117,3 +117,122 @@ h2 { font-family: "Bitter", Georgia, serif; font-weight: 600; font-size: 1.2rem;
 /* ------------------------------------------------------------- подвал */
 .foot { border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 0.88rem; padding-block: 1rem 2rem; }
 .foot p { margin: 0.3rem 0; }
+
+/* ------------------------------------------------------------- формы и кнопки */
+.field { display: flex; flex-direction: column; gap: 0.15rem; }
+.field label, .field .label { color: var(--ink-3); font-size: 0.82rem; }
+select, input[type="number"] {
+  font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px; padding: 0.25rem 0.5rem;
+}
+input[type="number"] { width: 6rem; }
+.btn {
+  font: inherit; font-size: 0.92rem; color: var(--accent); background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px; padding: 0.3rem 0.7rem; cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.hint { color: var(--ink-3); font-size: 0.88rem; margin: 0.6rem 0 0; }
+.note { background: var(--accent-soft); border-radius: 6px; padding: 0.5rem 0.8rem; }
+.panel {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px;
+  padding: 1rem 1.1rem; margin-bottom: 1rem; min-width: 0;
+}
+
+/* ------------------------------------------------------------- коэффициенты
+   Цвета гирь задаются на .coef ссылками на токены (--c-light, --c-heavy):
+   --bell-16/24/32 для соревновательных гирь, иначе цвета серий. */
+.bells { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; align-items: start; }
+.bell { display: flex; flex-wrap: wrap; align-items: end; gap: 0.6rem 1rem; }
+.chip {
+  display: inline-block; min-width: 4rem; text-align: center; border-radius: 6px;
+  padding: 0.3rem 0.6rem; font-weight: 700; align-self: center;
+}
+.chip-light { background: var(--c-light); color: var(--c-light-ink); }
+.chip-heavy { background: var(--c-heavy); color: var(--c-heavy-ink); }
+.fixed { color: var(--ink-2); padding-block: 0.3rem; }
+.k-range { width: 100%; accent-color: var(--c-heavy); margin: 0.2rem 0 0; }
+.bell .hint { flex-basis: 100%; margin: 0; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 0.2rem; border-bottom: 1px solid var(--rule); margin-bottom: 0.8rem; }
+.tabs [role="tab"] {
+  font: inherit; color: var(--ink-2); background: none; border: 0; cursor: pointer;
+  padding: 0.45rem 0.8rem; border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.tabs [role="tab"][aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+/* Без JavaScript вкладки не переключаются: оба графика идут подряд. */
+:root:not(.js) .tabs { display: none; }
+:root.js .nojs-title { display: none; }
+.nojs-title { font-size: 1rem; margin: 0.4rem 0; }
+
+.chart-box { touch-action: none; }
+.chart { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: "PT Sans", system-ui, sans-serif; font-size: 12px; fill: var(--ink-3); }
+.chart .axis-label { fill: var(--ink-2); }
+.chart .mark-label { fill: var(--ink); font-weight: 700; font-family: "PT Mono", ui-monospace, monospace; }
+.chart .guide-label { fill: var(--accent); font-weight: 700; font-family: "PT Mono", ui-monospace, monospace; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .axis { stroke: var(--ink-3); stroke-width: 1; }
+.chart .guide { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .hit { fill: transparent; cursor: crosshair; }
+.ln { fill: none; stroke-width: 3; stroke-linecap: round; }
+.ln-light { stroke: var(--c-light); }
+.ln-heavy { stroke: var(--c-heavy); }
+.ln-ratio { stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 6 5; stroke-linecap: butt; }
+.ln-equal { stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 0.5 5; }
+/* Жёлтая 16 кг на светлом фоне не читается без обводки. */
+.ln-halo { stroke: var(--ink-2); stroke-width: 5; stroke-linecap: round; }
+.dot { stroke: var(--surface); stroke-width: 2; }
+.dot-light { fill: var(--c-light); }
+.dot-heavy { fill: var(--c-heavy); }
+.handle { cursor: grab; }
+.dragging .handle, .dragging .hit { cursor: grabbing; }
+.handle:focus-visible { outline: none; stroke: var(--accent); stroke-width: 3; }
+
+.legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; padding: 0; margin: 0.4rem 0 0; font-size: 0.9rem; color: var(--ink-2); }
+.legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .key { width: 22px; height: 8px; overflow: visible; }
+.legend-hint { color: var(--ink-3); }
+
+.readout-row { display: flex; flex-wrap: wrap; align-items: end; gap: 0.6rem 1rem; margin-top: 0.8rem; }
+.readout { flex: 1 1 20rem; margin: 0; background: var(--accent-soft); border-radius: 6px; padding: 0.5rem 0.8rem; }
+
+.table-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 0.6rem 1rem; margin-bottom: 0.8rem; }
+.table-controls input[type="number"] { width: 5rem; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-left: auto; }
+.status { color: var(--ink-3); font-size: 0.85rem; }
+:root:not(.js) .table-controls, :root:not(.js) .readout-row .field,
+:root:not(.js) .js-only, :root:not(.js) .legend-hint, :root.js .nojs-only { display: none; }
+
+.coef-table { border-collapse: collapse; width: 100%; }
+.coef-table th, .coef-table td { padding: 0.35rem 0.8rem; text-align: right; border-bottom: 1px solid var(--rule-soft); }
+.coef-table th { color: var(--ink-3); font-weight: 400; font-size: 0.85rem; vertical-align: bottom; line-height: 1.3; }
+.coef-table th.score { color: var(--ink); font-weight: 700; }
+.coef-table td.score { font-weight: 700; background: var(--accent-soft); }
+.js .coef-table tbody tr { cursor: pointer; }
+.coef-table tbody tr:hover td { background: var(--rule-soft); }
+.coef-table tr.on td { background: var(--rule-soft); box-shadow: inset 0 2px 0 var(--accent), inset 0 -2px 0 var(--accent); }
+.coef-table tr.on td.score { background: var(--accent); color: var(--surface); }
+.coef-table tr:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+@media (max-width: 640px) {
+  .bells { grid-template-columns: 1fr; }
+  .tabs { flex-wrap: nowrap; }
+  .tabs [role="tab"] { flex: 1 1 0; padding-inline: 0.4rem; font-size: 0.92rem; line-height: 1.25; }
+  .panel { padding: 0.8rem; }
+  .coef-table th, .coef-table td { padding-inline: 0.5rem; }
+  .actions { margin-left: 0; }
+}
+
+/* ------------------------------------------------------------- печать
+   Печатается заголовок, гири с коэффициентами (в шапке таблицы) и таблица. */
+@media print {
+  :root { --paper: #fff; --surface: #fff; --ink: #000; --rule: #999; --rule-soft: #ccc; --accent-soft: #fff; }
+  header.site, footer.foot, nav, .lead, noscript, .bells, .chart-panel, .table-controls, .table-panel .hint { display: none !important; }
+  main { padding: 0; }
+  .panel { border: 0; padding: 0; margin: 0; }
+  .table-wrap { overflow: visible; }
+  .coef-table { font-size: 11pt; }
+  .coef-table th { color: var(--ink); }
+  .coef-table tr.on td, .coef-table tr.on td.score { background: none; color: var(--ink); box-shadow: none; }
+  .coef-table tr { break-inside: avoid; }
+}
