@@ -1,3 +1,4 @@
+import { coefficientsGuide } from './guides.js';
 // Коэффициенты для гирь разного веса (#1). Сборка рисует состояние по умолчанию
 // теми же функциями, что и браузер: без JavaScript видны графики и таблица для
 // 24 и 32 кг с коэффициентом по весу гири.
@@ -137,6 +138,7 @@ ${calcPanel(L, st)}
   </div>
   <p class="hint">${t('tableHint')}</p>
 </section>
-</div>`;
+</div>
+${coefficientsGuide(L)}`;
   },
 };

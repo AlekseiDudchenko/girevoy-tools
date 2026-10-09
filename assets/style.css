@@ -466,3 +466,9 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 .cal-feeds-grid ul { margin:0; padding:0; list-style:none; }
 .cal-feeds-grid li { margin:.15rem 0; }
 @media print { .calendar-subscribe, .cal-series-subscribe, .cal-feeds { display:none !important; } }
+
+/* Explanatory copy below the interactive tools. */
+.reading { max-width: 46rem; margin-top: 2rem; overflow-wrap: anywhere; }
+.reading p { color: var(--ink-2); }
+.reading h3 { font-size: 1.05rem; margin: 1.4rem 0 .4rem; }
+.reading article { padding-bottom: .6rem; }

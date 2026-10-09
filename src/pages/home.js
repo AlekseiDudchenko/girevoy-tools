@@ -1,3 +1,4 @@
+import { homeGuide } from './guides.js';
 import { esc } from '../html.js';
 import { langPath } from '../lib/locale.js';
 import { TOOLS } from '../tools.js';
@@ -15,6 +16,7 @@ export default {
 <p class="lead">${esc(L.t('home.lead'))}</p>
 <ul class="tools">
 ${cards}
-</ul>`;
+</ul>
+${homeGuide(L)}`;
   },
 };
