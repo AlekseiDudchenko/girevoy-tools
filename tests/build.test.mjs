@@ -7,25 +7,31 @@ import { join } from 'node:path';
 import { PAGES } from '../src/pages/index.js';
 import { TOOLS } from '../src/tools.js';
 import { esc } from '../src/html.js';
+import { LANGS } from '../src/i18n/index.js';
 
 const out = mkdtempSync(join(tmpdir(), 'tools-dist-'));
 execFileSync('node', ['scripts/build.mjs', out]);
 
-test('каждая страница собрана, с заголовком, описанием и канонической ссылкой', () => {
-  for (const page of PAGES) {
-    const html = readFileSync(join(out, page.path, 'index.html'), 'utf8');
-    assert.match(html, /<title>[^<]+<\/title>/);
-    assert.match(html, /<meta name="description" content="[^"]+">/);
-    assert.ok(html.includes(`<link rel="canonical" href="https://tools.vsegiri.com${page.path}">`));
+test('каждая страница собрана на каждом языке, с заголовком, описанием и канонической ссылкой', () => {
+  for (const lang of LANGS) {
+    for (const page of PAGES) {
+      const html = readFileSync(join(out, lang, page.slug, 'index.html'), 'utf8');
+      assert.match(html, new RegExp(`<html lang="${lang}">`));
+      assert.match(html, /<title>[^<]+<\/title>/);
+      assert.match(html, /<meta name="description" content="[^"]+">/);
+      assert.ok(html.includes(`<link rel="canonical" href="https://tools.vsegiri.com/${lang}/${page.slug}">`));
+    }
   }
 });
 
 test('у каждой готовой карточки есть страница, у готовящейся — нет ссылки', () => {
-  const home = readFileSync(join(out, 'index.html'), 'utf8');
-  for (const tool of TOOLS) {
-    const linked = home.includes(`href="/${tool.slug}/"`);
-    assert.equal(linked, tool.status === 'ready', tool.slug);
-    if (tool.status === 'ready') assert.ok(PAGES.some((p) => p.path === `/${tool.slug}/`), tool.slug);
+  for (const lang of LANGS) {
+    const home = readFileSync(join(out, lang, 'index.html'), 'utf8');
+    for (const tool of TOOLS) {
+      const linked = home.includes(`href="/${lang}/${tool.slug}/"`);
+      assert.equal(linked, tool.status === 'ready', `${lang} ${tool.slug}`);
+      if (tool.status === 'ready') assert.ok(PAGES.some((p) => p.slug === `${tool.slug}/`), tool.slug);
+    }
   }
 });
 
