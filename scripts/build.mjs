@@ -1,5 +1,6 @@
 // Сборка статического сайта в dist/: страницы из src/pages/ в общей оболочке,
-// файлы из assets/ — как есть в корень.
+// файлы из assets/ — как есть в корень, чистые функции src/lib/ — в dist/lib/:
+// браузер импортирует их из /lib/ те же, что проверяют тесты.
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +14,7 @@ const dist = resolve(root, process.argv[2] || 'dist');
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 cpSync(join(root, 'assets'), dist, { recursive: true });
+cpSync(join(root, 'src', 'lib'), join(dist, 'lib'), { recursive: true });
 
 for (const page of PAGES) {
   const file = join(dist, page.path, 'index.html');
