@@ -1,4 +1,4 @@
-import { ARCHIVE_URL, BRAND, SITE_URL, pageTitle } from './brand.js';
+import { BRAND, SITE_URL, pageTitle } from './brand.js';
 import { esc } from './html.js';
 import { DICTS } from './i18n/index.js';
 import { LANGS, X_DEFAULT, langPath } from './lib/locale.js';
@@ -48,14 +48,14 @@ ${alternates}
 <body>
 <header class="site"><div class="inner">
 <a class="brand" href="${langPath(lang)}"><img class="brand-mark" src="/logo.png" alt="" width="32" height="32"><span class="brand-name">${BRAND}</span><span class="brand-sub">${esc(product.toLocaleLowerCase(lang))}</span></a>
-<nav class="tools-nav" aria-label="${esc(product)}">${nav}<a href="${ARCHIVE_URL}/">${esc(L.t('site.archive'))}</a></nav>
+<nav class="tools-nav" aria-label="${esc(product)}">${nav}</nav>
 <nav class="langs" aria-label="${esc(L.t('site.lang'))}">${langs}</nav>
 </div></header>
 <main class="inner">
 ${page.body(L)}
 </main>
 <footer class="foot"><div class="inner">
-<p>${L.t(page.key === 'calendar' ? 'calendar.foot' : 'site.foot.calc', { archive: `${ARCHIVE_URL}/` })}</p>
+<p>${L.t(page.key === 'calendar' ? 'calendar.foot' : 'site.foot.calc')}</p>
 <p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : 'site.foot.privacy'))}</p>
 </div></footer>
 ${scripts.map((s) => `<script type="module" src="${esc(s)}"></script>`).join('\n')}
