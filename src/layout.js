@@ -41,7 +41,7 @@ export function layout(L, page) {
 <meta name="description" content="${esc(page.description ? page.description(L) : L.t(`${page.key}.description`))}">
 <link rel="canonical" href="${SITE_URL}${path}">
 ${alternates}
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
 <link rel="stylesheet" href="/fonts.css">
 <link rel="stylesheet" href="/style.css">${preload}
 </head>
