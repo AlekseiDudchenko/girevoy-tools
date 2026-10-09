@@ -11,11 +11,11 @@ export function layout(L, page) {
   const { lang } = L;
   const product = L.t('site.product');
   const path = langPath(lang, page.slug);
-  const fullTitle = page.slug === '' ? `${product} | ${BRAND}` : pageTitle(L.t(`${page.key}.title`), product);
+  const fullTitle = page.slug === '' ? `${product} | ${BRAND}` : pageTitle(page.title ? page.title(L) : L.t(`${page.key}.title`), product);
   const nav = readyTools()
     .map((t) => {
       const href = langPath(lang, `${t.slug}/`);
-      return `<a href="${href}"${href === path ? ' class="on" aria-current="page"' : ''}>${esc(L.t(`${t.key}.nav`))}</a>`;
+      return `<a href="${href}"${path.startsWith(href) ? ` class="on"${href === path ? ' aria-current="page"' : ''}` : ''}>${esc(L.t(`${t.key}.nav`))}</a>`;
     })
     .join('');
   const alternates = [...LANGS, 'x-default']
@@ -38,7 +38,7 @@ export function layout(L, page) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(fullTitle)}</title>
-<meta name="description" content="${esc(L.t(`${page.key}.description`))}">
+<meta name="description" content="${esc(page.description ? page.description(L) : L.t(`${page.key}.description`))}">
 <link rel="canonical" href="${SITE_URL}${path}">
 ${alternates}
 <link rel="icon" href="/favicon.ico">

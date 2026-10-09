@@ -97,15 +97,17 @@ export function applyReviewed(previous, incoming, decisions) {
   }
   return validateEvents(next.sort((a,b)=>a.startDate.localeCompare(b.startDate)||a.id.localeCompare(b.id)));
 }
-export const REGION_COUNTRIES = {europe:['AD','AL','AT','AX','BA','BE','BG','BY','CH','CY','CZ','DE','DK','EE','ES','FI','FO','FR','GB','GG','GI','GR','HR','HU','IE','IM','IS','IT','JE','LI','LT','LU','LV','MC','MD','ME','MK','MT','NL','NO','PL','PT','RO','RS','RU','SE','SI','SJ','SK','SM','TR','UA','VA'], 'north-america':['US','CA','MX']};
+export const REGION_COUNTRIES = {europe:['AD','AL','AT','AX','BA','BE','BG','BY','CH','CY','CZ','DE','DK','EE','ES','FI','FO','FR','GB','GG','GI','GR','HR','HU','IE','IM','IS','IT','JE','LI','LT','LU','LV','MC','MD','ME','MK','MT','NL','NO','PL','PT','RO','RS','RU','SE','SI','SJ','SK','SM','TR','UA','VA'], 'north-america':['US','CA','MX','GT','BZ','SV','HN','NI','CR','PA','CU','DO','HT','JM','PR','BS','BB','TT'], 'south-america':['AR','BO','BR','CL','CO','EC','GY','PE','PY','SR','UY','VE'], asia:['AF','AM','AZ','BD','BH','BN','BT','CN','GE','HK','ID','IL','IN','IQ','IR','JO','JP','KG','KH','KP','KR','KW','KZ','LA','LB','LK','MM','MN','MO','MV','MY','NP','OM','PH','PK','PS','QA','SA','SG','SY','TH','TJ','TL','TM','TW','UZ','VN','YE','AE'], oceania:['AU','NZ','FJ','PG','WS','TO']};
+export const REGIONS = Object.keys(REGION_COUNTRIES);
 export function filterEvents(events, filters = {}) {
   return events.filter(e => (!filters.from || e.endDate >= filters.from) && (!filters.to || e.startDate <= filters.to) && (!filters.country || e.country === filters.country) && (!filters.region || REGION_COUNTRIES[filters.region]?.includes(e.country)) && (!filters.federation || e.federations.includes(filters.federation)) && (!filters.format || e.format === filters.format));
 }
 export function parseFilters(search) {
   const params = new URLSearchParams(search), result = {};
-  for (const k of ['from','to','country','region','federation','format']) if (params.get(k)) result[k] = params.get(k);
+  for (const k of ['when','from','to','country','region','federation','format']) if (params.get(k)) result[k] = params.get(k);
   if (result.from && !isDate(result.from)) delete result.from;
   if (result.to && !isDate(result.to)) delete result.to;
+  if (result.when && result.when !== 'past') delete result.when;
   return result;
 }
 const icsText = value => String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');

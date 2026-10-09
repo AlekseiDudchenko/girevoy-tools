@@ -6,7 +6,8 @@ import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {normalizeEvent,validateEvent,validateEvents,deduplicate,diffEvents,applyReviewed,filterEvents,parseFilters,eventICS,isDate} from '../src/lib/calendar.js';
 import {schemaErrors} from '../src/lib/calendar-schema.js';
-import {renderEvents} from '../src/lib/calendar-view.js';
+import {renderEvents,renderBrowse,relative} from '../src/lib/calendar-view.js';
+import {validateSeries,split,nextEvent,localISO} from '../src/lib/calendar-series.js';
 import {importSources} from '../scripts/calendar-import.mjs';
 import {locale} from '../src/i18n/index.js';
 import {redirects} from '../src/redirects.js';
@@ -89,9 +90,9 @@ test('ICS escapes injection and folds UTF-8 lines at 75 octets',()=>{
   assert.equal((ics.match(/BEGIN:VEVENT/g)||[]).length,1);
 });
 test('all languages render a useful list, escape source facts, and handle unknown discipline names',()=>{
-  for(const lang of ['en','de','ru'])assert.ok(renderEvents(locale(lang),events).includes('wksf-european-2026'));
+  for(const lang of ['en','de','ru'])assert.ok(renderEvents(locale(lang),events,{today:'2026-10-09'}).includes('wksf-european-2026'));
   const e=fixture();e.title='<img src=x>';e.disciplines=['new-discipline'];
-  const html=renderEvents(locale('en'),[e]);assert.ok(html.includes('&lt;img'));assert.ok(!html.includes('<img'));assert.ok(html.includes('new-discipline'));
+  const html=renderEvents(locale('en'),[e],{today:e.startDate});assert.ok(html.includes('&lt;img'));assert.ok(!html.includes('<img'));assert.ok(html.includes('new-discipline'));
 });
 test('build exports event JSON and ICS without a wildcard redirect shadowing downloads',()=>{
   const out=mkdtempSync(join(tmpdir(),'calendar-build-'));execFileSync('node',['scripts/build.mjs',out]);
@@ -131,4 +132,28 @@ test('verification timestamps compare instants across offsets, not lexicographic
   }
   const report=importSources([{id:'WKSF',method:'manual',frequencyDays:7,url:'https://example.com'}],()=>[b,{...a,id:'another-event'}],new Date('2026-10-16T14:15:00Z'));
   assert.ok(report.notices.some(n=>n.kind==='stale'));
+});
+test('series: every series has at least two editions of its federation, each event is in at most one series',()=>{
+  const series=read('data/calendar/series.json');
+  assert.equal(validateSeries(series,events),series);
+  assert.throws(()=>validateSeries([{slug:'x',name:'X',federation:'IUKL',idPrefix:'no-such-'}],events),/fewer than 2/);
+  assert.throws(()=>validateSeries([...series,{...series[0],slug:'copy'}],events),/several series/);
+});
+test('upcoming and past split on the given day; a running event is upcoming and live',()=>{
+  const today='2026-10-09';const {upcoming,past}=split(events,today);
+  assert.equal(upcoming.length+past.length,events.length);
+  assert.ok(upcoming.every(e=>e.endDate>=today)&&past.every(e=>e.endDate<today));
+  assert.ok(past.every((e,i)=>!i||past[i-1].startDate>=e.startDate),'past: newest first');
+  assert.equal(nextEvent(events,today).id,'iukl-world-new-delhi-2026');
+  assert.equal(relative(locale('en'),nextEvent(events,today),today),'Happening now');
+  assert.equal(relative(locale('ru'),{startDate:'2026-10-23',endDate:'2026-10-25'},today),'через 14 дней');
+  const browse=renderBrowse(locale('en'),events,{when:'past',federation:'BVDKS'},{today,series:read('data/calendar/series.json')});
+  assert.ok(browse.html.includes('rhein-main-cup-2026')&&!browse.html.includes('bremen-open-2026'));
+  assert.equal(browse.shown,browse.past);
+});
+test('registration button is hidden after the deadline; local day uses the viewer clock',()=>{
+  const e={...fixture(),registrationUrl:'https://example.org/register',registrationDeadline:'2026-12-01',startDate:'2026-12-05',endDate:'2026-12-05'};
+  assert.ok(renderEvents(locale('en'),[e],{today:'2026-11-30'}).includes('example.org/register'));
+  assert.ok(!renderEvents(locale('en'),[e],{today:'2026-12-02'}).includes('example.org/register'));
+  assert.equal(localISO(new Date(2026,0,5,23,30)),'2026-01-05');
 });
