@@ -2,7 +2,7 @@
 // Чистые функции «состояние → строка HTML»: страница рисует ими состояние по
 // умолчанию при сборке, браузер — после каждого изменения. Пользовательский текст
 // сюда не попадает: только числа из состояния и постоянные подписи.
-import { fmt, heavyReps, plural, tableRows, weightRatio } from './coefficients.js';
+import { convert, fmt, heavyReps, plural, scoreOf, tableRows, weightRatio } from './coefficients.js';
 
 const BELL_TOKENS = { 16: 'bell-16', 24: 'bell-24', 32: 'bell-32' };
 
@@ -176,6 +176,34 @@ export function readout(state) {
   const n = heavyReps(S, state.k);
   const total = (n * Math.round(state.k * 100)) / 100;
   return `Зачётный результат <b class="n">${S}</b>: <b class="n">${S}</b> ${plural(S, REPS)} на ${kg(state.light)} или <b class="n">${n}</b> на ${kg(state.heavy)} (<span class="n">${n} × ${fmt(state.k, 2)} = ${fmt(total, 1)}</span>)`;
+}
+
+// ------------------------------------------------------------- пересчёт
+
+/** Значения трёх полей пересчёта по введённому. */
+export const calcValues = (state) => convert(state.k, state.calc.field, state.calc.value);
+
+/** Число для поля ввода: целое как есть, дробное — до сотых с запятой. */
+export const calcText = (v) => (Number.isInteger(v) ? String(v) : fmt(v, 2));
+
+/** Подписи полей пересчёта: меняются вместе с гирями. */
+export const calcLabels = (state) => ({
+  light: `Подъёмов на ${kg(state.light)}`,
+  heavy: `Подъёмов на ${kg(state.heavy)}`,
+  score: 'Зачётный результат',
+});
+
+/** Пояснение под строкой пересчёта: как получено каждое число. */
+export function calcNote(state) {
+  const { light, heavy, score } = calcValues(state);
+  const k = fmt(state.k, 2);
+  const target = calcText(score);
+  const lightLine = `<span class="n">${light} × 1,00 = ${light}</span> на ${kg(state.light)}`;
+  const heavyLine = `<span class="n">${heavy} × ${k} = ${fmt(scoreOf(heavy, state.k), 2)}</span> на ${kg(state.heavy)}`;
+  if (state.calc.field === 'heavy') {
+    return `${heavyLine}. Чтобы набрать не меньше на ${kg(state.light)}, нужно <span class="n">${light}</span> ${plural(light, REPS)}.`;
+  }
+  return `Не меньше <span class="n">${target}</span>: ${lightLine}, ${heavyLine}. Подъёмы округлены вверх.`;
 }
 
 // ------------------------------------------------------------- таблица

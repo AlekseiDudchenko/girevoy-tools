@@ -49,6 +49,36 @@ export function heavyReps(score, k) {
 /** Зачётный результат: подъёмы × k, точно до сотых. */
 export const scoreOf = (reps, k) => (reps * hundredths(k)) / 100;
 
+// ------------------------------------------------------------- пересчёт
+
+export const CALC_FIELDS = ['light', 'heavy', 'score'];
+export const DEFAULT_CALC = { field: 'light', value: 80 };
+
+/**
+ * Пересчёт одного введённого числа в два других. field — что ввели:
+ * подъёмы на лёгкой (light), на тяжёлой (heavy) или зачётный результат (score).
+ * Подъёмы — наименьшее целое, дающее не меньше зачётного результата.
+ */
+export function convert(k, field, value) {
+  const kh = hundredths(k);
+  if (field === 'heavy') {
+    // n × k в целых сотых; на лёгкой — ceil(результата), тоже в целых.
+    const scoreH = value * kh;
+    return { light: Math.floor((scoreH + 99) / 100), heavy: value, score: scoreH / 100 };
+  }
+  const score = field === 'light' ? value : round2(value);
+  return { light: field === 'light' ? value : Math.ceil(score - 1e-9), heavy: heavyReps(score, k), score };
+}
+
+/** Допустимое значение поля пересчёта: подъёмы — целые, результат — до сотых. */
+export function validCalc(field, value) {
+  if (!CALC_FIELDS.includes(field) || !Number.isFinite(value) || value <= 0 || value > SCORE_MAX) return false;
+  return field === 'score' ? Math.abs(value * 100 - Math.round(value * 100)) < 1e-6 : Number.isInteger(value);
+}
+
+/** Число из поля ввода: «81,13» и «81.13» — одно и то же; пустое — NaN. */
+export const parseNumber = (raw) => (/^\s*\d+([.,]\d+)?\s*$/.test(raw) ? Number(raw.trim().replace(',', '.')) : NaN);
+
 /** Коэффициент из равноценных подъёмов: 80 на лёгкой = 50 на тяжёлой → 1,60. */
 export function equivalentK(lightReps, heavyRepsValue) {
   if (!(heavyRepsValue > 0)) return K_MAX;
@@ -100,6 +130,7 @@ export function defaultState() {
     tab: 'score',
     ...DEFAULT_TABLE,
     score: DEFAULT_SCORE,
+    calc: { ...DEFAULT_CALC },
   };
 }
 
@@ -142,6 +173,10 @@ export function parseState(search) {
   const score = intParam(params, 's');
   if (score !== null && score >= 1 && score <= SCORE_MAX) state.score = score;
 
+  const calcField = params.get('calc');
+  const calcValue = parseNumber(params.get('v') ?? '');
+  if (validCalc(calcField, calcValue)) state.calc = { field: calcField, value: calcValue };
+
   return state;
 }
 
@@ -166,5 +201,9 @@ export function serializeState(state) {
     if (state[key] !== DEFAULT_TABLE[key]) params.set(key, String(state[key]));
   }
   if (state.score !== DEFAULT_SCORE) params.set('s', String(state.score));
+  if (state.calc.field !== DEFAULT_CALC.field || state.calc.value !== DEFAULT_CALC.value) {
+    params.set('calc', state.calc.field);
+    params.set('v', String(state.calc.value));
+  }
   return `?${params}`;
 }
