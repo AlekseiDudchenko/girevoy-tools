@@ -1,27 +1,10 @@
 // Перечень инструментов: главная, навигация и sitemap собираются отсюда.
 // status: 'ready' — страница опубликована; 'planned' — только карточка на главной.
+// Название, пункт меню и описание карточки — в словарях: <key>.title, <key>.nav, <key>.card.
 export const TOOLS = [
-  {
-    slug: 'tempo',
-    title: 'Калькулятор темпа',
-    nav: 'Темп',
-    summary: 'Раскладка подъёмов по минутам: от темпа к результату и от результата к темпу, метроном.',
-    status: 'planned',
-  },
-  {
-    slug: 'progress',
-    title: 'Динамика и нормативы',
-    nav: 'Динамика',
-    summary: 'Результаты спортсмена из архива по сериям, нормативы и сравнение с соперниками.',
-    status: 'planned',
-  },
-  {
-    slug: 'coefficients',
-    title: 'Коэффициенты для гирь разного веса',
-    nav: 'Коэффициенты',
-    summary: 'Для организаторов: подобрать коэффициент тяжёлой гири и увидеть, сколько подъёмов нужно на каждой гире.',
-    status: 'ready',
-  },
+  { slug: 'calendar', key: 'calendar', status: 'ready' },
+  { slug: 'tempo', key: 'tempo', status: 'ready' },
+  { slug: 'coefficients', key: 'coef', status: 'ready' },
 ];
 
 export const readyTools = () => TOOLS.filter((t) => t.status === 'ready');

@@ -5,10 +5,13 @@ import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  K_MAX, convert, defaultK, defaultState, equivalentK, fmt, heavyReps, parseNumber, parseState, plural,
+  K_MAX, convert, defaultK, defaultState, equivalentK, heavyReps, parseNumber, parseState,
   scoreOf, serializeState, sliderMax, tableRows, validCalc, validTable,
 } from '../src/lib/coefficients.js';
 import { calcNote, calcProducts, bellColor, colorVars, niceAxis, readout, scoreChart, equivChart, tableBody } from '../src/lib/coefficients-view.js';
+import { locale } from '../src/i18n/index.js';
+
+const L = locale('ru');
 
 // ------------------------------------------------------------- расчёт
 
@@ -71,12 +74,12 @@ test('k из равноценных подъёмов и по весу гири',
 });
 
 test('формат: десятичная запятая и склонение', () => {
-  assert.equal(fmt(1.6, 2), '1,60');
-  assert.equal(fmt(80, 1), '80,0');
-  assert.equal(plural(1, ['подъём', 'подъёма', 'подъёмов']), 'подъём');
-  assert.equal(plural(22, ['подъём', 'подъёма', 'подъёмов']), 'подъёма');
-  assert.equal(plural(11, ['подъём', 'подъёма', 'подъёмов']), 'подъёмов');
-  assert.equal(plural(80, ['подъём', 'подъёма', 'подъёмов']), 'подъёмов');
+  assert.equal(L.num(1.6, 2), '1,60');
+  assert.equal(L.num(80, 1), '80,0');
+  assert.equal(L.plural(1, 'reps'), 'подъём');
+  assert.equal(L.plural(22, 'reps'), 'подъёма');
+  assert.equal(L.plural(11, 'reps'), 'подъёмов');
+  assert.equal(L.plural(80, 'reps'), 'подъёмов');
 });
 
 // ------------------------------------------------------------- адрес
@@ -145,10 +148,10 @@ test('пересчёт: проверка ввода', () => {
 
 test('пояснение пересчёта показывает исходные числа', () => {
   const st = { ...defaultState(), calc: { field: 'heavy', value: 61 } };
-  assert.deepEqual(calcProducts(st), { light: '× 1,00 = 82', heavy: '× 1,33 = 81,13', score: '' });
-  assert.match(calcNote(st), /<span class="n">82<\/span> подъёма на 24\u00a0кг и <span class="n">61<\/span> подъём на 32\u00a0кг/);
-  assert.match(calcNote(st), /округлены вверх/);
-  assert.doesNotMatch(calcNote({ ...st, k: 1.6, calc: { field: 'light', value: 80 } }), /округлены/, '80 = 50 × 1,60 без округления');
+  assert.deepEqual(calcProducts(L, st), {light: '× 1,00 = 82', heavy: '× 1,33 = 81,13', score: ''});
+  assert.match(calcNote(L, st), /<span class="n">82<\/span> подъёма/);
+  assert.match(calcNote(L, st), /округлены вверх/);
+  assert.doesNotMatch(calcNote(L, {...st, k: 1.6, calc: {field: 'light', value: 80}}), /округлены/);
 });
 
 test('состояние → адрес → состояние без потерь', () => {
@@ -197,7 +200,7 @@ test('неверные параметры заменяются значения�
 // ------------------------------------------------------------- разметка
 
 test('расшифровка под графиком', () => {
-  const html = readout({ ...defaultState(), k: 1.6 });
+  const html = readout(L, { ...defaultState(), k: 1.6 });
   const text = html.replace(/<[^>]+>/g, '').replace(/ /g, ' ');
   assert.equal(text, 'Зачётный результат 80: 80 подъёмов на 24 кг или 50 на 32 кг (50 × 1,60 = 80,0)');
 });
@@ -210,7 +213,7 @@ test('цвета гирь — токены: гиря 24/32/16 своим цве�
   assert.equal(bellColor(28, 'heavy').color, 'var(--s2)');
   assert.doesNotMatch(colorVars(defaultState()), /#[0-9a-f]{3,6}/i);
   const st = defaultState();
-  for (const svg of [scoreChart(st), equivChart(st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
+  for (const svg of [scoreChart(L, st), equivChart(L, st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
 });
 
 test('шкала графика', () => {
@@ -228,24 +231,23 @@ test('выбранная строка таблицы отмечена', () => {
 test('страница собрана: таблица по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-coef-'));
   execFileSync('node', ['scripts/build.mjs', out]);
-  const html = readFileSync(join(out, 'coefficients', 'index.html'), 'utf8');
-  assert.match(html, /<h1>Коэффициенты для гирь разного веса<\/h1>/);
+  const html = readFileSync(join(out, 'en', 'coefficients', 'index.html'), 'utf8');
+  assert.match(html, /<h1>Coefficients for different kettlebell weights<\/h1>/);
   assert.match(html, /role="tablist"/);
   assert.match(html, /<svg class="chart" id="chart-score"/);
   assert.match(html, /<svg class="chart" id="chart-eq"/);
   assert.match(html, /<tr data-score="80" tabindex="0" class="on"><td class="n">80<\/td><td class="n">61<\/td>/);
-  // Версия в адресе: после обновления браузер не смешивает новую страницу со старыми модулями.
   const [, version] = html.match(/<script type="module" src="\/coefficients.js\?v=([0-9a-f]{10})"><\/script>/);
   const map = JSON.parse(html.match(/<script type="importmap">(.+?)<\/script>/)[1]);
-  assert.equal(map.imports['/lib/coefficients.js'], `/lib/coefficients.js?v=${version}`);
-  assert.equal(map.imports['/lib/coefficients-view.js'], `/lib/coefficients-view.js?v=${version}`);
-  assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'), 'importmap раньше модулей');
+  for (const path of ['/lib/coefficients.js', '/lib/coefficients-view.js', '/page.js', '/i18n/en.js']) assert.equal(map.imports[path], `${path}?v=${version}`);
+  assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'));
   assert.match(html, new RegExp(`href="/style.css\\?v=${version}"`));
+  assert.match(html, /id="calc-heavy-prod">× 1.33 = 81.13/);
   assert.ok(existsSync(join(out, 'coefficients.js')));
   assert.ok(existsSync(join(out, 'lib', 'coefficients.js')));
   assert.ok(existsSync(join(out, 'lib', 'coefficients-view.js')));
   const script = readFileSync(join(out, 'coefficients.js'), 'utf8');
   for (const [, path] of script.matchAll(/from '\.\/(lib\/[^']+)'/g)) assert.ok(existsSync(join(out, path)), path);
-  const home = readFileSync(join(out, 'index.html'), 'utf8');
-  assert.match(home, /href="\/coefficients\/"/);
+  const home = readFileSync(join(out, 'en', 'index.html'), 'utf8');
+  assert.match(home, /href="\/en\/coefficients\/"/);
 });

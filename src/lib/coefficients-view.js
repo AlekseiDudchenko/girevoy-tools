@@ -1,8 +1,9 @@
 // Разметка страницы коэффициентов: графики SVG, легенды, расшифровка, таблица.
 // Чистые функции «состояние → строка HTML»: страница рисует ими состояние по
 // умолчанию при сборке, браузер — после каждого изменения. Пользовательский текст
-// сюда не попадает: только числа из состояния и постоянные подписи.
-import { convert, fmt, heavyReps, plural, scoreOf, tableRows, weightRatio } from './coefficients.js';
+// сюда не попадает: только числа из состояния и подписи из словаря языка страницы.
+// Первый аргумент каждой функции с текстом — L, язык страницы (locale.js).
+import { convert, heavyReps, scoreOf, tableRows, weightRatio } from './coefficients.js';
 
 const BELL_TOKENS = { 16: 'bell-16', 24: 'bell-24', 32: 'bell-32' };
 
@@ -23,8 +24,8 @@ export function colorVars(state) {
   return `--c-light: ${l.color}; --c-light-ink: ${l.ink}; --c-heavy: ${h.color}; --c-heavy-ink: ${h.ink}`;
 }
 
-export const kg = (w) => `${w}\u00a0кг`; // неразрывный пробел: «24 кг» не рвётся
-const REPS = ['подъём', 'подъёма', 'подъёмов'];
+/** Вес гири: «24 кг», «24 kg» — с неразрывным пробелом из словаря. */
+export const kg = (L, w) => L.t('unit.kg', { w });
 
 // ------------------------------------------------------------- оси
 
@@ -84,11 +85,14 @@ function svg(f, id, label, inner) {
   return `<svg class="chart" id="${id}" viewBox="0 0 ${f.width} ${f.height}" width="${f.width}" height="${f.height}" role="img" aria-label="${label}">${inner}</svg>`;
 }
 
+/** Обе гири для подстановки в строку словаря. */
+const bells = (L, state) => ({ light: kg(L, state.light), heavy: kg(L, state.heavy) });
+
 // ------------------------------------------------------------- «Зачётный результат»
 
 /** X — подъёмы, Y — зачётный результат: подъёмы × 1, подъёмы × k, пунктир по весу. */
-export function scoreChart(state, size = chartSize(900)) {
-  const f = frame(size, state, 'подъёмы', 'зачётный результат');
+export function scoreChart(L, state, size = chartSize(900)) {
+  const f = frame(size, state, L.t('coef.axis.reps'), L.t('coef.axis.score'));
   const lc = bellColor(state.light, 'light');
   const hc = bellColor(state.heavy, 'heavy');
   const S = state.score;
@@ -114,14 +118,14 @@ export function scoreChart(state, size = chartSize(900)) {
     for (const m of marks) s += `<circle class="${m.cls}" cx="${f.sx(m.x)}" cy="${f.sy(S)}" r="6"/>`;
   }
   s += `<rect class="hit" x="${f.sx(0)}" y="${f.sy(f.max)}" width="${r1(f.sx(f.max) - f.sx(0))}" height="${r1(f.sy(0) - f.sy(f.max))}"/>`;
-  return svg(f, 'chart-score', `График: зачётный результат от числа подъёмов на ${kg(state.light)} и ${kg(state.heavy)}`, s);
+  return svg(f, 'chart-score', L.t('coef.chart.score', bells(L, state)), s);
 }
 
 // ------------------------------------------------------------- «Равноценные подъёмы»
 
 /** X — подъёмы на лёгкой, Y — на тяжёлой: тяжёлая = лёгкая / k и два ориентира. */
-export function equivChart(state, size = chartSize(900)) {
-  const f = frame(size, state, `подъёмы ${kg(state.light)}`, `подъёмы ${kg(state.heavy)}`);
+export function equivChart(L, state, size = chartSize(900)) {
+  const f = frame(size, state, L.t('coef.axis.repsOn', { w: kg(L, state.light) }), L.t('coef.axis.repsOn', { w: kg(L, state.heavy) }));
   const hc = bellColor(state.heavy, 'heavy');
   const S = state.score;
   const n = heavyReps(S, state.k);
@@ -134,12 +138,12 @@ export function equivChart(state, size = chartSize(900)) {
     const py = f.sy(S / state.k);
     s += seg('guide', px, f.sy(0), px, py);
     s += seg('guide', f.sx(0), py, px, py);
-    const text = `${S} на ${kg(state.light)} = ${n} на ${kg(state.heavy)}`;
+    const text = L.t('coef.chart.equal', { score: S, n, ...bells(L, state) });
     s += `<text class="mark-label" ${labelPlace(f, px, py, text)}>${text}</text>`;
     s += `<rect class="hit" x="${f.sx(0)}" y="${f.sy(f.max)}" width="${r1(f.sx(f.max) - f.sx(0))}" height="${r1(f.sy(0) - f.sy(f.max))}"/>`;
-    s += `<circle class="dot dot-heavy handle" cx="${px}" cy="${py}" r="9" tabindex="0" role="slider" aria-label="Равноценные подъёмы: перетащите, чтобы задать коэффициент" aria-valuemin="1" aria-valuemax="4" aria-valuenow="${state.k}" aria-valuetext="${S} на ${kg(state.light)} = ${n} на ${kg(state.heavy)}, коэффициент ${fmt(state.k, 2)}"/>`;
+    s += `<circle class="dot dot-heavy handle" cx="${px}" cy="${py}" r="9" tabindex="0" role="slider" aria-label="${L.t('coef.chart.handle')}" aria-valuemin="1" aria-valuemax="4" aria-valuenow="${state.k}" aria-valuetext="${L.t('coef.chart.handleValue', { text, k: L.num(state.k, 2) })}"/>`;
   }
-  return svg(f, 'chart-eq', `График: равноценные подъёмы на ${kg(state.light)} и ${kg(state.heavy)}`, s);
+  return svg(f, 'chart-eq', L.t('coef.chart.eq', bells(L, state)), s);
 }
 
 /** Подпись точки: справа, если влезает, иначе слева, иначе над точкой. */
@@ -160,22 +164,33 @@ export function chartInverse(state, size) {
 
 const key = (cls, text) => `<li><svg class="key" viewBox="0 0 22 8" aria-hidden="true"><line class="${cls}" x1="1" y1="4" x2="21" y2="4"/></svg>${text}</li>`;
 
-export function scoreLegend(state) {
+const times = (L, k) => `× <span class="n">${L.num(k, 2)}</span>`;
+
+export function scoreLegend(L, state) {
   const ratio = weightRatio(state.light, state.heavy);
-  return `<ul class="legend">${key('ln ln-light', `${kg(state.light)} × <span class="n">1,00</span>`)}${key('ln ln-heavy', `${kg(state.heavy)} × <span class="n">${fmt(state.k, 2)}</span>`)}${key('ln ln-ratio', `по весу гири × <span class="n">${fmt(ratio, 2)}</span>`)}</ul>`;
+  return `<ul class="legend">${key('ln ln-light', `${kg(L, state.light)} ${times(L, 1)}`)}${key('ln ln-heavy', `${kg(L, state.heavy)} ${times(L, state.k)}`)}${key('ln ln-ratio', `${L.t('coef.legend.ratio')} ${times(L, ratio)}`)}</ul>`;
 }
 
-export function equivLegend(state) {
+export function equivLegend(L, state) {
   const ratio = weightRatio(state.light, state.heavy);
-  return `<ul class="legend">${key('ln ln-heavy', `выбранный × <span class="n">${fmt(state.k, 2)}</span>`)}${key('ln ln-ratio', `по весу гири × <span class="n">${fmt(ratio, 2)}</span>`)}${key('ln ln-equal', 'гири равны × <span class="n">1,00</span>')}<li class="legend-hint">точку можно перетащить</li></ul>`;
+  return `<ul class="legend">${key('ln ln-heavy', `${L.t('coef.legend.chosen')} ${times(L, state.k)}`)}${key('ln ln-ratio', `${L.t('coef.legend.ratio')} ${times(L, ratio)}`)}${key('ln ln-equal', `${L.t('coef.legend.equal')} ${times(L, 1)}`)}<li class="legend-hint">${L.t('coef.legend.drag')}</li></ul>`;
+}
+
+/** Пояснение к пунктиру: отношение весов гирь. */
+export function ratioHint(L, state) {
+  const ratio = `<span class="n">${state.heavy} / ${state.light} = ${L.num(weightRatio(state.light, state.heavy), 2)}</span>`;
+  return L.t('coef.ratioHint', { ratio });
 }
 
 /** «Зачётный результат 80: 80 подъёмов на 24 кг или 50 на 32 кг (50 × 1,60 = 80,0)». */
-export function readout(state) {
+export function readout(L, state) {
   const S = state.score;
   const n = heavyReps(S, state.k);
   const total = (n * Math.round(state.k * 100)) / 100;
-  return `Зачётный результат <b class="n">${S}</b>: <b class="n">${S}</b> ${plural(S, REPS)} на ${kg(state.light)} или <b class="n">${n}</b> на ${kg(state.heavy)} (<span class="n">${n} × ${fmt(state.k, 2)} = ${fmt(total, 1)}</span>)`;
+  return L.t('coef.readout', {
+    score: S, reps: L.plural(S, 'reps'), n, ...bells(L, state),
+    calc: `<span class="n">${n} × ${L.num(state.k, 2)} = ${L.num(total, 1)}</span>`,
+  });
 }
 
 // ------------------------------------------------------------- пересчёт
@@ -183,38 +198,40 @@ export function readout(state) {
 /** Значения трёх полей пересчёта по введённому. */
 export const calcValues = (state) => convert(state.k, state.calc.field, state.calc.value);
 
-/** Число для поля ввода: целое как есть, дробное — до сотых с запятой. */
-export const calcText = (v) => (Number.isInteger(v) ? String(v) : fmt(v, 2));
+/** Число для поля ввода: целое как есть, дробное — до сотых с десятичным знаком языка. */
+export const calcText = (L, v) => (Number.isInteger(v) ? String(v) : L.num(v, 2));
 
-/** Подписи полей пересчёта: гиря — цветной меткой, как в выборе гирь. */
-export const calcLabels = (state) => ({
-  light: `Подъёмы на <span class="chip chip-sm chip-light">${kg(state.light)}</span>`,
-  heavy: `Подъёмы на <span class="chip chip-sm chip-heavy">${kg(state.heavy)}</span>`,
-  score: 'Зачётный результат',
+/** Labels share the bell chips used in the weight selector. */
+export const calcLabels = (L, state) => ({
+  light: L.t('coef.repsOn', {w: `<span class="chip chip-sm chip-light">${kg(L, state.light)}</span>`}),
+  heavy: L.t('coef.repsOn', {w: `<span class="chip chip-sm chip-heavy">${kg(L, state.heavy)}</span>`}),
+  score: L.t('coef.score'),
 });
 
-/** Строка под полем: как получен зачётный результат на этой гире. */
-export function calcProducts(state) {
-  const { light, heavy } = calcValues(state);
+export function calcProducts(L, state) {
+  const {light, heavy} = calcValues(state);
   return {
-    light: `× 1,00 = ${calcText(light)}`,
-    heavy: `× ${fmt(state.k, 2)} = ${calcText(scoreOf(heavy, state.k))}`,
+    light: `× ${L.num(1, 2)} = ${calcText(L, light)}`,
+    heavy: `× ${L.num(state.k, 2)} = ${calcText(L, scoreOf(heavy, state.k))}`,
     score: '',
   };
 }
 
-/** Итог для чтения с экрана и пояснение округления. */
-export function calcNote(state) {
-  const { light, heavy, score } = calcValues(state);
+export function calcNote(L, state) {
+  const {light, heavy, score} = calcValues(state);
   const exact = light === score && scoreOf(heavy, state.k) === score;
-  return `<span class="n">${light}</span> ${plural(light, REPS)} на ${kg(state.light)} и <span class="n">${heavy}</span> ${plural(heavy, REPS)} на ${kg(state.heavy)} — зачётный результат не меньше <span class="n">${calcText(score)}</span>.`
-    + (exact ? '' : ' Подъёмы округлены вверх.');
+  return L.t('coef.calc.summary', {
+    lightN: `<span class="n">${L.num(light)}</span>`, lightReps: L.plural(light, 'reps'), light: kg(L, state.light),
+    heavyN: `<span class="n">${L.num(heavy)}</span>`, heavyReps: L.plural(heavy, 'reps'), heavy: kg(L, state.heavy),
+    score: `<span class="n">${calcText(L, score)}</span>`,
+  }) + (exact ? '' : ` ${L.t('coef.calc.rounded')}`);
 }
 
 // ------------------------------------------------------------- таблица
 
-export function tableHead(state) {
-  return `<tr><th scope="col">Подъёмов на ${kg(state.light)}<br><span class="n">× 1,00</span></th><th scope="col">Подъёмов на ${kg(state.heavy)}<br><span class="n">× ${fmt(state.k, 2)}</span></th><th scope="col" class="score">Зачётный результат</th></tr>`;
+export function tableHead(L, state) {
+  const head = (w, k) => `<th scope="col">${L.t('coef.repsOn', { w: kg(L, w) })}<br><span class="n">× ${L.num(k, 2)}</span></th>`;
+  return `<tr>${head(state.light, 1)}${head(state.heavy, state.k)}<th scope="col" class="score">${L.t('coef.score')}</th></tr>`;
 }
 
 export function tableBody(state) {

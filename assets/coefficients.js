@@ -1,15 +1,17 @@
-// Поведение страницы /coefficients/. Расчёт и разметка — чистые функции из /lib/,
+// Поведение страницы /<язык>/coefficients/. Расчёт и разметка — чистые функции из /lib/,
 // здесь только события, синхронизация полей и адрес страницы.
 import {
-  CALC_FIELDS, K_MAX, K_MIN, SCORE_MAX, WEIGHTS, clampK, defaultK, fmt, parseNumber, parseState, round2,
-  serializeState, sliderMax, validCalc, validTable, weightRatio,
+  CALC_FIELDS, K_MAX, K_MIN, SCORE_MAX, WEIGHTS, clampK, defaultK, parseNumber, parseState, round2,
+  serializeState, sliderMax, validCalc, validTable,
 } from './lib/coefficients.js';
 import {
-  calcLabels, calcNote, calcProducts, calcText, calcValues, chartInverse, chartSize, colorVars, equivChart, equivLegend, readout,
-  scoreChart, scoreLegend, tableBody, tableHead,
+  calcLabels, calcNote, calcProducts, calcText, calcValues, chartInverse, chartSize, colorVars, equivChart, equivLegend, kg, ratioHint,
+  readout, scoreChart, scoreLegend, tableBody, tableHead,
 } from './lib/coefficients-view.js';
+import { pageLocale, replaceSearch } from './page.js';
 
 document.documentElement.classList.add('js');
+const L = await pageLocale();
 
 const $ = (id) => document.getElementById(id);
 const root = $('coef');
@@ -44,37 +46,37 @@ function size() {
 function renderCharts() {
   const sz = size();
   const handleFocused = document.activeElement?.classList.contains('handle');
-  html(el.boxScore, scoreChart(state, sz));
-  html(el.boxEq, equivChart(state, sz));
+  html(el.boxScore, scoreChart(L, state, sz));
+  html(el.boxEq, equivChart(L, state, sz));
   if (handleFocused) el.boxEq.querySelector('.handle')?.focus();
 }
 
 /** Перерисовать всё по состоянию. skip — поле, которое сейчас вводят: его не трогаем. */
 function render(skip) {
   root.setAttribute('style', colorVars(state));
-  el.chipLight.textContent = `${state.light} кг`;
-  el.chipHeavy.textContent = `${state.heavy} кг`;
+  el.chipLight.textContent = kg(L, state.light);
+  el.chipHeavy.textContent = kg(L, state.heavy);
   el.light.value = String(state.light);
   el.heavy.value = String(state.heavy);
-  if (skip !== 'k') el.k.value = state.k.toFixed(2);
+  if (skip !== 'k') el.k.value = L.num(state.k, 2);
   el.range.max = String(sliderMax(state));
   if (skip !== 'range') el.range.value = String(state.k);
   // Второй ползунок — в строке пересчёта; оба меняют один и тот же k.
   el.rangeCalc.max = el.range.max;
   if (skip !== 'range-calc') el.rangeCalc.value = String(state.k);
-  el.calcKValue.textContent = `× ${fmt(state.k, 2)}`;
-  el.calcKBell.textContent = `${state.heavy} кг`;
-  html(el.ratioHint, `Пунктир на графиках — «по весу гири»: <span class="n">${state.heavy} / ${state.light} = ${fmt(weightRatio(state.light, state.heavy), 2)}</span>. Это арифметика, а не рекомендация.`);
+  el.calcKValue.textContent = `× ${L.num(state.k, 2)}`;
+  el.calcKBell.textContent = kg(L, state.heavy);
+  html(el.ratioHint, ratioHint(L, state));
   renderCharts();
-  html(el.legendScore, scoreLegend(state));
-  html(el.legendEq, equivLegend(state));
-  html(el.readout, readout(state));
+  html(el.legendScore, scoreLegend(L, state));
+  html(el.legendEq, equivLegend(L, state));
+  html(el.readout, readout(L, state));
   if (skip !== 'score') el.score.value = String(state.score);
   el.step.value = String(state.step);
   el.from.value = String(state.from);
   el.to.value = String(state.to);
   renderCalc(skip);
-  html(el.head, tableHead(state));
+  html(el.head, tableHead(L, state));
   html(el.body, tableBody(state));
   for (const tab of el.tabs) {
     const on = tab.dataset.tab === state.tab;
@@ -82,24 +84,24 @@ function render(skip) {
     tab.tabIndex = on ? 0 : -1;
     $(tab.getAttribute('aria-controls')).hidden = !on;
   }
-  history.replaceState(null, '', serializeState(state) + location.hash);
+  replaceSearch(serializeState(state));
 }
 
 /** Строка пересчёта: введённое поле не трогаем, два других — по коэффициенту. */
 function renderCalc(skip) {
   const values = calcValues(state);
-  const labels = calcLabels(state);
-  const products = calcProducts(state);
+  const labels = calcLabels(L, state);
+  const products = calcProducts(L, state);
   for (const name of CALC_FIELDS) {
     const input = $(`calc-${name}`);
     html($(`calc-${name}-label`), labels[name]);
     html($(`calc-${name}-prod`), products[name]);
     input.closest('.calc-cell').classList.toggle('src', name === state.calc.field);
     if (skip === `calc-${name}`) continue;
-    input.value = calcText(values[name]);
+    input.value = calcText(L, values[name]);
     input.removeAttribute('aria-invalid');
   }
-  html(el.calcNote, calcNote(state));
+  html(el.calcNote, calcNote(L, state));
 }
 
 function update(patch, skip) {
@@ -127,12 +129,14 @@ el.heavy.addEventListener('change', () => {
   update({ light, heavy, k: defaultK(light, heavy) });
 });
 
+// Коэффициент — текстовое поле: число с десятичным знаком языка страницы,
+// ввод принимает и запятую, и точку.
 el.k.addEventListener('input', () => {
-  const k = Number(el.k.value.replace(',', '.'));
+  const k = parseNumber(el.k.value);
   if (Number.isFinite(k) && k >= K_MIN && k <= K_MAX) update({ k: round2(k) }, 'k');
 });
 el.k.addEventListener('change', () => {
-  const k = Number(el.k.value.replace(',', '.'));
+  const k = parseNumber(el.k.value);
   update({ k: Number.isFinite(k) ? clampK(round2(k)) : state.k });
 });
 
@@ -244,7 +248,7 @@ function tableChanged() {
   if (validTable(next)) {
     update(next);
   } else {
-    say('Диапазон: от 1 до 999, «от» меньше «до», не больше 100 строк.');
+    say(L.t('coef.rangeError'));
     render();
   }
 }
@@ -255,9 +259,9 @@ el.to.addEventListener('change', tableChanged);
 $('copy-link').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(location.href);
-    say('Ссылка скопирована');
+    say(L.t('common.copied'));
   } catch {
-    say('Скопируйте адрес из строки браузера');
+    say(L.t('common.copyFailed'));
   }
 });
 $('print').addEventListener('click', () => window.print());

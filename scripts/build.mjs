@@ -1,13 +1,21 @@
-// Сборка статического сайта в dist/: страницы из src/pages/ в общей оболочке,
-// файлы из assets/ — как есть в корень, чистые функции src/lib/ — в dist/lib/:
-// браузер импортирует их из /lib/ те же, что проверяют тесты.
+// Сборка статического сайта в dist/: каждая страница из src/pages/ на каждом языке
+// из src/i18n/ — в /<язык>/<slug>/index.html; файлы из assets/ — как есть в корень;
+// чистые функции src/lib/ — в dist/lib/, словари src/i18n/ — в dist/i18n/: браузер
+// импортирует те же модули, что проверяют тесты.
 import { createHash } from 'node:crypto';
-import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { schemaErrors } from '../src/lib/calendar-schema.js';
+import { validateEvents, eventICS } from '../src/lib/calendar.js';
 import { layout } from '../src/layout.js';
 import { SITE_URL } from '../src/brand.js';
+import { feeds, feedICS } from '../src/lib/calendar-feeds.js';
+import { SERIES, BUILD_DAY } from '../src/calendar-data.js';
+import { LANGS, locale } from '../src/i18n/index.js';
+import { X_DEFAULT, langPath } from '../src/lib/locale.js';
 import { PAGES } from '../src/pages/index.js';
+import { redirects } from '../src/redirects.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(root, process.argv[2] || 'dist');
@@ -16,29 +24,57 @@ rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 cpSync(join(root, 'assets'), dist, { recursive: true });
 cpSync(join(root, 'src', 'lib'), join(dist, 'lib'), { recursive: true });
+mkdirSync(join(dist, 'i18n'), { recursive: true });
+for (const lang of LANGS) cpSync(join(root, 'src', 'i18n', `${lang}.js`), join(dist, 'i18n', `${lang}.js`));
 
-// Версия стилей и скриптов — хеш их содержимого: после обновления браузер не возьмёт
-// из кэша старый модуль к новой странице. Модули /lib/ получают версию через importmap.
 const files = (dir, ext) => readdirSync(join(root, dir)).filter((f) => f.endsWith(ext)).sort();
 const libFiles = files('src/lib', '.js');
 const hash = createHash('sha256');
 for (const f of [...files('assets', '.js'), ...files('assets', '.css')]) hash.update(readFileSync(join(root, 'assets', f)));
-for (const f of libFiles) hash.update(readFileSync(join(root, 'src', 'lib', f)));
+for (const f of libFiles) hash.update(readFileSync(join(root, 'src/lib', f)));
+for (const lang of LANGS) hash.update(readFileSync(join(root, 'src/i18n', `${lang}.js`)));
 const version = hash.digest('hex').slice(0, 10);
-const modules = libFiles.map((f) => `/lib/${f}`);
+const modules = [...libFiles.map((f) => `/lib/${f}`), '/page.js', ...LANGS.map((lang) => `/i18n/${lang}.js`)];
 
-for (const page of PAGES) {
-  const file = join(dist, page.path, 'index.html');
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, layout({ ...page, body: page.body(), version, modules }));
+for (const lang of LANGS) {
+  const L = locale(lang);
+  for (const page of PAGES) {
+    const file = join(dist, langPath(lang, page.slug), 'index.html');
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, layout(L, page, {version, modules}));
+  }
 }
 
-const urls = PAGES.map((p) => `  <url><loc>${SITE_URL}${p.path}</loc></url>`).join('\n');
+const events = validateEvents(JSON.parse(readFileSync(join(root, 'data/calendar/events.json'), 'utf8')));
+const eventSchema = JSON.parse(readFileSync(join(root, 'data/calendar/event.schema.json'), 'utf8'));
+for (const event of events) { const errors = schemaErrors(event, eventSchema); if (errors.length) throw new Error(errors.join(', ')); }
+mkdirSync(join(dist, 'calendar/ics'), {recursive:true});
+cpSync(join(root, 'data/calendar/event.schema.json'), join(dist, 'calendar/event.schema.json'));
+writeFileSync(join(dist, 'calendar/events.json'), JSON.stringify(events));
+for (const event of events) writeFileSync(join(dist, 'calendar/ics', event.id + '.ics'), eventICS(event));
+// Ленты подписки: весь набор выводится из данных на дату сборки, руками не ведётся.
+const feedList = feeds(events, SERIES);
+for (const feed of feedList) {
+  const file = join(dist, 'calendar/feeds', `${feed.path}.ics`);
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, feedICS(feed, events, BUILD_DAY, SITE_URL));
+}
+writeFileSync(join(dist, '_headers'), '/calendar/feeds/*\n  Content-Type: text/calendar; charset=utf-8\n  Cache-Control: public, max-age=3600\n/calendar/ics/*\n  Content-Type: text/calendar; charset=utf-8\n');
+
+// sitemap: каждая версия со ссылками на остальные языки.
+const loc = (lang, slug) => `${SITE_URL}${langPath(lang, slug)}`;
+const urls = PAGES.flatMap((p) => LANGS.map((lang) => {
+  const alt = [...LANGS, 'x-default']
+    .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${loc(l === 'x-default' ? X_DEFAULT : l, p.slug)}"/>`)
+    .join('\n');
+  return `  <url>\n    <loc>${loc(lang, p.slug)}</loc>\n${alt}\n  </url>`;
+})).join('\n');
 writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
 </urlset>
 `);
 writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+writeFileSync(join(dist, '_redirects'), redirects());
 
-console.log(`dist: ${PAGES.length} страниц`);
+console.log(`dist: ${PAGES.length} страниц × ${LANGS.length} языка, ${feedList.length} лент календаря`);
