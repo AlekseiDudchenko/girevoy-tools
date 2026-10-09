@@ -25,7 +25,7 @@ export function switchPath(pathname, lang) {
  * plural(n, key) — склонённое слово из словаря.
  */
 export function makeLocale(lang, dict) {
-  if (!LANGS.includes(lang)) throw new RangeError(`нет такого языка: ${lang}`);
+  if (!LANGS.includes(lang) && lang !== 'ru') throw new RangeError(`нет такого языка: ${lang}`);
   const rules = new Intl.PluralRules(lang);
   const formats = new Map();
   const format = (min, max) => {
