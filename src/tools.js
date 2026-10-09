@@ -9,13 +9,6 @@ export const TOOLS = [
     status: 'ready',
   },
   {
-    slug: 'progress',
-    title: 'Динамика и нормативы',
-    nav: 'Динамика',
-    summary: 'Результаты спортсмена из архива по сериям, нормативы и сравнение с соперниками.',
-    status: 'planned',
-  },
-  {
     slug: 'coefficients',
     title: 'Коэффициенты для гирь разного веса',
     nav: 'Коэффициенты',
