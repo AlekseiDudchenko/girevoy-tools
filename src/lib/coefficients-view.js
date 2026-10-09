@@ -186,24 +186,29 @@ export const calcValues = (state) => convert(state.k, state.calc.field, state.ca
 /** Число для поля ввода: целое как есть, дробное — до сотых с запятой. */
 export const calcText = (v) => (Number.isInteger(v) ? String(v) : fmt(v, 2));
 
-/** Подписи полей пересчёта: меняются вместе с гирями. */
+/** Подписи полей пересчёта: гиря — цветной меткой, как в выборе гирь. */
 export const calcLabels = (state) => ({
-  light: `Подъёмов на ${kg(state.light)}`,
-  heavy: `Подъёмов на ${kg(state.heavy)}`,
+  light: `Подъёмы на <span class="chip chip-sm chip-light">${kg(state.light)}</span>`,
+  heavy: `Подъёмы на <span class="chip chip-sm chip-heavy">${kg(state.heavy)}</span>`,
   score: 'Зачётный результат',
 });
 
-/** Пояснение под строкой пересчёта: как получено каждое число. */
+/** Строка под полем: как получен зачётный результат на этой гире. */
+export function calcProducts(state) {
+  const { light, heavy } = calcValues(state);
+  return {
+    light: `× 1,00 = ${calcText(light)}`,
+    heavy: `× ${fmt(state.k, 2)} = ${calcText(scoreOf(heavy, state.k))}`,
+    score: '',
+  };
+}
+
+/** Итог для чтения с экрана и пояснение округления. */
 export function calcNote(state) {
   const { light, heavy, score } = calcValues(state);
-  const k = fmt(state.k, 2);
-  const target = calcText(score);
-  const lightLine = `<span class="n">${light} × 1,00 = ${light}</span> на ${kg(state.light)}`;
-  const heavyLine = `<span class="n">${heavy} × ${k} = ${fmt(scoreOf(heavy, state.k), 2)}</span> на ${kg(state.heavy)}`;
-  if (state.calc.field === 'heavy') {
-    return `${heavyLine}. Чтобы набрать не меньше на ${kg(state.light)}, нужно <span class="n">${light}</span> ${plural(light, REPS)}.`;
-  }
-  return `Не меньше <span class="n">${target}</span>: ${lightLine}, ${heavyLine}. Подъёмы округлены вверх.`;
+  const exact = light === score && scoreOf(heavy, state.k) === score;
+  return `<span class="n">${light}</span> ${plural(light, REPS)} на ${kg(state.light)} и <span class="n">${heavy}</span> ${plural(heavy, REPS)} на ${kg(state.heavy)} — зачётный результат не меньше <span class="n">${calcText(score)}</span>.`
+    + (exact ? '' : ' Подъёмы округлены вверх.');
 }
 
 // ------------------------------------------------------------- таблица
