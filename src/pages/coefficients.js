@@ -82,8 +82,6 @@ export default {
   </div>
 </section>
 
-${calcPanel(L, st)}
-
 <section class="panel chart-panel" aria-label="${t('chartPanel')}">
   <div class="tabs" role="tablist" aria-label="${t('chartTabs')}">
     <button type="button" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">${t('score')}</button>
@@ -108,6 +106,8 @@ ${calcPanel(L, st)}
   </div>
   <p class="hint">${t('oneK')}</p>
 </section>
+
+${calcPanel(L, st)}
 
 <section class="panel table-panel" aria-label="${t('tablePanel')}">
   <div class="table-controls">
