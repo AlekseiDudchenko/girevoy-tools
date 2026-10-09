@@ -9,7 +9,7 @@ import {
   goalError, goalReps, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
   secPerRep, serializeState, setMinute, toMode, toSegments, withMinutes,
 } from '../src/lib/tempo.js';
-import { announce, barChart, errorText, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
+import { announce, barChart, errorText, metroBoard, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
 import { locale } from '../src/i18n/index.js';
 
 const L = locale('ru');
@@ -156,14 +156,29 @@ test('переходы: режимы начинаются с текущей ра
 
 // ------------------------------------------------------------- метроном
 
-test('метроном: щелчок на каждый подъём, минуты с начала минуты', () => {
+test('метроном: отсчёт, старт, два тика и сигнал на каждый подъём', () => {
   const reps = [7, 8, 10];
-  const list = clicks(reps);
-  assert.equal(list.length, 25);
-  assert.deepEqual(list.filter((c) => c.first).map((c) => c.t), [0, 60, 120]);
-  assert.equal(list[1].t, 60 / 7);
-  assert.equal(list[8].t, 60 + 7.5);
+  const list = clicks(reps, 5);
+  assert.deepEqual(list.filter((c) => c.kind === 'count').map((c) => c.t), [-5, -4, -3, -2, -1]);
+  assert.deepEqual(list.filter((c) => c.kind === 'go').map((c) => c.t), [0]);
+  const rep = list.filter((c) => c.kind === 'rep');
+  assert.equal(rep.length, 25);
+  assert.equal(rep[0].t, 60 / 7);
+  assert.equal(rep[6].t, 60); // последний подъём минуты — на её конце
+  assert.equal(rep[7].t, 60 + 7.5);
+  assert.equal(rep.at(-1).t, 180);
+  assert.equal(list.filter((c) => c.kind === 'pre').length, 50);
+  const i = list.indexOf(rep[0]);
+  assert.deepEqual(list.slice(i - 2, i).map((c) => [c.kind, c.t]), [['pre', 60 / 7 - 0.8], ['pre', 60 / 7 - 0.4]]);
+  // По времени по порядку и на самом быстром темпе: сигналы не налезают друг на друга.
+  for (const r of [[7, 8, 10], [30, 30], [1, 30, 1]]) {
+    const ts = clicks(r, 10).map((c) => c.t);
+    for (let k = 1; k < ts.length; k += 1) assert.ok(ts[k] - ts[k - 1] >= 0.39, `${r}: ${ts[k - 1]} → ${ts[k]}`);
+  }
+  assert.equal(clicks([7]).filter((c) => c.kind === 'count').length, 0);
   assert.equal(clock(135), '2:15');
+  assert.equal(clock(-4.2), '\u22120:05');
+  assert.equal(clock(-0.01), '\u22120:01');
   assert.equal(announce(L, defaultState(), 0), 'Минута 1. Темп 7.');
   assert.equal(announce(L, defaultState(), 9), 'Последняя минута. Темп 10.');
   assert.equal(announce(L, { ...defaultState(), ex: 'snatch' }, 5), 'Смена руки. Минута 6. Темп 8.');
@@ -259,6 +274,23 @@ test('таблица на 60 минут и текущая минута метр�
 });
 
 // ------------------------------------------------------------- собранная страница
+
+test('табло на весь экран: часы, темп минуты, следующая минута, рука в рывке', () => {
+  const st = defaultState(); // 7, 7, 8, 8, 8, 8, 8, 8, 8, 10
+  const start = metroBoard(L, st, 0);
+  assert.match(start, /board-clock n">0:00</);
+  assert.match(start, /<span class="n">7<\/span>/);
+  assert.match(start, /минута 1 из 10/);
+  assert.match(start, /дальше: 7 в минуту/);
+  const last = metroBoard(L, st, 545);
+  assert.match(last, /9:05/);
+  assert.match(last, /<span class="n">10<\/span>/);
+  assert.match(last, /последняя минута/);
+  assert.match(metroBoard(L, st, 600), /минута 10 из 10/); // конец — не за пределами плана
+  const snatch = { ...st, ex: 'snatch', hand: 5 };
+  assert.match(metroBoard(L, snatch, 0), /первая рука/);
+  assert.match(metroBoard(L, snatch, 300), /вторая рука/);
+});
 
 test('страница собрана: пример по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-tempo-'));

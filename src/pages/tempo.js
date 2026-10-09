@@ -1,8 +1,8 @@
 // Калькулятор темпа (#6). Сборка рисует состояние по умолчанию теми же функциями,
 // что и браузер: без JavaScript видны графики и таблица для примера из задачи —
 // длинный цикл, 10 минут, цель 80, запас на финиш.
-import { D_MAX, D_MIN, EXERCISES, MINUTES, MODES, STRATEGIES, defaultState, planText, repsOf } from '../lib/tempo.js';
-import { barChart, barLegend, metroText, summary, tableBody, tableFoot, tableHead } from '../lib/tempo-view.js';
+import { COUNTDOWNS, DEFAULT_COUNTDOWN, D_MAX, D_MIN, EXERCISES, MINUTES, MODES, STRATEGIES, defaultState, planText, repsOf } from '../lib/tempo.js';
+import { barChart, barLegend, metroBoard, metroText, summary, tableBody, tableFoot, tableHead } from '../lib/tempo-view.js';
 
 const options = (items, selected) => items
   .map(({ id, name }) => `<option value="${id}"${id === selected ? ' selected' : ''}>${name}</option>`)
@@ -83,10 +83,14 @@ export default {
 
 <section class="panel metro js-only" aria-labelledby="metro-title">
   <h2 id="metro-title">${t('metro.title')}</h2>
+  <div class="board" id="board" aria-hidden="true">${metroBoard(L, st, 0)}</div>
   <div class="metro-row">
     <button type="button" class="btn btn-main" id="metro-start" aria-pressed="false">${t('metro.start')}</button>
     <p class="metro-now n" id="metro-now">${metroText(L, '0:00', 1, st.min, repsOf(st)[0])}</p>
+    <label class="count-field">${t('metro.countdown')}
+      <select id="countdown">${options(COUNTDOWNS.map((n) => ({ id: n, name: t('metro.sec', { n }) })), DEFAULT_COUNTDOWN)}</select></label>
     <label class="check"><input type="checkbox" id="voice" checked> ${t('metro.voice')}</label>
+    <button type="button" class="btn btn-full" id="metro-full" aria-pressed="false">${t('metro.full')}</button>
   </div>
   <p class="hint">${t('metro.hint')}</p>
 </section>

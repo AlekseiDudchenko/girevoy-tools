@@ -304,6 +304,42 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 .btn-main[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
 .metro-now { margin: 0; font-size: 1.05rem; color: var(--ink); white-space: normal; }
 .check { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--ink-2); font-size: 0.92rem; }
+.btn-full { margin-left: auto; }
+.count-field { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--ink-2); font-size: 0.92rem; }
+.metro.full .count-field { font-size: 1.05rem; }
+
+/* Табло метронома на весь экран: видно с помоста, крупные кнопки под палец. */
+.board { display: none; }
+.metro-full body { overflow: hidden; }
+.metro.full {
+  position: fixed; inset: 0; z-index: 100; margin: 0; border: 0; border-radius: 0;
+  display: flex; flex-direction: column; background: var(--paper);
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+.metro.full:fullscreen { background: var(--paper); }
+.metro.full h2, .metro.full .hint, .metro.full .metro-now { display: none; }
+.metro.full .board {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; gap: 1vmin;
+}
+.board p { margin: 0; line-height: 1.05; }
+.board-clock { font-size: clamp(3.5rem, 24vmin, 16rem); font-weight: 700; color: var(--ink); }
+.board-clock.count { color: var(--accent); }
+.board-rate { color: var(--accent); }
+.board-rate .n { font-size: clamp(3rem, 18vmin, 12rem); font-weight: 700; }
+.board-unit { font-size: clamp(1.2rem, 4.5vmin, 2.6rem); }
+.board-minute { font-size: clamp(1.2rem, 5vmin, 3rem); color: var(--ink); }
+.board-next { font-size: clamp(1rem, 3.6vmin, 2rem); color: var(--ink-2); }
+.metro.full .metro-row { justify-content: center; gap: 1rem 2rem; }
+.metro.full .btn-main { font-size: clamp(1.2rem, 4vmin, 2rem); min-width: 10rem; padding: 0.6rem 2rem; }
+.metro.full .check { font-size: 1.05rem; }
+.metro.full .check input { width: 1.3rem; height: 1.3rem; }
+.metro.full .btn-full { margin-left: 0; font-size: 1.05rem; padding: 0.55rem 1.2rem; }
+@media (orientation: landscape) and (max-height: 500px) {
+  .board-clock { font-size: 20vmin; }
+  .board-rate .n { font-size: 16vmin; }
+}
 
 .tempo-table th, .tempo-table td { padding: 0.3rem 0.7rem; text-align: right; border-bottom: 1px solid var(--rule-soft); }
 .tempo-table th { color: var(--ink-3); font-weight: 400; font-size: 0.85rem; vertical-align: bottom; line-height: 1.3; }

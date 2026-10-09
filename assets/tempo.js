@@ -1,11 +1,11 @@
 // Поведение страницы /<язык>/tempo/. Расчёт и разметка — чистые функции из /lib/,
 // здесь только события, поля, метроном и адрес страницы.
 import {
-  D_MAX, D_MIN, RATE_MAX, addSegment, canAddSegment, clicks, clock,
+  COUNTDOWNS, D_MAX, D_MIN, RATE_MAX, addSegment, canAddSegment, clicks, clock,
   editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
-  announce, barAxis, barChart, barGeometry, barLegend, chartSize, errorText, metroText, paceSum, segmentRows, summary,
+  announce, barAxis, barChart, barGeometry, barLegend, chartSize, errorText, metroBoard, metroText, paceSum, segmentRows, summary,
   tableBody, tableFoot, tableHead,
 } from './lib/tempo-view.js';
 import { SPEECH_LANG } from './lib/locale.js';
@@ -23,7 +23,8 @@ const el = {
   summary: $('summary'), boxBars: $('box-bars'),
   legendBars: $('legend-bars'),
   head: $('table-head'), body: $('table-body'), foot: $('table-foot'), status: $('status'),
-  metroStart: $('metro-start'), metroNow: $('metro-now'), voice: $('voice'),
+  metroStart: $('metro-start'), metroNow: $('metro-now'), voice: $('voice'), countdown: $('countdown'),
+  metro: $('metro-start').closest('.metro'), board: $('board'), full: $('metro-full'),
   tabs: [...document.querySelectorAll('[role="tab"]')],
 };
 
@@ -89,7 +90,10 @@ function render(skip) {
   html(el.head, tableHead(L, state));
   html(el.body, tableBody(L, state, metro.minute));
   html(el.foot, tableFoot(L, state));
-  if (!metro.on) el.metroNow.textContent = metroIdle();
+  if (!metro.on) {
+    el.metroNow.textContent = metroIdle();
+    html(el.board, metroBoard(L, state, 0));
+  }
   metro.resync();
   replaceSearch(serializeState(state));
 }
@@ -266,6 +270,15 @@ el.voice.addEventListener('change', () => {
   try { localStorage.setItem(VOICE_KEY, el.voice.checked ? 'on' : 'off'); } catch { /* не страшно */ }
 });
 
+const COUNT_KEY = 'tempo.countdown';
+try {
+  const saved = Number(localStorage.getItem(COUNT_KEY));
+  if (COUNTDOWNS.includes(saved)) el.countdown.value = String(saved);
+} catch { /* без хранилища — отсчёт по умолчанию */ }
+el.countdown.addEventListener('change', () => {
+  try { localStorage.setItem(COUNT_KEY, el.countdown.value); } catch { /* не страшно */ }
+});
+
 function speak(text) {
   if (!el.voice.checked || !('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(text);
@@ -279,8 +292,16 @@ const metroIdle = () => metroText(L, '0:00', 1, state.min, repsOf(state)[0]);
 
 const LOOKAHEAD = 0.15; // секунд: щелчки планируются заранее, таймер может опаздывать
 
+/** Звук сигнала: частота, Гц, и длительность, с. Старт и подъём — долгие. */
+const SOUND = {
+  count: { hz: 880, dur: 0.08 },
+  go: { hz: 1320, dur: 0.8 },
+  pre: { hz: 1100, dur: 0.05 },
+  rep: { hz: 1760, dur: 0.3 },
+};
+
 const metro = {
-  on: false, ctx: null, t0: 0, list: [], idx: 0, minute: -1, timer: 0, shown: '', lock: null,
+  on: false, starting: false, ctx: null, t0: 0, count: 0, list: [], sounding: [], idx: 0, minute: -1, timer: 0, shown: '', lock: null,
 
   async start() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -288,11 +309,15 @@ const metro = {
       say(L.t('tempo.metro.noAudio'));
       return;
     }
+    if (this.starting) return; // второе нажатие, пока звук включается
+    this.starting = true;
     this.ctx ||= new AC();
     await this.ctx.resume();
+    this.starting = false;
     this.on = true;
-    this.t0 = this.ctx.currentTime + 0.4;
-    this.list = clicks(repsOf(state));
+    this.count = Number(el.countdown.value);
+    this.t0 = this.ctx.currentTime + 0.4 + this.count;
+    this.list = clicks(repsOf(state), this.count);
     this.idx = 0;
     this.minute = -1;
     this.timer = setInterval(() => this.tick(), 25);
@@ -306,6 +331,9 @@ const metro = {
     if (!this.on) return;
     this.on = false;
     clearInterval(this.timer);
+    // Уже запланированные сигналы (долгий старт, подъём) не доигрывают после «Стоп».
+    for (const osc of this.sounding) osc.stop();
+    this.sounding = [];
     this.minute = -1;
     this.shown = '';
     this.lock?.release().catch(() => {});
@@ -321,36 +349,41 @@ const metro = {
   resync() {
     if (!this.on) return;
     const now = this.ctx.currentTime - this.t0 + LOOKAHEAD;
-    this.list = clicks(repsOf(state));
+    this.list = clicks(repsOf(state), this.count);
     this.idx = this.list.findIndex((c) => c.t >= now);
     if (this.idx < 0) this.idx = this.list.length;
   },
 
-  beep(at, first) {
+  beep(at, kind) {
     const { ctx } = this;
+    const { hz, dur } = SOUND[kind];
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.frequency.value = first ? 1760 : 880;
+    osc.frequency.value = hz;
     gain.gain.setValueAtTime(0.0001, at);
     gain.gain.exponentialRampToValueAtTime(0.6, at + 0.003);
-    gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.07);
+    gain.gain.setValueAtTime(0.6, at + dur - 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, at + dur);
     osc.connect(gain).connect(ctx.destination);
     osc.start(at);
-    osc.stop(at + 0.08);
+    osc.stop(at + dur + 0.01);
+    this.sounding.push(osc);
+    osc.onended = () => { this.sounding = this.sounding.filter((o) => o !== osc); };
   },
 
   tick() {
     const now = this.ctx.currentTime - this.t0;
-    if (now >= state.min * 60) {
+    // Последний сигнал подъёма — ровно на конце: остановка — когда он отзвучит.
+    if (now >= state.min * 60 + SOUND.rep.dur) {
       this.stop(true);
       return;
     }
     while (this.idx < this.list.length && this.list[this.idx].t < now + LOOKAHEAD) {
       const c = this.list[this.idx];
-      if (c.t >= now - 0.05) this.beep(this.t0 + c.t, c.first);
+      if (c.t >= now - 0.05) this.beep(this.t0 + c.t, c.kind);
       this.idx += 1;
     }
-    const m = Math.max(0, Math.floor(now / 60));
+    const m = Math.min(state.min - 1, Math.max(0, Math.floor(now / 60)));
     if (now >= 0 && m !== this.minute) {
       this.minute = m;
       speak(announce(L, state, m));
@@ -358,15 +391,50 @@ const metro = {
       renderChart();
     }
     const reps = repsOf(state)[m];
-    const text = metroText(L, clock(Math.max(0, now)), m + 1, state.min, reps);
+    const shown = Math.min(Math.max(now, -this.count), state.min * 60);
+    const text = metroText(L, clock(shown), m + 1, state.min, reps);
     if (text !== this.shown) {
       this.shown = text;
       el.metroNow.textContent = text;
+      html(el.board, metroBoard(L, state, shown));
     }
   },
 };
 
 el.metroStart.addEventListener('click', () => (metro.on ? metro.stop() : metro.start()));
+
+// ------------------------------------------------------------- на весь экран
+
+// Табло на весь экран — для планшета на полу у помоста. Где есть Fullscreen API,
+// табло занимает весь экран; где нет (iPhone), — всё окно браузера.
+const fs = {
+  request: el.metro.requestFullscreen || el.metro.webkitRequestFullscreen,
+  exit: document.exitFullscreen || document.webkitExitFullscreen,
+  element: () => document.fullscreenElement || document.webkitFullscreenElement,
+};
+
+function setFull(on) {
+  el.metro.classList.toggle('full', on);
+  document.documentElement.classList.toggle('metro-full', on);
+  el.board.setAttribute('aria-hidden', String(!on));
+  el.full.setAttribute('aria-pressed', String(on));
+  el.full.textContent = L.t(on ? 'tempo.metro.exit' : 'tempo.metro.full');
+}
+
+el.full.addEventListener('click', async () => {
+  const on = !el.metro.classList.contains('full');
+  setFull(on);
+  try {
+    if (on && fs.request && !fs.element()) await fs.request.call(el.metro);
+    else if (!on && fs.element()) await fs.exit.call(document);
+  } catch { /* без Fullscreen API табло занимает окно */ }
+});
+const fsChange = () => { if (!fs.element() && el.metro.classList.contains('full')) setFull(false); };
+document.addEventListener('fullscreenchange', fsChange);
+document.addEventListener('webkitfullscreenchange', fsChange);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && el.metro.classList.contains('full') && !fs.element()) setFull(false);
+});
 
 // ------------------------------------------------------------- ссылка и печать
 
