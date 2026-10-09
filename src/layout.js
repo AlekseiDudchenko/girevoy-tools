@@ -11,7 +11,7 @@ export function layout(L, page) {
   const { lang } = L;
   const product = L.t('site.product');
   const path = langPath(lang, page.slug);
-  const fullTitle = page.slug === '' ? `${product} | ${BRAND}` : pageTitle(page.title ? page.title(L) : L.t(`${page.key}.title`), product);
+  const fullTitle = pageTitle(page.title ? page.title(L) : L.t(`${page.key}.seoTitle`));
   const nav = readyTools()
     .map((t) => {
       const href = langPath(lang, `${t.slug}/`);

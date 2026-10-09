@@ -1,7 +1,8 @@
-// English dictionary. Same keys as ru.js; placeholders are {name}; a word that
+// Public English dictionary. Same keys as de.js; placeholders are {name}; a word that
 // changes with the number is an object keyed by Intl.PluralRules('en') categories.
 export default {
-  "calendar.title": "International competition calendar",
+  "calendar.title": "Kettlebell sport competition calendar",
+  "calendar.seoTitle": "Kettlebell Sport Competition Calendar",
   "calendar.nav": "Calendar",
   "calendar.card": "Find local opens, international championships and online meets in one calendar.",
   "calendar.description": "Kettlebell sport competitions in Europe, Asia, the Americas and online: upcoming and past events, championship series, official sources and calendar downloads.",
@@ -95,6 +96,7 @@ export default {
 
   // ----------------------------------------------------------- home
   'home.description': 'Calculators and charts for kettlebell lifters, coaches and competition organizers.',
+  'home.seoTitle': 'Kettlebell Sport Tools & Calculators',
   'home.h1': 'Kettlebell sport tools',
   'home.lead': 'Calculators and charts for athletes, coaches and organizers. Everything is calculated in your browser.',
   'home.status.ready': 'Ready',
@@ -102,6 +104,7 @@ export default {
 
   // ----------------------------------------------------------- coefficients
   'coef.title': 'Coefficients for different kettlebell weights',
+  'coef.seoTitle': 'Kettlebell Weight Coefficient Calculator',
   'coef.nav': 'Coefficients',
   'coef.card': 'For organizers: choose a coefficient for the heavier kettlebell and see how many reps are needed with each kettlebell.',
   'coef.description': 'For organizers: the heavier kettlebell’s coefficient, a chart and a table showing how many reps with each kettlebell earn the same score.',
@@ -147,7 +150,8 @@ export default {
   'coef.readout': 'Score <b class="n">{score}</b>: <b class="n">{score}</b> {reps} with {light} or <b class="n">{n}</b> with {heavy} ({calc})',
 
   // ----------------------------------------------------------- pace
-  'tempo.title': 'Pace calculator',
+  'tempo.title': 'Kettlebell sport pace calculator',
+  'tempo.seoTitle': 'Kettlebell Sport Pace Calculator',
   'tempo.nav': 'Pace',
   'tempo.card': 'Reps broken down by minute: from a goal to a pace and from a pace to a total, with a chart and a table.',
   'tempo.description': 'Reps broken down by minute: from a goal to a pace and from a pace to a total. A table and a chart for jerk, long cycle and snatch.',

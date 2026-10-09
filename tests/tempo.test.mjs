@@ -246,7 +246,7 @@ test('страница собрана: пример по умолчанию бе
   const out = mkdtempSync(join(tmpdir(), 'tools-tempo-'));
   execFileSync('node', ['scripts/build.mjs', out]);
   const html = readFileSync(join(out, 'en', 'tempo', 'index.html'), 'utf8');
-  assert.match(html, /<h1>Pace calculator<\/h1>/);
+  assert.match(html, /<h1>Kettlebell sport pace calculator<\/h1>/);
   assert.match(html, /<svg class="chart" id="chart-bars"/);
   assert.match(html, /7, 7, 8 × 7, 10/);
   assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6.0<\/td><td class="n total">80<\/td>/);

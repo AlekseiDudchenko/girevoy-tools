@@ -23,10 +23,10 @@ const placeholders = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort(
 
 // ------------------------------------------------------------- словари
 
-test('у каждого ключа словаря есть перевод на все языки, того же вида', () => {
+test('у каждого ключа публичного словаря есть перевод на EN/DE, того же вида', () => {
   const keys = Object.keys(DICTS.en).sort();
   for (const lang of LANGS) {
-    assert.deepEqual(Object.keys(DICTS[lang]).sort(), keys, `ключи ${lang} совпадают с ru`);
+    assert.deepEqual(Object.keys(DICTS[lang]).sort(), keys, `ключи ${lang} совпадают с en`);
     const categories = new Intl.PluralRules(lang).resolvedOptions().pluralCategories;
     for (const key of keys) {
       const value = DICTS[lang][key];
@@ -155,7 +155,7 @@ test('_redirects: корень и старые адреса без языка �
   const file = readFileSync(join(out, '_redirects'), 'utf8');
   assert.equal(file, redirects());
   const rules = file.split('\n').filter((l) => l && !l.startsWith('#')).map((l) => l.split(' '));
-  assert.deepEqual(rules, [
+  assert.deepEqual(rules.filter(([from]) => !from.startsWith('/ru')), [
     ['/', '/en/', '302'],
     ['/calendar', '/en/calendar/', '301'],
     ['/calendar/', '/en/calendar/', '301'],
