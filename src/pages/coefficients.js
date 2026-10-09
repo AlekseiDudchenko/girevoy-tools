@@ -3,7 +3,7 @@
 // 24 и 32 кг с коэффициентом по весу гири.
 import { esc } from '../html.js';
 import { DEFAULT_TABLE, K_MAX, K_MIN, STEPS, WEIGHTS, defaultState, fmt, sliderMax, weightRatio } from '../lib/coefficients.js';
-import { calcLabels, calcNote, calcText, calcValues, colorVars, equivChart, equivLegend, readout, scoreChart, scoreLegend, tableBody, tableHead } from '../lib/coefficients-view.js';
+import { calcLabels, calcNote, calcProducts, calcText, calcValues, colorVars, equivChart, equivLegend, readout, scoreChart, scoreLegend, tableBody, tableHead } from '../lib/coefficients-view.js';
 
 const options = (values, selected, skip) => values
   .filter((v) => v !== skip)
@@ -11,25 +11,26 @@ const options = (values, selected, skip) => values
   .join('');
 
 // Строка пересчёта: ввести число в любое поле — два других пересчитываются.
+// Поле, в которое вводили, обведено; пересчитанные — на заливке.
 function calcPanel(st) {
   const values = calcValues(st);
   const labels = calcLabels(st);
-  const field = (name, mode) => `<div class="field calc-${name}${st.calc.field === name ? ' src' : ''}">
+  const products = calcProducts(st);
+  const field = (name, mode) => `<div class="calc-cell${st.calc.field === name ? ' src' : ''}">
       <label for="calc-${name}" id="calc-${name}-label">${labels[name]}</label>
       <input id="calc-${name}" class="n" type="text" inputmode="${mode}" autocomplete="off" value="${calcText(values[name])}">
+      <span class="calc-prod n" id="calc-${name}-prod">${products[name]}</span>
     </div>`;
   return `<section class="panel calc-panel js-only" aria-labelledby="calc-title">
   <h2 id="calc-title">Пересчёт</h2>
-  <p class="hint calc-intro">Введите число в любое поле — два других пересчитаются по выбранному коэффициенту.</p>
+  <p class="hint calc-intro">Введите число в любое поле — два других пересчитаются по коэффициенту.</p>
   <div class="calc-row">
     ${field('light', 'numeric')}
-    <span class="calc-sep" aria-hidden="true">или</span>
     ${field('heavy', 'numeric')}
-    <span class="calc-sep" aria-hidden="true">→</span>
     ${field('score', 'decimal')}
   </div>
   <div class="calc-k">
-    <label for="k-range-calc">Коэффициент гири <span id="calc-k-bell">${st.heavy} кг</span> <b class="n" id="calc-k-value">× ${fmt(st.k, 2)}</b></label>
+    <label for="k-range-calc">Коэффициент <span class="chip chip-sm chip-heavy" id="calc-k-bell">${st.heavy} кг</span> <b class="n" id="calc-k-value">× ${fmt(st.k, 2)}</b></label>
     <input id="k-range-calc" class="k-range" type="range" min="${K_MIN}" max="${sliderMax(st)}" step="0.01" value="${st.k}">
   </div>
   <p class="hint calc-note" id="calc-note" aria-live="polite">${calcNote(st)}</p>

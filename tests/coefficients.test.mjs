@@ -8,7 +8,7 @@ import {
   K_MAX, convert, defaultK, defaultState, equivalentK, fmt, heavyReps, parseNumber, parseState, plural,
   scoreOf, serializeState, sliderMax, tableRows, validCalc, validTable,
 } from '../src/lib/coefficients.js';
-import { calcNote, bellColor, colorVars, niceAxis, readout, scoreChart, equivChart, tableBody } from '../src/lib/coefficients-view.js';
+import { calcNote, calcProducts, bellColor, colorVars, niceAxis, readout, scoreChart, equivChart, tableBody } from '../src/lib/coefficients-view.js';
 
 // ------------------------------------------------------------- расчёт
 
@@ -145,8 +145,10 @@ test('пересчёт: проверка ввода', () => {
 
 test('пояснение пересчёта показывает исходные числа', () => {
   const st = { ...defaultState(), calc: { field: 'heavy', value: 61 } };
-  assert.match(calcNote(st), /61 × 1,33 = 81,13/);
-  assert.match(calcNote(st), /нужно <span class="n">82<\/span> подъёма/);
+  assert.deepEqual(calcProducts(st), { light: '× 1,00 = 82', heavy: '× 1,33 = 81,13', score: '' });
+  assert.match(calcNote(st), /<span class="n">82<\/span> подъёма на 24\u00a0кг и <span class="n">61<\/span> подъём на 32\u00a0кг/);
+  assert.match(calcNote(st), /округлены вверх/);
+  assert.doesNotMatch(calcNote({ ...st, k: 1.6, calc: { field: 'light', value: 80 } }), /округлены/, '80 = 50 × 1,60 без округления');
 });
 
 test('состояние → адрес → состояние без потерь', () => {
@@ -232,7 +234,13 @@ test('страница собрана: таблица по умолчанию б
   assert.match(html, /<svg class="chart" id="chart-score"/);
   assert.match(html, /<svg class="chart" id="chart-eq"/);
   assert.match(html, /<tr data-score="80" tabindex="0" class="on"><td class="n">80<\/td><td class="n">61<\/td>/);
-  assert.match(html, /<script type="module" src="\/coefficients.js"><\/script>/);
+  // Версия в адресе: после обновления браузер не смешивает новую страницу со старыми модулями.
+  const [, version] = html.match(/<script type="module" src="\/coefficients.js\?v=([0-9a-f]{10})"><\/script>/);
+  const map = JSON.parse(html.match(/<script type="importmap">(.+?)<\/script>/)[1]);
+  assert.equal(map.imports['/lib/coefficients.js'], `/lib/coefficients.js?v=${version}`);
+  assert.equal(map.imports['/lib/coefficients-view.js'], `/lib/coefficients-view.js?v=${version}`);
+  assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'), 'importmap раньше модулей');
+  assert.match(html, new RegExp(`href="/style.css\\?v=${version}"`));
   assert.ok(existsSync(join(out, 'coefficients.js')));
   assert.ok(existsSync(join(out, 'lib', 'coefficients.js')));
   assert.ok(existsSync(join(out, 'lib', 'coefficients-view.js')));

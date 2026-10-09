@@ -3,8 +3,13 @@ import { esc } from './html.js';
 import { readyTools } from './tools.js';
 
 // Оболочка страницы: <head>, шапка, подвал. Стили и скрипты — файлами из assets/,
-// в HTML встроены только данные конкретной страницы.
-export function layout({ path, title, description, body, scripts = [] }) {
+// в HTML встроены только данные конкретной страницы. version — хеш стилей и скриптов
+// из сборки, modules — модули /lib/: importmap добавляет версию и к их импортам.
+export function layout({ path, title, description, body, scripts = [], version = '', modules = [] }) {
+  const v = (url) => (version ? `${url}?v=${version}` : url);
+  const importMap = scripts.length && modules.length
+    ? `<script type="importmap">${JSON.stringify({ imports: Object.fromEntries(modules.map((m) => [m, v(m)])) })}</script>\n`
+    : '';
   const fullTitle = path === '/' ? `${PRODUCT} | ${BRAND}` : pageTitle(title);
   const nav = readyTools()
     .map((t) => {
@@ -22,7 +27,7 @@ export function layout({ path, title, description, body, scripts = [] }) {
 <link rel="canonical" href="${SITE_URL}${path}">
 <link rel="icon" href="/favicon.ico">
 <link rel="stylesheet" href="/fonts.css">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="${v('/style.css')}">
 </head>
 <body>
 <header class="site"><div class="inner">
@@ -36,7 +41,7 @@ ${body}
 <p>Расчёты на этих страницах — ваш ввод и арифметика, а не данные протоколов. Результаты соревнований — в <a href="${ARCHIVE_URL}/">Гиревом архиве</a>.</p>
 <p>Ничего из введённого на сервер не отправляется.</p>
 </div></footer>
-${scripts.map((s) => `<script type="module" src="${esc(s)}"></script>`).join('\n')}
+${importMap}${scripts.map((s) => `<script type="module" src="${esc(v(s))}"></script>`).join('\n')}
 </body>
 </html>
 `;

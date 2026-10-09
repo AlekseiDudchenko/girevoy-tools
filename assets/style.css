@@ -200,15 +200,21 @@ input[type="number"] { width: 6rem; }
 .readout-row { display: flex; flex-wrap: wrap; align-items: end; gap: 0.6rem 1rem; margin-top: 0.8rem; }
 .readout { flex: 1 1 20rem; margin: 0; background: var(--accent-soft); border-radius: 6px; padding: 0.5rem 0.8rem; }
 
+.chip-sm { min-width: 0; padding: 0.05rem 0.4rem; font-size: 0.8rem; border-radius: 4px; }
 .calc-panel h2 { margin: 0; font-size: 1.1rem; }
 .calc-intro { margin: 0.2rem 0 0.7rem; }
-.calc-row { display: flex; flex-wrap: wrap; align-items: end; gap: 0.6rem 0.8rem; }
-.calc-row input { width: 7rem; font-size: 1.1rem; }
-.calc-row .src input { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-.calc-k { margin-top: 0.8rem; max-width: 32rem; }
-.calc-k label { color: var(--ink-3); font-size: 0.82rem; }
-.calc-k label b { color: var(--ink); font-size: 0.95rem; margin-left: 0.3rem; }
-.calc-sep { color: var(--ink-3); padding-bottom: 0.35rem; }
+.calc-row { display: grid; grid-template-columns: repeat(3, minmax(0, 11rem)); gap: 0.6rem 1rem; align-items: end; }
+.calc-cell { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.calc-cell label { color: var(--ink-3); font-size: 0.82rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+.calc-cell input { width: 100%; font-size: 1.15rem; }
+/* Поле, в которое вводили, — обведено; пересчитанные — на заливке. */
+.calc-cell:not(.src) input { background: var(--accent-soft); border-color: transparent; }
+.calc-cell.src input { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.calc-prod { color: var(--ink-3); font-size: 0.8rem; line-height: 1.3; min-height: 1.3em; }
+.calc-k { margin-top: 0.9rem; max-width: 35rem; }
+.calc-k label { color: var(--ink-3); font-size: 0.82rem; display: flex; align-items: center; gap: 0.4rem; }
+.calc-k label b { color: var(--ink); font-size: 0.95rem; }
+.calc-note { margin: 0.6rem 0 0; }
 input[type="text"] {
   font: inherit; color: var(--ink); background: var(--surface);
   border: 1px solid var(--rule); border-radius: 6px; padding: 0.25rem 0.5rem;
@@ -238,10 +244,8 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
   .tabs { flex-wrap: nowrap; }
   .tabs [role="tab"] { flex: 1 1 0; padding-inline: 0.4rem; font-size: 0.92rem; line-height: 1.25; }
   .panel { padding: 0.8rem; }
-  .calc-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
-  .calc-row .field label { min-height: 2.5em; line-height: 1.25; }
-  .calc-row input { width: 100%; }
-  .calc-sep { display: none; }
+  .calc-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+  .calc-cell label { min-height: 2.6em; align-content: end; line-height: 1.25; }
   .coef-table th, .coef-table td { padding-inline: 0.5rem; }
   .actions { margin-left: 0; }
 }
