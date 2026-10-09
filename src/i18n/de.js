@@ -2,7 +2,8 @@
 // ein Wort, das sich mit der Zahl ändert, ist ein Objekt nach den Kategorien
 // von Intl.PluralRules('de'). Anrede: „Sie“.
 export default {
-  "calendar.title": "Internationaler Wettkampfkalender",
+  "calendar.title": "Wettkampfkalender für Kettlebell-Sport",
+  "calendar.seoTitle": "Wettkampfkalender für Kettlebell-Sport",
   "calendar.nav": "Kalender",
   "calendar.card": "Regionale Opens, internationale Meisterschaften und Online-Wettkämpfe in einem Kalender.",
   "calendar.description": "Kettlebell-Sport-Wettkämpfe in Europa, Asien, Amerika und online: kommende und vergangene Termine, Meisterschaftsserien, offizielle Quellen und Kalender-Downloads.",
@@ -84,6 +85,7 @@ export default {
 
   // ----------------------------------------------------------- Startseite
   'home.description': 'Rechner und Diagramme für Kettlebell-Sportler, Trainer und Wettkampfveranstalter.',
+  'home.seoTitle': 'Tools und Rechner für Kettlebell-Sport',
   'home.h1': 'Tools für den Kettlebell-Sport',
   'home.lead': 'Rechner und Diagramme für Athleten, Trainer und Veranstalter. Alles wird im Browser berechnet.',
   'home.status.ready': 'Verfügbar',
@@ -91,6 +93,7 @@ export default {
 
   // ----------------------------------------------------------- Koeffizienten
   'coef.title': 'Koeffizienten für unterschiedlich schwere Kettlebells',
+  'coef.seoTitle': 'Koeffizienten-Rechner für Kettlebells',
   'coef.nav': 'Koeffizienten',
   'coef.card': 'Für Veranstalter: einen Koeffizienten für die schwerere Kettlebell wählen und sehen, wie viele Wiederholungen mit jeder Kettlebell nötig sind.',
   'coef.description': 'Für Veranstalter: Koeffizient der schwereren Kettlebell, Diagramm und Tabelle – wie viele Wiederholungen mit jeder Kettlebell dieselbe Punktzahl ergeben.',
@@ -136,7 +139,8 @@ export default {
   'coef.readout': 'Punktzahl <b class="n">{score}</b>: <b class="n">{score}</b> {reps} mit {light} oder <b class="n">{n}</b> mit {heavy} ({calc})',
 
   // ----------------------------------------------------------- Tempo
-  'tempo.title': 'Tempo-Rechner',
+  'tempo.title': 'Tempo-Rechner für Kettlebell-Sport',
+  'tempo.seoTitle': 'Tempo-Rechner für Kettlebell-Sport',
   'tempo.nav': 'Tempo',
   'tempo.card': 'Wiederholungen pro Minute verteilt: vom Ziel zum Tempo und vom Tempo zur Summe, mit Diagramm und Tabelle.',
   'tempo.description': 'Wiederholungen pro Minute verteilt: vom Ziel zum Tempo und vom Tempo zur Summe. Tabelle und Diagramm für Stoßen, Long Cycle und Reißen.',

@@ -4,5 +4,5 @@
 export const BRAND = 'VseGiri';
 export const SITE_URL = 'https://tools.vsegiri.com';
 
-// Единый шаблон <title>: «<раздел> — <продукт> | VseGiri».
-export const pageTitle = (section, product) => `${section} — ${product} | ${BRAND}`;
+// Единый шаблон <title>: «<SEO-заголовок страницы> | VseGiri».
+export const pageTitle = (section) => `${section} | ${BRAND}`;
