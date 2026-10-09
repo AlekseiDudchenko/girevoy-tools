@@ -35,7 +35,7 @@ export default {
   "calendar.count": "Events: {n}",
   "calendar.note": "Initial coverage is selective. Dates and participation options may change: check the organizer before booking. Listings are reviewed manually; a missing listing does not mean cancellation. ICS downloads are individual events, not a subscription.",
   "calendar.noscript": "All events are shown below. Enable JavaScript to filter this static list.",
-  "calendar.foot": "Calendar dates are attributed to their official sources. Competition results are in the <a href=\"{archive}\" hreflang=\"ru\">competition archive</a>.",
+  "calendar.foot": "Calendar dates are attributed to their official sources.",
   "calendar.privacy": "Filters stay in this page’s address. Registration opens on the organizer’s site.",
   "calendar.next": "Next up",
   "calendar.live": "Happening now",
@@ -68,8 +68,7 @@ export default {
   "calendar.discipline.military-snatch": "Military snatch",
   // ----------------------------------------------------------- common
   'site.product': 'Tools',
-  'site.archive': 'Competition archive',
-  'site.foot.calc': 'Calculations on these pages are your input plus arithmetic, not data from official result sheets. Competition results are in the <a href="{archive}" hreflang="ru">competition archive</a> (in Russian).',
+  'site.foot.calc': 'Calculations on these pages are your input plus arithmetic, not data from official result sheets.',
   'site.foot.privacy': 'Nothing you enter is sent to a server.',
   'site.lang': 'Language',
   'site.langName': 'English',
