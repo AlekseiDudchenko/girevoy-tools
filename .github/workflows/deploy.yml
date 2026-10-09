@@ -2,9 +2,9 @@ name: Build and deploy
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -30,9 +30,11 @@ jobs:
 
       # Продакшен — только main. Проект Cloudflare Pages vsegiri-tools с доменом
       # tools.vsegiri.com создаётся вручную; секреты CLOUDFLARE_API_TOKEN и
-      # CLOUDFLARE_ACCOUNT_ID — в настройках репозитория.
+      # CLOUDFLARE_ACCOUNT_ID — в настройках репозитория; включается переменной
+      # репозитория CLOUDFLARE_DEPLOY=true.
       - name: Deploy production to Cloudflare Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        # Пока секретов нет, шаг пропускается, а проверка остаётся зелёной.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

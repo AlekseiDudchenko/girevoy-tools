@@ -35,7 +35,7 @@ assets/fonts.css, fonts/  копия шрифтов архива — рукам�
 assets/<инструмент>.js  поведение страницы в браузере (ES-модуль)
 scripts/build.mjs       сборка в dist/: страницы, assets/, sitemap.xml, robots.txt
 tests/*.test.mjs        node:test — расчёты и собранные страницы
-.github/workflows/deploy.yml  проверка на PR, деплой main на Cloudflare Pages
+.github/workflows/deploy.yml  проверка на PR, деплой main на Cloudflare Pages (пока не настроен)
 ```
 
 ## Команды
@@ -67,11 +67,11 @@ npm run preview  # сборка и сервер на :8081
 
 ## Git
 
-- Никогда не коммитить и не пушить напрямую в `main` и `develop`.
-- Каждая задача — новая ветка от актуального `origin/develop`
-  (`git fetch origin develop && git switch -c <ветка> origin/develop`), PR в `develop`.
-- `main` — продакшен, деплоится автоматически. Переносится PR из `develop` в `main`
-  только по просьбе владельца.
-- PR ссылается на Issue. Когда работа по Issue слита в `develop`, проверить, что Issue
+- Никогда не коммитить и не пушить напрямую в `main`.
+- Пока ветки `develop` в процессе нет: каждая задача — новая ветка от актуального
+  `origin/main` (`git fetch origin main && git switch -c <ветка> origin/main`), PR в `main`,
+  ревью, слияние. Промежуточный шаг с PR в `develop` добавим позже.
+- `main` — продакшен, после настройки деплоя публикуется автоматически.
+- PR ссылается на Issue. Когда работа по Issue слита в `main`, проверить, что Issue
   закрыт, и закрыть вручную, если нет.
 - Коммитить и пушить небольшими шагами; в конце сессии рабочее дерево чистое.
