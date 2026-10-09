@@ -28,6 +28,10 @@ function calcPanel(st) {
     <span class="calc-sep" aria-hidden="true">→</span>
     ${field('score', 'decimal')}
   </div>
+  <div class="calc-k">
+    <label for="k-range-calc">Коэффициент гири <span id="calc-k-bell">${st.heavy} кг</span> <b class="n" id="calc-k-value">× ${fmt(st.k, 2)}</b></label>
+    <input id="k-range-calc" class="k-range" type="range" min="${K_MIN}" max="${sliderMax(st)}" step="0.01" value="${st.k}">
+  </div>
   <p class="hint calc-note" id="calc-note" aria-live="polite">${calcNote(st)}</p>
 </section>`;
 }

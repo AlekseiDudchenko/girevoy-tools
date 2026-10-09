@@ -14,7 +14,8 @@ document.documentElement.classList.add('js');
 const $ = (id) => document.getElementById(id);
 const root = $('coef');
 const el = {
-  light: $('light'), heavy: $('heavy'), k: $('k'), range: $('k-range'),
+  light: $('light'), heavy: $('heavy'), k: $('k'), range: $('k-range'), rangeCalc: $('k-range-calc'),
+  calcKValue: $('calc-k-value'), calcKBell: $('calc-k-bell'),
   chipLight: $('chip-light'), chipHeavy: $('chip-heavy'), ratioHint: $('ratio-hint'),
   boxScore: $('box-score'), boxEq: $('box-eq'), legendScore: $('legend-score'), legendEq: $('legend-eq'),
   readout: $('readout'), score: $('score'),
@@ -58,6 +59,11 @@ function render(skip) {
   if (skip !== 'k') el.k.value = state.k.toFixed(2);
   el.range.max = String(sliderMax(state));
   if (skip !== 'range') el.range.value = String(state.k);
+  // Второй ползунок — в строке пересчёта; оба меняют один и тот же k.
+  el.rangeCalc.max = el.range.max;
+  if (skip !== 'range-calc') el.rangeCalc.value = String(state.k);
+  el.calcKValue.textContent = `× ${fmt(state.k, 2)}`;
+  el.calcKBell.textContent = `${state.heavy} кг`;
   html(el.ratioHint, `Пунктир на графиках — «по весу гири»: <span class="n">${state.heavy} / ${state.light} = ${fmt(weightRatio(state.light, state.heavy), 2)}</span>. Это арифметика, а не рекомендация.`);
   renderCharts();
   html(el.legendScore, scoreLegend(state));
@@ -129,6 +135,7 @@ el.k.addEventListener('change', () => {
 });
 
 el.range.addEventListener('input', () => update({ k: round2(Number(el.range.value)) }, 'range'));
+el.rangeCalc.addEventListener('input', () => update({ k: round2(Number(el.rangeCalc.value)) }, 'range-calc'));
 
 // ------------------------------------------------------------- пересчёт
 
