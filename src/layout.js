@@ -3,6 +3,7 @@ import { esc } from './html.js';
 import { DICTS } from './i18n/index.js';
 import { LANGS, X_DEFAULT, langPath } from './lib/locale.js';
 import { readyTools } from './tools.js';
+import { socialCard, SOCIAL_WIDTH, SOCIAL_HEIGHT, SOCIAL_LOCALES } from './social.js';
 
 // Оболочка страницы: <head>, шапка, подвал. Стили и скрипты — файлами из assets/,
 // в HTML встроены только данные конкретной страницы. Весь текст — из словаря
@@ -11,7 +12,10 @@ export function layout(L, page) {
   const { lang } = L;
   const product = L.t('site.product');
   const path = langPath(lang, page.slug);
-  const fullTitle = pageTitle(page.title ? page.title(L) : L.t(`${page.key}.seoTitle`));
+  const card = socialCard(L, page);
+  const fullTitle = pageTitle(card.title);
+  const description = page.description ? page.description(L) : L.t(`${page.key}.description`);
+  const image = `${SITE_URL}${card.image}`;
   const nav = readyTools()
     .map((t) => {
       const href = langPath(lang, `${t.slug}/`);
@@ -38,9 +42,26 @@ export function layout(L, page) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(fullTitle)}</title>
-<meta name="description" content="${esc(page.description ? page.description(L) : L.t(`${page.key}.description`))}">
+<meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${SITE_URL}${path}">
 ${alternates}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(BRAND)}">
+<meta property="og:title" content="${esc(fullTitle)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${esc(card.url)}">
+<meta property="og:image" content="${esc(image)}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="${SOCIAL_WIDTH}">
+<meta property="og:image:height" content="${SOCIAL_HEIGHT}">
+<meta property="og:image:alt" content="${esc(card.alt)}">
+<meta property="og:locale" content="${SOCIAL_LOCALES[lang]}">
+${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${SOCIAL_LOCALES[l]}">`).join('\n')}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(fullTitle)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${esc(image)}">
+<meta name="twitter:image:alt" content="${esc(card.alt)}">
 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
 <link rel="stylesheet" href="/fonts.css">
 <link rel="stylesheet" href="/style.css">${preload}

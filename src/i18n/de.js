@@ -2,6 +2,7 @@
 // ein Wort, das sich mit der Zahl ändert, ist ein Objekt nach den Kategorien
 // von Intl.PluralRules('de'). Anrede: „Sie“.
 export default {
+  'site.socialImageAlt': 'VseGiri-Tools-Logo und {title}',
   "calendar.title": "Wettkampfkalender für Kettlebell-Sport",
   "calendar.seoTitle": "Wettkampfkalender für Kettlebell-Sport",
   "calendar.nav": "Kalender",
