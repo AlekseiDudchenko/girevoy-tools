@@ -1,14 +1,14 @@
 [
   {
-    "id": "wksf-european-2026",
-    "title": "WKSF European Open Championship 2026",
-    "startDate": "2026-12-03",
-    "endDate": "2026-12-06",
-    "country": "IT",
-    "city": "Turbigo",
-    "organizer": "WKSF",
+    "id": "berlin-christmas-snatch-2025",
+    "title": "Weihnachts-Snatch Berlin 2025",
+    "startDate": "2025-12-06",
+    "endDate": "2025-12-06",
+    "country": "DE",
+    "city": "Berlin",
+    "organizer": "BVDKS",
     "federations": [
-      "WKSF"
+      "BVDKS"
     ],
     "format": "in-person",
     "status": "confirmed",
@@ -16,7 +16,123 @@
     "registrationUrl": null,
     "registrationDeadline": null,
     "organizerUrl": null,
-    "timeZone": "Europe/Rome",
+    "timeZone": "Europe/Berlin",
+    "startAt": "2025-12-06T09:00:00Z",
+    "endAt": "2025-12-06T12:00:00Z",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/weihnachts-snatch-berlin-2025/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "deutsche-meisterschaft-2026",
+    "title": "Deutsche Meisterschaft 2026",
+    "startDate": "2026-03-07",
+    "endDate": "2026-03-07",
+    "country": "DE",
+    "city": "Berlin",
+    "organizer": "Bundesverband Deutscher Kettlebell Sportler e.V.",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/deutsche-meisterschaft-2026/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "nrw-open-2026",
+    "title": "North Rhine-Westphalia Open 2026",
+    "startDate": "2026-06-27",
+    "endDate": "2026-06-27",
+    "country": "DE",
+    "city": "Stolberg",
+    "organizer": "Bundesverband Deutscher Kettlebell Sportler e.V.",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/north-rhine-westphalia-open-2026/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "rhein-main-cup-2026",
+    "title": "Rhein-Main Cup 2026",
+    "startDate": "2026-09-12",
+    "endDate": "2026-09-12",
+    "country": "DE",
+    "city": "Ober-Olm",
+    "organizer": "Bundesverband Deutscher Kettlebell Sportler e.V.",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "startAt": "2026-09-12T08:00:00Z",
+    "endAt": "2026-09-12T15:00:00Z",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/rhein-main-cup-2026/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-riga-2026",
+    "title": "IUKL World Championship Riga 2026",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-18",
+    "country": "LV",
+    "city": "Riga",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Riga",
     "lastChecked": "2026-10-09T15:00:00Z",
     "sequence": 0,
     "sources": [
@@ -62,6 +178,34 @@
     "endAt": "2026-11-28T17:00:00+01:00"
   },
   {
+    "id": "wksf-european-2026",
+    "title": "WKSF European Open Championship 2026",
+    "startDate": "2026-12-03",
+    "endDate": "2026-12-06",
+    "country": "IT",
+    "city": "Turbigo",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Rome",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  },
+  {
     "id": "berlin-christmas-snatch-2026",
     "title": "Weihnachts-Snatch Berlin 2026",
     "startDate": "2026-12-05",
@@ -92,33 +236,5 @@
     ],
     "startAt": "2026-12-05T10:00:00+01:00",
     "endAt": "2026-12-05T13:00:00+01:00"
-  },
-  {
-    "id": "iukl-world-riga-2026",
-    "title": "IUKL World Championship Riga 2026",
-    "startDate": "2026-11-14",
-    "endDate": "2026-11-18",
-    "country": "LV",
-    "city": "Riga",
-    "organizer": "IUKL",
-    "federations": [
-      "IUKL"
-    ],
-    "format": "in-person",
-    "status": "confirmed",
-    "disciplines": [],
-    "registrationUrl": null,
-    "registrationDeadline": null,
-    "organizerUrl": null,
-    "timeZone": "Europe/Riga",
-    "lastChecked": "2026-10-09T15:00:00Z",
-    "sequence": 0,
-    "sources": [
-      {
-        "organization": "BVDKS",
-        "url": "https://bvdks.de/",
-        "checkedAt": "2026-10-09T15:00:00Z"
-      }
-    ]
   }
 ]

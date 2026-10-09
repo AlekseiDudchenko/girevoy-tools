@@ -1,5 +1,257 @@
 [
   {
+    "id": "iukl-asian-2024",
+    "title": "IUKL Asian Championship 2024",
+    "startDate": "2024-05-25",
+    "endDate": "2024-05-30",
+    "country": "TW",
+    "city": "Taipei",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Taipei",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2024/asian-championship-2024",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-corfu-2024",
+    "title": "IUKL World Championship 2024 Corfu",
+    "startDate": "2024-10-11",
+    "endDate": "2024-10-13",
+    "country": "GR",
+    "city": "Corfu",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Athens",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2024/world-championship-in-corfu",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-european-2025",
+    "title": "IUKL European Championship 2025",
+    "startDate": "2025-04-10",
+    "endDate": "2025-04-12",
+    "country": "BG",
+    "city": "Gorna Malina",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Sofia",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/2025-european-kettlebell-sport-championships",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-youth-world-2025",
+    "title": "IUKL World Championship U-16/U-18 2025",
+    "startDate": "2025-04-25",
+    "endDate": "2025-04-30",
+    "country": "UZ",
+    "city": "Khanabad",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Tashkent",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/the-world-championship-among-boys-and-girls-u-16u-18",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-kalisz-2025",
+    "title": "IUKL World Championship 2025 Kalisz",
+    "startDate": "2025-10-15",
+    "endDate": "2025-10-20",
+    "country": "PL",
+    "city": "Kalisz",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Warsaw",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/1st-world-championship-2025-in-poland",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-haining-2025",
+    "title": "IUKL World Championship 2025 Haining",
+    "startDate": "2025-11-13",
+    "endDate": "2025-11-18",
+    "country": "CN",
+    "city": "Haining",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Shanghai",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/2nd-world-championship-2025-in-china",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-asian-2026",
+    "title": "IUKL Asian Championship 2026",
+    "startDate": "2026-05-12",
+    "endDate": "2026-05-17",
+    "country": "KZ",
+    "city": "Aktau",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Aqtau",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2026/asian-championship-2026-aktau",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-european-2026",
+    "title": "IUKL European Championship 2026",
+    "startDate": "2026-05-14",
+    "endDate": "2026-05-17",
+    "country": "GB",
+    "city": "York",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/London",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2026/european-championships-2026-in-york",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-new-delhi-2026",
+    "title": "IUKL World Championship New Delhi 2026",
+    "startDate": "2026-10-04",
+    "endDate": "2026-10-09",
+    "country": "IN",
+    "city": "New Delhi",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Kolkata",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
     "id": "iukl-world-riga-2026",
     "title": "IUKL World Championship Riga 2026",
     "startDate": "2026-11-14",

@@ -1,5 +1,546 @@
 [
   {
+    "id": "iukl-asian-2024",
+    "title": "IUKL Asian Championship 2024",
+    "startDate": "2024-05-25",
+    "endDate": "2024-05-30",
+    "country": "TW",
+    "city": "Taipei",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Taipei",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2024/asian-championship-2024",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-corfu-2024",
+    "title": "IUKL World Championship 2024 Corfu",
+    "startDate": "2024-10-11",
+    "endDate": "2024-10-13",
+    "country": "GR",
+    "city": "Corfu",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Athens",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2024/world-championship-in-corfu",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-european-2025",
+    "title": "IUKL European Championship 2025",
+    "startDate": "2025-04-10",
+    "endDate": "2025-04-12",
+    "country": "BG",
+    "city": "Gorna Malina",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Sofia",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/2025-european-kettlebell-sport-championships",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-youth-world-2025",
+    "title": "IUKL World Championship U-16/U-18 2025",
+    "startDate": "2025-04-25",
+    "endDate": "2025-04-30",
+    "country": "UZ",
+    "city": "Khanabad",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Tashkent",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/the-world-championship-among-boys-and-girls-u-16u-18",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-kalisz-2025",
+    "title": "IUKL World Championship 2025 Kalisz",
+    "startDate": "2025-10-15",
+    "endDate": "2025-10-20",
+    "country": "PL",
+    "city": "Kalisz",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Warsaw",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/1st-world-championship-2025-in-poland",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-haining-2025",
+    "title": "IUKL World Championship 2025 Haining",
+    "startDate": "2025-11-13",
+    "endDate": "2025-11-18",
+    "country": "CN",
+    "city": "Haining",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Shanghai",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2025/2nd-world-championship-2025-in-china",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-americas-2025",
+    "title": "WKSF Open South & North America Championship 2025",
+    "startDate": "2025-11-20",
+    "endDate": "2025-11-22",
+    "country": "BR",
+    "city": "Ijuí",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "America/Sao_Paulo",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/06/2025-SOUTH-NORTH-AMERICA-CHAMPIONSHIP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      },
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/11/RELATORIO-WKSF-OPEN-SOUTH-NORTH-AMERICA-2025-All-Days-Protocols.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-european-2025",
+    "title": "WKSF Open European Championship 2025",
+    "startDate": "2025-12-04",
+    "endDate": "2025-12-07",
+    "country": "MD",
+    "city": "Chisinau",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Chisinau",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/06/2025-EUROPEAN-CHAMPIONSHIP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "berlin-christmas-snatch-2025",
+    "title": "Weihnachts-Snatch Berlin 2025",
+    "startDate": "2025-12-06",
+    "endDate": "2025-12-06",
+    "country": "DE",
+    "city": "Berlin",
+    "organizer": "BVDKS",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "startAt": "2025-12-06T09:00:00Z",
+    "endAt": "2025-12-06T12:00:00Z",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/weihnachts-snatch-berlin-2025/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-online-africa-2026",
+    "title": "WKSF Online Open Cup Africa 2026",
+    "startDate": "2026-01-30",
+    "endDate": "2026-02-25",
+    "country": null,
+    "city": "",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "online",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": null,
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2026/01/2026-WKSF-Online-Open-Cup-Africa-Application-1-1.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "deutsche-meisterschaft-2026",
+    "title": "Deutsche Meisterschaft 2026",
+    "startDate": "2026-03-07",
+    "endDate": "2026-03-07",
+    "country": "DE",
+    "city": "Berlin",
+    "organizer": "Bundesverband Deutscher Kettlebell Sportler e.V.",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/deutsche-meisterschaft-2026/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-world-cup-2026",
+    "title": "WKSF World Cup 2026",
+    "startDate": "2026-03-20",
+    "endDate": "2026-03-22",
+    "country": "IT",
+    "city": "Turbigo",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Rome",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/12/2026-WORLD-CUP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-asian-2026",
+    "title": "IUKL Asian Championship 2026",
+    "startDate": "2026-05-12",
+    "endDate": "2026-05-17",
+    "country": "KZ",
+    "city": "Aktau",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Aqtau",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2026/asian-championship-2026-aktau",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-european-2026",
+    "title": "IUKL European Championship 2026",
+    "startDate": "2026-05-14",
+    "endDate": "2026-05-17",
+    "country": "GB",
+    "city": "York",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/London",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/news/2026/european-championships-2026-in-york",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ikmf-world-part1-2026",
+    "title": "IKMF World Championship 2026 Part 1",
+    "startDate": "2026-05-22",
+    "endDate": "2026-05-24",
+    "country": "US",
+    "city": "",
+    "organizer": "IKMF",
+    "federations": [
+      "IKMF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": null,
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IKMF",
+        "url": "https://www.ikmf-world.com/calendars/ikmf-international-competitions/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-world-2026",
+    "title": "WKSF World Championship 2026",
+    "startDate": "2026-06-04",
+    "endDate": "2026-06-07",
+    "country": "MD",
+    "city": "Chisinau",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Chisinau",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2026/04/2026-WORLD-CHAMPIONSHIP-Application-1.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "nrw-open-2026",
+    "title": "North Rhine-Westphalia Open 2026",
+    "startDate": "2026-06-27",
+    "endDate": "2026-06-27",
+    "country": "DE",
+    "city": "Stolberg",
+    "organizer": "Bundesverband Deutscher Kettlebell Sportler e.V.",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/north-rhine-westphalia-open-2026/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "rhein-main-cup-2026",
+    "title": "Rhein-Main Cup 2026",
+    "startDate": "2026-09-12",
+    "endDate": "2026-09-12",
+    "country": "DE",
+    "city": "Ober-Olm",
+    "organizer": "Bundesverband Deutscher Kettlebell Sportler e.V.",
+    "federations": [
+      "BVDKS"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Berlin",
+    "startAt": "2026-09-12T08:00:00Z",
+    "endAt": "2026-09-12T15:00:00Z",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "BVDKS",
+        "url": "https://bvdks.de/event/rhein-main-cup-2026/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "iukl-world-new-delhi-2026",
+    "title": "IUKL World Championship New Delhi 2026",
+    "startDate": "2026-10-04",
+    "endDate": "2026-10-09",
+    "country": "IN",
+    "city": "New Delhi",
+    "organizer": "IUKL",
+    "federations": [
+      "IUKL"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Kolkata",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IUKL",
+        "url": "https://giri-iukl.com/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
     "id": "all-american-open-2026",
     "title": "All American Kettlebell Open 2026",
     "startDate": "2026-10-09",
@@ -24,6 +565,39 @@
         "organization": "AKLU",
         "url": "https://www.aklu.net/sanctioned-events",
         "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-asia-oceania-2026",
+    "title": "WKSF Open Asia & Oceania Championship 2026",
+    "startDate": "2026-10-23",
+    "endDate": "2026-10-25",
+    "country": "IN",
+    "city": "Panaji",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Kolkata",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/12/2026-ASIA-OCEANIA-OPEN-CHAMPIONSHIP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      },
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/",
+        "checkedAt": "2026-10-09T16:50:00Z"
       }
     ]
   },
@@ -286,6 +860,34 @@
         "organization": "AKLU",
         "url": "https://www.aklu.net/sanctioned-events",
         "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ikmf-world-part1-2027",
+    "title": "IKMF World Championship 2027 Part 1",
+    "startDate": "2027-05-07",
+    "endDate": "2027-05-09",
+    "country": "RS",
+    "city": "",
+    "organizer": "IKMF",
+    "federations": [
+      "IKMF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Belgrade",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "IKMF",
+        "url": "https://www.ikmf-world.com/calendars/ikmf-international-competitions/",
+        "checkedAt": "2026-10-09T16:50:00Z"
       }
     ]
   }
