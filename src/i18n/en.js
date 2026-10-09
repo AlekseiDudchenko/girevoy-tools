@@ -43,7 +43,6 @@ export default {
   "calendar.upcoming": "Upcoming",
   "calendar.past": "Past",
   "calendar.countries": "Countries",
-  "calendar.where": "Where to compete",
   "calendar.when": "Which events to show",
   "calendar.list": "All events",
   "calendar.region.asia": "Asia",

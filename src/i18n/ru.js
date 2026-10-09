@@ -44,7 +44,6 @@ export default {
   "calendar.upcoming": "Предстоящие",
   "calendar.past": "Прошедшие",
   "calendar.countries": "Страны",
-  "calendar.where": "Где выступить",
   "calendar.when": "Какие соревнования показать",
   "calendar.list": "Все соревнования",
   "calendar.region.asia": "Азия",

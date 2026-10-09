@@ -1,14 +1,13 @@
 import {pageLocale,replaceSearch} from './page.js';
 import {parseFilters} from './lib/calendar.js';
 import {todayISO,split} from './lib/calendar-series.js';
-import {featureCard,regionTiles,renderBrowse} from './lib/calendar-view.js';
+import {featureCard,renderBrowse} from './lib/calendar-view.js';
 const L=await pageLocale();
 const {events,series}=JSON.parse(document.getElementById('calendar-data').textContent);
 const form=document.getElementById('calendar-filters');
 // «Сегодня» — дата браузера: страница могла быть собрана несколько дней назад.
 const today=todayISO();
 document.getElementById('cal-next').innerHTML=featureCard(L,events,today,series);
-document.getElementById('cal-tiles').innerHTML=regionTiles(L,events,today);
 const {upcoming}=split(events,today);
 document.getElementById('stat-upcoming').textContent=L.num(upcoming.length,0);
 document.getElementById('stat-countries').textContent=L.num(new Set(upcoming.map(e=>e.country).filter(Boolean)).size,0);

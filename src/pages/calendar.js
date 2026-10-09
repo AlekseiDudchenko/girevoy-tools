@@ -1,7 +1,7 @@
 import {esc} from '../html.js';
 import {FEDERATIONS, FORMATS, REGIONS} from '../lib/calendar.js';
 import {split} from '../lib/calendar-series.js';
-import {countryName,featureCard,regionTiles,seriesCards,renderBrowse} from '../lib/calendar-view.js';
+import {countryName,featureCard,seriesCards,renderBrowse} from '../lib/calendar-view.js';
 import {EVENTS as events, SERIES as series, BUILD_DAY as today} from '../calendar-data.js';
 const option=(value,text)=>`<option value="${esc(value)}">${esc(text)}</option>`;
 export default {
@@ -17,7 +17,6 @@ export default {
       <header class="cal-hero"><div><h1>${esc(L.t('calendar.title'))}</h1><p class="lead">${esc(L.t('calendar.lead'))}</p>
       <div class="cal-stats">${stat('stat-upcoming',upcoming.length,'calendar.upcoming')}${stat('stat-countries',new Set(upcoming.map(e=>e.country).filter(Boolean)).size,'calendar.countries')}${stat('stat-series',series.length,'calendar.series.title')}</div></div>
       <div id="cal-next">${featureCard(L,events,today,series)}</div></header>
-      <nav class="cal-tiles" id="cal-tiles" aria-label="${esc(L.t('calendar.where'))}">${regionTiles(L,events,today)}</nav>
       <section class="cal-section"><h2>${esc(L.t('calendar.series.title'))}</h2><p class="cal-section-lead">${esc(L.t('calendar.series.intro'))}</p><div class="cal-series-grid">${seriesCards(L,series,events,today)}</div></section>
       <section class="cal-section" id="list"><h2 class="sr">${esc(L.t('calendar.list'))}</h2>
       <form id="calendar-filters" class="calendar-filters" method="get">

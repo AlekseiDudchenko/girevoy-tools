@@ -1,6 +1,6 @@
 // Разметка календаря: общая для сборки (значения на дату сборки) и браузера (на сегодня).
 // Текст — только из словаря L; даты, страны и числа — через Intl.
-import {safeURL,filterEvents,REGIONS,REGION_COUNTRIES} from './calendar.js';
+import {safeURL,filterEvents} from './calendar.js';
 import {split,nextEvent,isLive,daysUntil,seriesOf,seriesEvents,todayISO} from './calendar-series.js';
 import {langPath} from './locale.js';
 const esc = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -52,15 +52,6 @@ export function featureCard(L,events,today,series=[]) {
   return `<article class="cal-feature${isLive(e,today)?' is-live':''}"><p class="cal-kicker">${esc(L.t('calendar.next'))}${when?` · <strong>${esc(when)}</strong>`:''}</p>
     <div class="cal-feature-main">${leaf(L,e,'cal-leaf-lg')}<div><h2><a href="#${esc(e.id)}">${esc(e.title)}</a></h2><p class="cal-place">${esc(placeLabel(L,e))}</p><p class="cal-tags">${tags(L,e)}</p></div></div>
     ${actions(L,e)}</article>`;
-}
-/** Плитки «где выступить»: регионы и онлайн с числом предстоящих стартов, ссылки на фильтр. */
-export function regionTiles(L,events,today) {
-  const {upcoming}=split(events,today);
-  const tile=(query,label,n)=>`<a class="cal-tile" href="${calendarHref(L,query)}#list"><span class="cal-tile-n">${L.num(n,0)}</span><span class="cal-tile-label">${esc(label)}</span></a>`;
-  const regions=REGIONS.map(r=>[r,upcoming.filter(e=>REGION_COUNTRIES[r].includes(e.country)).length]).filter(([,n])=>n);
-  const online=upcoming.filter(e=>e.format!=='in-person').length;
-  return [...regions.map(([r,n])=>tile(`?region=${r}`,L.t(`calendar.region.${r}`),n)),online?tile('?format=online',L.t('calendar.format.online'),online):'',
-    tile('?when=past',L.t('calendar.past'),split(events,today).past.length)].join('');
 }
 /** Карточки серий: число выпусков, следующий или последний. */
 export function seriesCards(L,series,events,today) {

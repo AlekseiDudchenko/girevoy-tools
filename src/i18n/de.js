@@ -44,7 +44,6 @@ export default {
   "calendar.upcoming": "Kommend",
   "calendar.past": "Vergangen",
   "calendar.countries": "Länder",
-  "calendar.where": "Wo starten",
   "calendar.when": "Welche Wettkämpfe anzeigen",
   "calendar.list": "Alle Wettkämpfe",
   "calendar.region.asia": "Asien",
