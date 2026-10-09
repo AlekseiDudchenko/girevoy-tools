@@ -4,6 +4,9 @@
 // Зачётный результат = подъёмы × коэффициент. У лёгкой гири коэффициент 1,00,
 // у тяжёлой — k ≥ 1. Коэффициент хранится с точностью до сотых и в расчёте
 // переводится в целые сотые: так 50 × 1,6 даёт ровно 80, а не 80,000…01.
+import { parseNumber } from './format.js';
+
+export { fmt, parseNumber, plural } from './format.js';
 
 export const WEIGHTS = [8, 12, 16, 20, 24, 28, 32];
 export const STEPS = [5, 10];
@@ -76,8 +79,6 @@ export function validCalc(field, value) {
   return field === 'score' ? Math.abs(value * 100 - Math.round(value * 100)) < 1e-6 : Number.isInteger(value);
 }
 
-/** Число из поля ввода: «81,13» и «81.13» — одно и то же; пустое — NaN. */
-export const parseNumber = (raw) => (/^\s*\d+([.,]\d+)?\s*$/.test(raw) ? Number(raw.trim().replace(',', '.')) : NaN);
 
 /** Коэффициент из равноценных подъёмов: 80 на лёгкой = 50 на тяжёлой → 1,60. */
 export function equivalentK(lightReps, heavyRepsValue) {
@@ -104,18 +105,6 @@ export function tableRows({ k, step, from, to }) {
 }
 
 // ------------------------------------------------------------- форматирование
-
-/** Число с десятичной запятой: fmt(1.6, 2) → «1,60». */
-export const fmt = (value, digits = 0) => Number(value).toFixed(digits).replace('.', ',');
-
-/** Склонение: plural(5, ['подъём', 'подъёма', 'подъёмов']) → «подъёмов». */
-export function plural(n, [one, few, many]) {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-  return many;
-}
 
 /** k для адреса: без лишних нулей, с точкой — 1.6, 1.33, 2. */
 export const kParam = (k) => String(round2(k));
