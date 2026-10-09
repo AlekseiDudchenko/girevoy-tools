@@ -1,4 +1,4 @@
-// Deutsches Wörterbuch. Dieselben Schlüssel wie ru.js; Platzhalter sind {name};
+// Öffentliches deutsches Wörterbuch. Dieselben Schlüssel wie en.js; Platzhalter sind {name};
 // ein Wort, das sich mit der Zahl ändert, ist ein Objekt nach den Kategorien
 // von Intl.PluralRules('de'). Anrede: „Sie“.
 export default {
@@ -35,7 +35,7 @@ export default {
   "calendar.cityUnknown": "Ort nicht angegeben",
   "calendar.empty": "Keine Wettkämpfe für diese Filter.",
   "calendar.count": "Wettkämpfe: {n}",
-  "calendar.note": "Die erste Auswahl ist nicht vollständig. Termine und Teilnahmebedingungen können sich ändern: vor der Buchung beim Ausrichter prüfen. Einträge werden manuell geprüft; ein fehlender Eintrag bedeutet keine Absage. ICS-Dateien enthalten einzelne Termine, kein Abonnement.",
+  "calendar.note": "Die erste Auswahl ist nicht vollständig. Termine und Teilnahmebedingungen können sich ändern: vor der Buchung beim Ausrichter prüfen. Einträge werden manuell geprüft; ein fehlender Eintrag bedeutet keine Absage. „In den Kalender“ lädt nur diesen einen Termin; für Aktualisierungen den Kalender abonnieren.",
   "calendar.noscript": "Alle Wettkämpfe stehen unten. JavaScript aktivieren, um diese statische Liste zu filtern.",
   "calendar.foot": "Kalendertermine verweisen auf ihre offiziellen Quellen.",
   "calendar.privacy": "Filter bleiben in der Adresse dieser Seite. Die Anmeldung öffnet die Website des Ausrichters.",
@@ -60,6 +60,18 @@ export default {
   "calendar.series.editions": "Ausgaben",
   "calendar.series.federation": "Alle Wettkämpfe von {federation}",
   "calendar.series.back": "Ganzer Kalender",
+  "calendar.feed.subscribe": "Kalender abonnieren",
+  "calendar.feed.google": "Google Calendar",
+  "calendar.feed.apple": "Apple Kalender / Outlook",
+  "calendar.feed.link": "Kalender-Link (iCal)",
+  "calendar.feed.copy": "Link kopieren",
+  "calendar.feed.copied": "Kopiert",
+  "calendar.feed.hint": "Ihre Kalender-App liest diesen Link regelmäßig neu: neue und geänderte Termine erscheinen innerhalb weniger Stunden. Nur kommende Termine. Kein E-Mail-Abonnement.",
+  "calendar.feed.none": "Ein Kalender-Abo gibt es für alle Termine, einen Verband, eine Region, einen Verband in einer Region, ein Land oder Online-Wettkämpfe.",
+  "calendar.feed.list": "Alle Kalender-Abos",
+  "calendar.feed.listLead": "Links für Kalender-Apps (iCal). Jeder enthält nur kommende Termine und aktualisiert sich selbst.",
+  "calendar.feed.all": "Alle Termine",
+  "calendar.feed.online": "Online und hybrid",
   'calendar.days': { one: 'Tag', other: 'Tagen' },
   'calendar.editions': { one: 'Ausgabe', other: 'Ausgaben' },
   "calendar.discipline.biathlon": "Zweikampf",

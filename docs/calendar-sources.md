@@ -97,7 +97,16 @@ exclusive (one day after the inclusive source end), with no invented starting ho
 Known local start/end times require an explicit offset and IANA time zone; export
 converts them to UTC, avoiding unsupported/incomplete VTIMEZONE definitions.
 Stable UID, sequence, status, escaping, CRLF and 75-octet UTF-8 folding are tested.
-This is an individual download, not a subscription or reminder service.
+An individual download is a one-off copy, not a subscription.
+
+Subscribable feeds (#33) live at `/calendar/feeds/<path>.ics`: `all`, `federation/<fed>`,
+`federation/<fed>/<region>`, `region/<region>`, `country/<cc>`, `series/<slug>`,
+`online` (online and hybrid). They are generated from reviewed events at every build,
+hold upcoming and ongoing events only (by build date, rebuilt daily) and share the
+VEVENT code with individual downloads, so UID and SEQUENCE are the same in both. Feed
+URLs are permanent; country feeds exist for every country in `REGION_COUNTRIES`, so a
+country without events keeps a valid empty feed. There is one feed per selection,
+not one per language.
 
 The list is rendered on the server at build time, grouped by month, on all three
 languages. JavaScript adds combined date/country/region/federation/format filters;

@@ -62,9 +62,15 @@ test('all known retired Russian pages permanently redirect to existing English p
   assert.ok(retired.some(([from, to, code]) => from === '/ru' && to === '/en/' && code === '301'));
   const sources = retired.map(([from]) => from);
   assert.equal(new Set(sources).size, sources.length, 'no duplicate retired rules');
-  for (const { slug } of PAGES) {
+  // Published Russian URLs before #25; new public pages do not extend this set.
+  const retiredSlugs = ['', 'tempo/', 'coefficients/', 'calendar/',
+    'calendar/iukl-world-championship/', 'calendar/iukl-european-championship/',
+    'calendar/iukl-asian-championship/', 'calendar/ikmf-world-championship/',
+    'calendar/wksf-european-open-championship/', 'calendar/weihnachts-snatch-berlin/'];
+  assert.equal(retired.length, retiredSlugs.length * 2);
+  for (const slug of retiredSlugs) {
     const from = `/ru/${slug}`;
-    for (const source of slug ? [from, from.slice(0, -1)] : [from]) {
+    for (const source of [from, from.slice(0, -1)]) {
       assert.ok(retired.some(([old, to, code]) => old === source && to === `/en/${slug}` && code === '301'), source);
     }
   }
@@ -77,4 +83,18 @@ test('all known retired Russian pages permanently redirect to existing English p
   assert.ok(!existsSync(join(out, 'ru')));
   assert.ok(!existsSync(join(out, 'i18n', 'ru.js')));
   assert.doesNotMatch(readFileSync(join(out, 'sitemap.xml'), 'utf8'), /\/ru\/|hreflang="ru"/);
+});
+
+test('retired redirects survive page removal and ignore newly added pages', () => {
+  // Isolate registry changes from other build tests.
+  const result = JSON.parse(execFileSync('node', ['--input-type=module', '-e', `
+    import { PAGES } from './src/pages/index.js';
+    import { redirects } from './src/redirects.js';
+    const before = redirects();
+    PAGES.splice(0, PAGES.length, { slug: 'calendar/new-series/' });
+    console.log(JSON.stringify({ before, after: redirects() }));
+  `], { cwd: new URL('..', import.meta.url), encoding: 'utf8' }));
+  assert.equal(result.after, result.before);
+  assert.ok(result.after.includes('/ru/calendar/iukl-world-championship/ /en/calendar/iukl-world-championship/ 301'));
+  assert.doesNotMatch(result.after, /\/ru\/calendar\/new-series/);
 });

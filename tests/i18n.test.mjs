@@ -23,7 +23,7 @@ const placeholders = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort(
 
 // ------------------------------------------------------------- словари
 
-test('у каждого ключа словаря есть перевод на все языки, того же вида', () => {
+test('у каждого ключа публичного словаря есть перевод на EN/DE, того же вида', () => {
   const keys = Object.keys(DICTS.en).sort();
   for (const lang of LANGS) {
     assert.deepEqual(Object.keys(DICTS[lang]).sort(), keys, `ключи ${lang} совпадают с en`);
