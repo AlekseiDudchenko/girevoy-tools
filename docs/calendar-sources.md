@@ -41,8 +41,8 @@ and IUKL Riga cross-listings merge under explicitly assigned canonical IDs.
 - Multiple announcements may use the same manually reconciled ID. Keep organizer
   and registration details consistent across these snapshots, or resolve conflicts
   before approval. Manual corrections are edits to these source records in a PR.
-- Submission/correction links open the GitHub Issue Form; submitting requires a GitHub
-  account, browsing does not. A maintainer verifies the public organizer source,
+- The public page has no submission or correction links. Suggestions may still arrive
+  through the repository's GitHub Issue Form. A maintainer verifies the public organizer source,
   updates the source snapshot, reviews the candidate and merges a PR. Nothing from
   an issue is automatically imported or published.
 

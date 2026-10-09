@@ -339,31 +339,42 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 
 /* Competition calendar */
 .calendar { padding-block: 2rem; }
-.calendar-top { display:flex; flex-wrap:wrap; gap:.7rem 1.5rem; margin-block:1.5rem; }
-.calendar-top span,.calendar-note { color:var(--ink-2); }
-.calendar-filters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; padding:1.2rem; border:1px solid var(--rule); background:var(--surface); }
-.calendar-filters label { display:flex; flex-direction:column; gap:.35rem; min-width:0; }
-.calendar-filters input,.calendar-filters select { width:100%; min-width:0; padding:.6rem; color:var(--ink); background:var(--paper); border:1px solid var(--rule); border-radius:4px; font:inherit; }
-.calendar-filter-actions { display:flex; flex-wrap:wrap; gap:.7rem; grid-column:1/-1; }
-.calendar-month { font-size:1.3rem; margin-block:2rem .5rem; text-transform:capitalize; }
-.calendar-event { display:grid; grid-template-columns:12rem minmax(0,1fr); gap:1.5rem; padding:1.5rem 0; border-top:1px solid var(--rule); }
-.calendar-date { font-weight:700; }
-.calendar-date small { display:block; font-weight:400; color:var(--ink-2); margin-top:.4rem; }
-.calendar-info { min-width:0; overflow-wrap:anywhere; }
-.calendar-info h2 { margin:0; font-size:1.25rem; }
-.calendar-place { margin:.5rem 0; color:var(--ink-2); }
-.calendar-badges { display:flex; flex-wrap:wrap; gap:.5rem; margin:.8rem 0; }
-.calendar-badges span { border:1px solid var(--rule); border-radius:4px; padding:.1rem .5rem; font-size:.85rem; background:var(--surface); }
-.calendar-info dl { display:grid; grid-template-columns: minmax(6rem,auto) 1fr; gap:.25rem 1rem; font-size:.9rem; }
-.calendar-info dt { color:var(--ink-2); }
-.calendar-info dd { margin:0; }
-.calendar-actions { display:flex; flex-wrap:wrap; gap:.7rem 1.2rem; margin-block:1rem; }
-.calendar-sources { padding-left:1.2rem; font-size:.85rem; }
-.calendar-sources li span { color:var(--ink-2); margin-left:.6rem; }
-.calendar-info summary { cursor:pointer; color:var(--ink-2); }
+.visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.calendar-filters { display:grid; grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr)); gap:.8rem 1rem; padding:1rem 1.1rem; margin-block:1.5rem 2rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface); }
+.calendar-filters label { display:flex; flex-direction:column; gap:.2rem; min-width:0; color:var(--ink-3); font-size:.82rem; }
+.calendar-filters input,.calendar-filters select { width:100%; min-width:0; padding:.35rem .5rem; color:var(--ink); background:var(--paper); border:1px solid var(--rule); border-radius:6px; font:inherit; font-size:.95rem; }
+.calendar-filter-actions { display:flex; align-items:center; justify-content:space-between; gap:.7rem; grid-column:1/-1; padding-top:.7rem; border-top:1px solid var(--rule-soft); }
+.calendar-filter-actions p { margin:0; color:var(--ink-2); font-weight:700; }
+.calendar-month { font-size:1rem; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-2); margin:2rem 0 .6rem; padding-bottom:.4rem; border-bottom:2px solid var(--ink); }
+.cal-event { display:grid; grid-template-columns:5.5rem minmax(0,1fr) auto; gap:1rem 1.25rem; align-items:start; padding:1.1rem; margin-bottom:.8rem; background:var(--surface); border:1px solid var(--rule); border-radius:8px; }
+.cal-leaf { display:flex; flex-direction:column; align-items:center; text-align:center; border:1px solid var(--rule); border-radius:6px; overflow:hidden; background:var(--paper); line-height:1.15; }
+.cal-mon { align-self:stretch; padding:.2rem .3rem; background:var(--accent); color:var(--surface); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+.cal-day { padding:.35rem .3rem .1rem; font-size:1.45rem; font-weight:700; white-space:nowrap; }
+.cal-wd { padding-bottom:.35rem; color:var(--ink-3); font-size:.78rem; }
+.cal-body { min-width:0; overflow-wrap:anywhere; }
+.cal-body h3 { margin:0; font-family:"Bitter",Georgia,serif; font-weight:600; font-size:1.15rem; line-height:1.3; }
+.cal-is-cancelled h3 { text-decoration:line-through; color:var(--ink-3); }
+.cal-place { margin:.25rem 0 .6rem; color:var(--ink-2); }
+.cal-tags { display:flex; flex-wrap:wrap; gap:.35rem; margin:0 0 .6rem; }
+.cal-tag { border:1px solid var(--rule); border-radius:999px; padding:.05rem .6rem; font-size:.8rem; color:var(--ink-2); background:var(--paper); }
+.cal-online,.cal-hybrid { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+.cal-status-tentative,.cal-status-postponed,.cal-status-cancelled { border-color:var(--error); color:var(--error); }
+.cal-facts { display:flex; flex-wrap:wrap; gap:.3rem 1.4rem; margin:0; font-size:.9rem; }
+.cal-facts dt { color:var(--ink-3); font-size:.78rem; }
+.cal-facts dd { margin:0; }
+.cal-source { margin:.6rem 0 0; font-size:.8rem; color:var(--ink-3); }
+.cal-actions { display:flex; flex-direction:column; gap:.45rem; min-width:11rem; }
+.cal-actions .btn { text-align:center; text-decoration:none; white-space:nowrap; }
+.btn-primary { background:var(--accent); border-color:var(--accent); color:var(--surface); font-weight:700; }
+.btn-primary:hover { opacity:.9; }
+.calendar-note { color:var(--ink-2); font-size:.9rem; margin-top:2rem; }
+@media(min-width:960px) { .calendar-filters { grid-template-columns:repeat(6,minmax(0,1fr)); } }
+@media(max-width:720px) {
+  .cal-event { grid-template-columns:4.2rem minmax(0,1fr); padding:.9rem; gap:.8rem; }
+  .cal-day { font-size:1.15rem; }
+  .cal-actions { grid-column:1/-1; flex-direction:row; flex-wrap:wrap; min-width:0; }
+  .cal-actions .btn { flex:1 1 9rem; }
+}
 @media(max-width:600px) {
-  .calendar-filters { grid-template-columns:repeat(2,minmax(0,1fr)); padding:.8rem; gap:.7rem; }
-  .calendar-event { grid-template-columns:1fr; gap:.5rem; }
-  .calendar-info dl { grid-template-columns:1fr; gap:0; }
-  .calendar-info dd { margin-bottom:.5rem; }
+  .calendar-filters { grid-template-columns:repeat(2,minmax(0,1fr)); padding:.8rem; gap:.6rem; }
 }
