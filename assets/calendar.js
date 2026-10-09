@@ -14,7 +14,7 @@ function render() {
 for (const [key,value] of Object.entries(parseFilters(location.search))) form.elements.namedItem(key).value=value;
 form.addEventListener('submit',e=>{e.preventDefault();render();});
 form.addEventListener('change',render);
-form.addEventListener('reset',()=>{queueMicrotask(render);});
+form.addEventListener('reset',()=>{setTimeout(render,0);});
 window.addEventListener('popstate',()=>{
   form.reset();
   for (const [key,value] of Object.entries(parseFilters(location.search))) form.elements.namedItem(key).value=value;
