@@ -19,7 +19,10 @@ export default {
     const tabs = MODES.map((id) => `<button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}" aria-selected="${id === st.mode}"${id === st.mode ? '' : ' tabindex="-1"'} data-mode="${id}">${t(`mode.${id}`)}</button>`).join('\n    ');
     const exercises = EXERCISES.map(({ id }) => ({ id, name: t(`ex.${id}`) }));
     const strategies = STRATEGIES.map(({ id }) => ({ id, name: t(`s.${id}`) }));
-    const minutes = MINUTES.map((m) => ({ id: m, name: t('minOption', { n: m, minutes: L.plural(m, 'minutes') }) }));
+    const minutes = [
+      ...MINUTES.map((m) => ({ id: m, name: t('minOption', { n: m, minutes: L.plural(m, 'minutes') }) })),
+      { id: 'custom', name: t('minCustom') },
+    ];
     return `<h1>${t('title')}</h1>
 <p class="lead">${t('lead')}</p>
 <noscript><p class="note">${t('noscript', { min: st.min, minutes: L.plural(st.min, 'minutes'), goal: st.goal, plan: planText(repsOf(st)) })}</p></noscript>
@@ -34,6 +37,11 @@ export default {
     <label for="min">${t('time')}</label>
     <select id="min">${options(minutes, st.min)}</select>
   </div>
+  <div class="field" id="min-custom-field" hidden>
+    <label for="min-custom">${t('minCustomLabel')}</label>
+    <input id="min-custom" class="n" type="text" inputmode="numeric" autocomplete="off" value="${st.min}" aria-describedby="min-error">
+  </div>
+  <p class="error" id="min-error" aria-live="polite"></p>
   <div class="field" id="hand-field" hidden>
     <label for="hand">${t('hand')}</label>
     <input id="hand" class="n" type="number" inputmode="numeric" min="1" max="${st.min - 1}" step="1" value="${st.hand}">
