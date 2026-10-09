@@ -37,7 +37,8 @@ const dayBefore = (day) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDat
 export function feedICS(feed, events, today, site) {
   const own = feed.select(events).filter((e) => !isPast(e, dayBefore(today))).sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id));
   const desc = `Upcoming kettlebell sport competitions from ${site}/en/calendar/. Dates are attributed to official federation sources; check the organizer before booking.`;
-  return calendarICS(own, ['METHOD:PUBLISH', `X-WR-CALNAME:${icsText(`${BRAND} — ${feed.name}`)}`, `X-WR-CALDESC:${icsText(desc)}`,
+  const name = icsText(`${BRAND} — ${feed.name}`);
+  return calendarICS(own, ['METHOD:PUBLISH', `NAME:${name}`, `X-WR-CALNAME:${name}`, `X-WR-CALDESC:${icsText(desc)}`,
     'REFRESH-INTERVAL;VALUE=DURATION:PT12H', 'X-PUBLISHED-TTL:PT12H']);
 }
 
@@ -63,5 +64,5 @@ export function feedFor(filters, events) {
 export function subscribeLinks(site, path) {
   const https = `${site}${feedURL(path)}`;
   const webcal = https.replace(/^https?:/, 'webcal:');
-  return {https, webcal, google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}`};
+  return {https, webcal, google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(https)}`};
 }
