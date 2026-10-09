@@ -128,6 +128,11 @@ el.min.addEventListener('change', () => {
     el.minCustom.select();
   } else setMinutes(Number(el.min.value));
 });
+// Пока вводят своё время, каждое число считается от состояния до ввода: «2» по пути
+// к «25» не обрезает свой план, отрезки и смену руки (withMinutes с потерями).
+let minBase = null;
+el.minCustom.addEventListener('focus', () => { minBase = state; });
+el.minCustom.addEventListener('blur', () => { minBase = null; });
 el.minCustom.addEventListener('input', () => {
   const n = int(el.minCustom.value);
   const error = minutesError(n);
@@ -138,7 +143,8 @@ el.minCustom.addEventListener('input', () => {
   }
   el.minCustom.removeAttribute('aria-invalid');
   el.minError.textContent = '';
-  setMinutes(n, 'min');
+  focusIdx = Math.min(focusIdx, n - 1);
+  update(withMinutes(minBase ?? state, n), 'min');
 });
 // Ушли из поля с неверным числом — вернуть время из состояния.
 el.minCustom.addEventListener('change', () => { if (minutesError(int(el.minCustom.value))) render(); });

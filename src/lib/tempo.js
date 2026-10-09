@@ -191,7 +191,7 @@ export function editSegment(seg, idx, key, raw, n) {
     value = parseRate(raw);
     if (Number.isNaN(value)) return { error: { code: 'rate', min: RATE_MIN, max: RATE_MAX } };
   } else {
-    value = /^\s*\d{1,2}\s*$/.test(String(raw)) ? Number(raw) : NaN;
+    value = /^\s*\d{1,3}\s*$/.test(String(raw)) ? Number(raw) : NaN;
     if (!(value >= 1)) return { error: { code: 'segMin' } };
   }
   const out = seg.map((s, i) => (i === idx ? { ...s, [key]: value } : { ...s }));
@@ -337,7 +337,7 @@ function parseSegments(raw, n) {
   if (!raw) return null;
   const seg = [];
   for (const part of raw.split(',')) {
-    const m = /^(\d{1,2})x(\d{1,2}(?:\.\d{1,2})?)$/.exec(part.trim());
+    const m = /^(\d{1,3})x(\d{1,2}(?:\.\d{1,2})?)$/.exec(part.trim());
     if (!m) return null;
     seg.push({ n: Number(m[1]), r: parseRate(m[2]) });
   }

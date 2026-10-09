@@ -199,6 +199,16 @@ test('своё время: от 2 до 120 минут, в адресе как е
   const snatch = parseState('?ex=snatch&min=2');
   assert.equal(snatch.hand, 1);
   assert.equal(repsOf(parseState('?min=120')).length, 120);
+  for (const q of ['?min=0', '?min=abc', '?min=']) assert.equal(parseState(q).min, 10, q);
+  // Отрезок длиннее 99 минут переживает ссылку.
+  const long = toMode(parseState('?min=120&s=even'), 'pace');
+  assert.equal(serializeState(long), '?min=120&mode=pace&seg=120x8');
+  assert.deepEqual(parseState(serializeState(long)).seg, long.seg);
+  assert.deepEqual(parseState('?min=120&mode=pace&seg=110x9,10x7').seg, [{ n: 110, r: 900 }, { n: 10, r: 700 }]);
+  assert.equal(editSegment([{ n: 20, r: 800 }, { n: 100, r: 800 }], 0, 'n', '100', 120).error, undefined);
+  // Ось на 120 минутах: подписи через 20, без наложения.
+  const ticks = [...barChart(L, parseState('?min=120')).matchAll(/text-anchor="middle">(\d+)</g)].map((m) => Number(m[1]));
+  assert.deepEqual(ticks, [1, 20, 40, 60, 80, 100, 120]);
 });
 
 test('неверные параметры заменяются значениями по умолчанию', () => {

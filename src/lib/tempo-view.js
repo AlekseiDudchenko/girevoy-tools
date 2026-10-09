@@ -26,7 +26,7 @@ export function chartSize(width) {
 }
 
 /** Через сколько минут подписывать ось X. */
-const minuteStep = (n) => (n <= 10 ? 1 : n <= 30 ? 5 : 10);
+const minuteStep = (n) => (n <= 10 ? 1 : n <= 30 ? 5 : n <= 60 ? 10 : 20);
 
 function svg(size, id, attrs, inner) {
   return `<svg class="chart" id="${id}" viewBox="0 0 ${size.width} ${size.height}" width="${size.width}" height="${size.height}" ${attrs}>${inner}</svg>`;
