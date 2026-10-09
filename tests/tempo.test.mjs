@@ -262,5 +262,5 @@ test('страница собрана: пример по умолчанию бе
     for (const [, path] of script.matchAll(/from '\.\/([^']+)'/g)) assert.ok(existsSync(join(base, path)), `${file} → ${path}`);
   }
   const home = readFileSync(join(out, 'en', 'index.html'), 'utf8');
-  assert.match(home, /href="\/ru\/tempo\/"/);
+  assert.match(home, /href="\/en\/tempo\/"/);
 });
