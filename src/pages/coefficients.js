@@ -3,12 +3,34 @@
 // 24 и 32 кг с коэффициентом по весу гири.
 import { esc } from '../html.js';
 import { DEFAULT_TABLE, K_MAX, K_MIN, STEPS, WEIGHTS, defaultState, fmt, sliderMax, weightRatio } from '../lib/coefficients.js';
-import { colorVars, equivChart, equivLegend, readout, scoreChart, scoreLegend, tableBody, tableHead } from '../lib/coefficients-view.js';
+import { calcLabels, calcNote, calcText, calcValues, colorVars, equivChart, equivLegend, readout, scoreChart, scoreLegend, tableBody, tableHead } from '../lib/coefficients-view.js';
 
 const options = (values, selected, skip) => values
   .filter((v) => v !== skip)
   .map((v) => `<option value="${v}"${v === selected ? ' selected' : ''}>${v} кг</option>`)
   .join('');
+
+// Строка пересчёта: ввести число в любое поле — два других пересчитываются.
+function calcPanel(st) {
+  const values = calcValues(st);
+  const labels = calcLabels(st);
+  const field = (name, mode) => `<div class="field calc-${name}${st.calc.field === name ? ' src' : ''}">
+      <label for="calc-${name}" id="calc-${name}-label">${labels[name]}</label>
+      <input id="calc-${name}" class="n" type="text" inputmode="${mode}" autocomplete="off" value="${calcText(values[name])}">
+    </div>`;
+  return `<section class="panel calc-panel js-only" aria-labelledby="calc-title">
+  <h2 id="calc-title">Пересчёт</h2>
+  <p class="hint calc-intro">Введите число в любое поле — два других пересчитаются по выбранному коэффициенту.</p>
+  <div class="calc-row">
+    ${field('light', 'numeric')}
+    <span class="calc-sep" aria-hidden="true">или</span>
+    ${field('heavy', 'numeric')}
+    <span class="calc-sep" aria-hidden="true">→</span>
+    ${field('score', 'decimal')}
+  </div>
+  <p class="hint calc-note" id="calc-note" aria-live="polite">${calcNote(st)}</p>
+</section>`;
+}
 
 export default {
   path: '/coefficients/',
@@ -53,6 +75,8 @@ export default {
     <p class="hint" id="ratio-hint">Пунктир на графиках — «по весу гири»: <span class="n">${st.heavy} / ${st.light} = ${fmt(ratio, 2)}</span>. Это арифметика, а не рекомендация.</p>
   </div>
 </section>
+
+${calcPanel(st)}
 
 <section class="panel chart-panel" aria-label="График">
   <div class="tabs" role="tablist" aria-label="Вид графика">

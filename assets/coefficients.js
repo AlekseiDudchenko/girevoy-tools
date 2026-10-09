@@ -1,11 +1,11 @@
 // Поведение страницы /coefficients/. Расчёт и разметка — чистые функции из /lib/,
 // здесь только события, синхронизация полей и адрес страницы.
 import {
-  K_MAX, K_MIN, SCORE_MAX, WEIGHTS, clampK, defaultK, fmt, parseState, round2,
-  serializeState, sliderMax, validTable, weightRatio,
+  CALC_FIELDS, K_MAX, K_MIN, SCORE_MAX, WEIGHTS, clampK, defaultK, fmt, parseNumber, parseState, round2,
+  serializeState, sliderMax, validCalc, validTable, weightRatio,
 } from './lib/coefficients.js';
 import {
-  chartInverse, chartSize, colorVars, equivChart, equivLegend, readout,
+  calcLabels, calcNote, calcText, calcValues, chartInverse, chartSize, colorVars, equivChart, equivLegend, readout,
   scoreChart, scoreLegend, tableBody, tableHead,
 } from './lib/coefficients-view.js';
 
@@ -20,6 +20,7 @@ const el = {
   readout: $('readout'), score: $('score'),
   step: $('step'), from: $('from'), to: $('to'),
   head: $('table-head'), body: $('table-body'), status: $('status'),
+  calcNote: $('calc-note'),
   tabs: [...document.querySelectorAll('[role="tab"]')],
   tablist: document.querySelector('.tabs'),
 };
@@ -66,6 +67,7 @@ function render(skip) {
   el.step.value = String(state.step);
   el.from.value = String(state.from);
   el.to.value = String(state.to);
+  renderCalc(skip);
   html(el.head, tableHead(state));
   html(el.body, tableBody(state));
   for (const tab of el.tabs) {
@@ -75,6 +77,21 @@ function render(skip) {
     $(tab.getAttribute('aria-controls')).hidden = !on;
   }
   history.replaceState(null, '', serializeState(state) + location.hash);
+}
+
+/** Строка пересчёта: введённое поле не трогаем, два других — по коэффициенту. */
+function renderCalc(skip) {
+  const values = calcValues(state);
+  const labels = calcLabels(state);
+  for (const name of CALC_FIELDS) {
+    const input = $(`calc-${name}`);
+    $(`calc-${name}-label`).textContent = labels[name];
+    input.closest('.field').classList.toggle('src', name === state.calc.field);
+    if (skip === `calc-${name}`) continue;
+    input.value = calcText(values[name]);
+    input.removeAttribute('aria-invalid');
+  }
+  html(el.calcNote, calcNote(state));
 }
 
 function update(patch, skip) {
@@ -112,6 +129,20 @@ el.k.addEventListener('change', () => {
 });
 
 el.range.addEventListener('input', () => update({ k: round2(Number(el.range.value)) }, 'range'));
+
+// ------------------------------------------------------------- пересчёт
+
+for (const name of CALC_FIELDS) {
+  const input = $(`calc-${name}`);
+  input.addEventListener('input', () => {
+    const value = parseNumber(input.value);
+    const ok = validCalc(name, value);
+    input.setAttribute('aria-invalid', String(!ok && input.value.trim() !== ''));
+    if (ok) update({ calc: { field: name, value } }, `calc-${name}`);
+  });
+  // Ушли из поля с неверным числом — вернуть пересчитанное значение.
+  input.addEventListener('change', () => render());
+}
 
 // ------------------------------------------------------------- вкладки
 

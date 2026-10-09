@@ -5,10 +5,10 @@ import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  K_MAX, defaultK, defaultState, equivalentK, fmt, heavyReps, parseState, plural,
-  scoreOf, serializeState, sliderMax, tableRows, validTable,
+  K_MAX, convert, defaultK, defaultState, equivalentK, fmt, heavyReps, parseNumber, parseState, plural,
+  scoreOf, serializeState, sliderMax, tableRows, validCalc, validTable,
 } from '../src/lib/coefficients.js';
-import { bellColor, colorVars, niceAxis, readout, scoreChart, equivChart, tableBody } from '../src/lib/coefficients-view.js';
+import { calcNote, bellColor, colorVars, niceAxis, readout, scoreChart, equivChart, tableBody } from '../src/lib/coefficients-view.js';
 
 // ------------------------------------------------------------- расчёт
 
@@ -97,12 +97,64 @@ test('адрес из задачи читается', () => {
   assert.equal(serializeState(st), '?light=24&heavy=32&k=1.6&tab=eq');
 });
 
+// ------------------------------------------------------------- пересчёт
+
+test('пересчёт: подъёмы на лёгкой → тяжёлая и результат', () => {
+  assert.deepEqual(convert(1.33, 'light', 80), { light: 80, heavy: 61, score: 80 });
+  assert.deepEqual(convert(1.6, 'light', 80), { light: 80, heavy: 50, score: 80 }); // не 51
+  assert.deepEqual(convert(1, 'light', 77), { light: 77, heavy: 77, score: 77 });
+});
+
+test('пересчёт: подъёмы на тяжёлой → результат точно до сотых, лёгкая вверх', () => {
+  assert.deepEqual(convert(1.33, 'heavy', 61), { light: 82, heavy: 61, score: 81.13 });
+  assert.deepEqual(convert(1.6, 'heavy', 50), { light: 80, heavy: 50, score: 80 });
+  assert.deepEqual(convert(1.15, 'heavy', 60), { light: 69, heavy: 60, score: 69 }); // 60 × 1,15 = 69, не 69,000…01
+  assert.deepEqual(convert(1.4, 'heavy', 15), { light: 21, heavy: 15, score: 21 });
+});
+
+test('пересчёт: результат → наименьшие подъёмы на обеих гирях', () => {
+  assert.deepEqual(convert(1.33, 'score', 81.13), { light: 82, heavy: 61, score: 81.13 });
+  assert.deepEqual(convert(1.6, 'score', 80), { light: 80, heavy: 50, score: 80 });
+  assert.deepEqual(convert(2.3, 'score', 69), { light: 69, heavy: 30, score: 69 });
+  for (const k of [1, 1.07, 1.33, 1.5, 2.37]) {
+    for (const v of [1, 33, 80, 141]) {
+      const r = convert(k, 'heavy', v);
+      assert.equal(convert(k, 'score', r.score).heavy, v, `k=${k}, ${v} на тяжёлой`);
+    }
+  }
+});
+
+test('пересчёт: проверка ввода', () => {
+  assert.equal(parseNumber('81,13'), 81.13);
+  assert.equal(parseNumber(' 61 '), 61);
+  assert.ok(Number.isNaN(parseNumber('')));
+  assert.ok(Number.isNaN(parseNumber('6a')));
+  assert.ok(Number.isNaN(parseNumber('-5')));
+  assert.equal(validCalc('light', 80), true);
+  assert.equal(validCalc('light', 80.5), false); // подъёмы — целые
+  assert.equal(validCalc('heavy', 0), false);
+  assert.equal(validCalc('score', 81.13), true);
+  assert.equal(validCalc('score', 81.135), false);
+  assert.equal(validCalc('score', 1000), false);
+  assert.equal(validCalc('other', 5), false);
+  for (const q of ['?calc=light&v=8.5', '?calc=x&v=5', '?calc=heavy&v=0', '?calc=heavy']) {
+    assert.deepEqual(parseState(q).calc, { field: 'light', value: 80 }, q);
+  }
+  assert.deepEqual(parseState('?calc=score&v=81,13').calc, { field: 'score', value: 81.13 });
+});
+
+test('пояснение пересчёта показывает исходные числа', () => {
+  const st = { ...defaultState(), calc: { field: 'heavy', value: 61 } };
+  assert.match(calcNote(st), /61 × 1,33 = 81,13/);
+  assert.match(calcNote(st), /нужно <span class="n">82<\/span> подъёма/);
+});
+
 test('состояние → адрес → состояние без потерь', () => {
   const states = [
     defaultState(),
-    { light: 16, heavy: 24, k: 1.5, tab: 'eq', step: 5, from: 20, to: 75, score: 33 },
-    { light: 8, heavy: 32, k: 4, tab: 'score', step: 10, from: 1, to: 901, score: 999 },
-    { light: 24, heavy: 28, k: 1, tab: 'score', step: 10, from: 40, to: 140, score: 80 },
+    { light: 16, heavy: 24, k: 1.5, tab: 'eq', step: 5, from: 20, to: 75, score: 33, calc: { field: 'heavy', value: 61 } },
+    { light: 8, heavy: 32, k: 4, tab: 'score', step: 10, from: 1, to: 901, score: 999, calc: { field: 'score', value: 81.13 } },
+    { light: 24, heavy: 28, k: 1, tab: 'score', step: 10, from: 40, to: 140, score: 80, calc: { field: 'light', value: 80 } },
   ];
   for (const st of states) assert.deepEqual(parseState(serializeState(st)), st);
   assert.deepEqual(parseState(new URLSearchParams('k=1,45')).k, 1.45, 'запятая в k допустима');
