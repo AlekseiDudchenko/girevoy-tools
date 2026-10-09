@@ -21,7 +21,8 @@ rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 cpSync(join(root, 'assets'), dist, { recursive: true });
 cpSync(join(root, 'src', 'lib'), join(dist, 'lib'), { recursive: true });
-cpSync(join(root, 'src', 'i18n'), join(dist, 'i18n'), { recursive: true });
+mkdirSync(join(dist, 'i18n'), { recursive: true });
+for (const lang of LANGS) cpSync(join(root, 'src', 'i18n', `${lang}.js`), join(dist, 'i18n', `${lang}.js`));
 
 for (const lang of LANGS) {
   const L = locale(lang);

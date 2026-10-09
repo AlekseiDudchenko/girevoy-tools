@@ -245,14 +245,14 @@ test('таблица на 60 минут, смена руки в рывке', () 
 test('страница собрана: пример по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-tempo-'));
   execFileSync('node', ['scripts/build.mjs', out]);
-  const html = readFileSync(join(out, 'ru', 'tempo', 'index.html'), 'utf8');
-  assert.match(html, /<h1>Калькулятор темпа<\/h1>/);
+  const html = readFileSync(join(out, 'en', 'tempo', 'index.html'), 'utf8');
+  assert.match(html, /<h1>Pace calculator<\/h1>/);
   assert.match(html, /<svg class="chart" id="chart-bars"/);
   assert.match(html, /7, 7, 8 × 7, 10/);
-  assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6,0<\/td><td class="n total">80<\/td>/);
+  assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6.0<\/td><td class="n total">80<\/td>/);
   assert.match(html, /<div class="table-wrap">/);
   // Только планирование: без старта и метронома; столбики на телефоне — по кнопке.
-  assert.match(html, /<button type="button" class="btn bars-edit js-only" id="bars-edit" aria-pressed="false"[^>]*>Изменить столбики</);
+  assert.match(html, /<button type="button" class="btn bars-edit js-only" id="bars-edit" aria-pressed="false"[^>]*>Edit bars</);
   assert.doesNotMatch(html, /metro|Старт|Метроном/i);
   assert.match(html, /<script type="module" src="\/tempo.js"><\/script>/);
   for (const f of ['tempo.js', 'lib/tempo.js', 'lib/tempo-view.js', 'lib/format.js']) assert.ok(existsSync(join(out, f)), f);
@@ -261,6 +261,6 @@ test('страница собрана: пример по умолчанию бе
     const base = file.includes('/') ? join(out, 'lib') : out;
     for (const [, path] of script.matchAll(/from '\.\/([^']+)'/g)) assert.ok(existsSync(join(base, path)), `${file} → ${path}`);
   }
-  const home = readFileSync(join(out, 'ru', 'index.html'), 'utf8');
-  assert.match(home, /href="\/ru\/tempo\/"/);
+  const home = readFileSync(join(out, 'en', 'index.html'), 'utf8');
+  assert.match(home, /href="\/en\/tempo\/"/);
 });
