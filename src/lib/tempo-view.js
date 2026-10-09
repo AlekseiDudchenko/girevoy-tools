@@ -162,7 +162,7 @@ export const metroText = (L, clockText, m, n, reps) => L.t('tempo.metro.now', { 
 
 /**
  * Табло метронома на весь экран: часы, темп текущей минуты крупно, минута из скольких,
- * рука в рывке и темп следующей минуты. sec — секунды от старта.
+ * рука в рывке и темп следующей минуты. sec — секунды от старта, до старта — с минусом.
  */
 export function metroBoard(L, state, sec) {
   const reps = repsOf(state);
@@ -171,7 +171,7 @@ export function metroBoard(L, state, sec) {
   const t = (key, args) => L.t(`tempo.board.${key}`, args);
   const hand = state.ex === 'snatch' ? ` · ${L.t(`tempo.legend.${m < state.hand ? 'h1' : 'h2'}`)}` : '';
   const next = m === n - 1 ? t('last') : t('next', { reps: reps[m + 1] });
-  return `<p class="board-clock n">${clock(Math.max(0, sec))}</p>
+  return `<p class="board-clock n${sec < 0 ? ' count' : ''}">${clock(sec)}</p>
 <p class="board-rate"><span class="n">${reps[m]}</span> <span class="board-unit">${L.t('tempo.axis.perMin')}</span></p>
 <p class="board-minute">${t('minute', { m: m + 1, n })}${hand}</p>
 <p class="board-next">${next}</p>`;
