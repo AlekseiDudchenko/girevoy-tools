@@ -68,6 +68,8 @@ test('date filters include overlapping multi-day events; regional and hybrid fil
   assert.ok(filterEvents(events,{from:'2026-12-04',to:'2026-12-04'}).some(e=>e.id==='wksf-european-2026'));
   assert.equal(filterEvents(events,{region:'north-america',country:'CA',format:'hybrid',federation:'IKO'}).length,1);
   assert.equal(filterEvents(events,{region:'europe',format:'online'}).length,0);
+  assert.equal(filterEvents([{...fixture(),country:'SI'}],{region:'europe'}).length,1);
+  assert.equal(filterEvents([{...fixture(),country:'SK'}],{region:'europe'}).length,1);
   assert.deepEqual(parseFilters('?from=2026-02-30&to=2026-12-06&region=europe'),{to:'2026-12-06',region:'europe'});
 });
 test('ICS all-day ranges have exclusive end dates; local timed events convert to UTC',()=>{
@@ -101,4 +103,32 @@ test('review command produces previous/candidate/diff artifacts without modifyin
   const before=readFileSync('data/calendar/events.json','utf8');const out=mkdtempSync(join(tmpdir(),'calendar-review-'));
   execFileSync('node',['scripts/calendar-import.mjs',`--out=${out}`]);assert.deepEqual(read(join(out,'previous.json')),events);assert.equal(read(join(out,'review.json')).changes.length,0);
   assert.equal(readFileSync('data/calendar/events.json','utf8'),before);
+});
+
+test('registration, organizer URLs and names require review when both sources differ',()=>{
+  for (const key of ['registrationUrl','organizerUrl','title','organizer']) {
+    const a=fixture(),b=fixture();
+    a[key]=key.endsWith('Url')?'https://old.example/register':'Old name';
+    b[key]=key.endsWith('Url')?'https://new.example/register':'New name';
+    const merged=deduplicate([a,b]);
+    assert.equal(merged.conflicts.length,1,key);assert.ok(merged.conflicts[0].fields.includes(key));
+    assert.equal(merged.events[0][key],a[key]);
+  }
+  const a=fixture(),b=fixture();b.registrationUrl='https://example.com/register';
+  const merged=deduplicate([a,b]);assert.equal(merged.conflicts.length,0);assert.equal(merged.events[0].registrationUrl,b.registrationUrl);
+  b.title=a.title.toUpperCase();assert.equal(deduplicate([a,b]).conflicts.length,0);
+});
+test('verification timestamps compare instants across offsets, not lexicographic order',()=>{
+  const a=fixture();a.lastChecked='2026-10-09T16:00:00+02:00';
+  a.sources=a.sources.map(s=>({...s,checkedAt:'2026-10-09T14:30:00Z'}));
+  assert.ok(validateEvent(a).includes('lastChecked'));
+  a.sources=a.sources.map(s=>({...s,checkedAt:'2026-10-09T16:00:00+02:00'}));
+  assert.deepEqual(validateEvent(a),[]);
+  const b=structuredClone(a);b.lastChecked='2026-10-09T14:30:00Z';b.sources=b.sources.map(s=>({...s,checkedAt:b.lastChecked}));
+  for(const records of [[a,b],[b,a]]) {
+    const merged=deduplicate(records);assert.equal(merged.events[0].lastChecked,b.lastChecked);
+    assert.ok(merged.events[0].sources.every(s=>s.checkedAt===b.lastChecked));
+  }
+  const report=importSources([{id:'WKSF',method:'manual',frequencyDays:7,url:'https://example.com'}],()=>[b,{...a,id:'another-event'}],new Date('2026-10-16T14:15:00Z'));
+  assert.ok(report.notices.some(n=>n.kind==='stale'));
 });

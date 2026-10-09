@@ -29,7 +29,7 @@ export function validateEvent(e) {
   for (const k of ['registrationUrl', 'organizerUrl']) if (e[k] !== null && !safeURL(e[k])) fail(k);
   if (e.registrationDeadline !== null && (!isDate(e.registrationDeadline) || e.registrationDeadline > e.endDate)) fail('registrationDeadline');
   if (!isTimestamp(e.lastChecked)) fail('lastChecked');
-  if (Array.isArray(e.sources) && e.sources.some(s => s?.checkedAt > e.lastChecked)) fail('lastChecked');
+  if (Array.isArray(e.sources) && e.sources.some(s => Date.parse(s?.checkedAt) > Date.parse(e.lastChecked))) fail('lastChecked');
   if (e.timeZone !== null) { try { new Intl.DateTimeFormat('en', {timeZone:e.timeZone}); } catch { fail('timeZone'); } }
   if ((e.startAt != null) !== (e.endAt != null)) fail('times');
   if (e.startAt != null && (!isTimestamp(e.startAt) || !isTimestamp(e.endAt) || Date.parse(e.endAt) <= Date.parse(e.startAt) || !e.timeZone)) fail('times');
@@ -62,14 +62,16 @@ export function deduplicate(events) {
     const existing = result.find(x => x.id === e.id || identity(x) === identity(e));
     if (!existing) { result.push(e); continue; }
     const different = ['startDate','endDate','country','city','format','status','timeZone','registrationDeadline','startAt','endAt'].filter(k => (existing[k] ?? null) !== (e[k] ?? null));
+    for (const k of ['title', 'organizer']) if (nameKey(existing[k]) !== nameKey(e[k])) different.push(k);
+    for (const k of ['registrationUrl', 'organizerUrl']) if (existing[k] && e[k] && existing[k] !== e[k]) different.push(k);
     if (different.length) { conflicts.push({id:existing.id, fields:different, incoming:e}); continue; }
     existing.federations = [...new Set([...existing.federations,...e.federations])].sort();
     existing.disciplines = [...new Set([...existing.disciplines,...e.disciplines])];
     for (const s of e.sources) {
       const old = existing.sources.find(x => sourceKey(x) === sourceKey(s));
-      if (!old) existing.sources.push(s); else if (s.checkedAt > old.checkedAt) old.checkedAt = s.checkedAt;
+      if (!old) existing.sources.push(s); else if (Date.parse(s.checkedAt) > Date.parse(old.checkedAt)) old.checkedAt = s.checkedAt;
     }
-    existing.lastChecked = [existing.lastChecked,e.lastChecked].sort().at(-1);
+    if (Date.parse(e.lastChecked) > Date.parse(existing.lastChecked)) existing.lastChecked = e.lastChecked;
     for (const k of ['registrationUrl','organizerUrl']) existing[k] ||= e[k];
   }
   return {events:result.sort((a,b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id)), conflicts};
@@ -95,7 +97,7 @@ export function applyReviewed(previous, incoming, decisions) {
   }
   return validateEvents(next.sort((a,b)=>a.startDate.localeCompare(b.startDate)||a.id.localeCompare(b.id)));
 }
-export const REGION_COUNTRIES = {europe:['DE','IT','GB','LV','RS','FR','ES','PL','NL','BE','CH','AT','CZ','DK','SE','NO','FI','IE','PT','GR','HU','RO','BG','EE','LT','MD','UA'], 'north-america':['US','CA','MX']};
+export const REGION_COUNTRIES = {europe:['AD','AL','AT','AX','BA','BE','BG','BY','CH','CY','CZ','DE','DK','EE','ES','FI','FO','FR','GB','GG','GI','GR','HR','HU','IE','IM','IS','IT','JE','LI','LT','LU','LV','MC','MD','ME','MK','MT','NL','NO','PL','PT','RO','RS','RU','SE','SI','SJ','SK','SM','TR','UA','VA'], 'north-america':['US','CA','MX']};
 export function filterEvents(events, filters = {}) {
   return events.filter(e => (!filters.from || e.endDate >= filters.from) && (!filters.to || e.startDate <= filters.to) && (!filters.country || e.country === filters.country) && (!filters.region || REGION_COUNTRIES[filters.region]?.includes(e.country)) && (!filters.federation || e.federations.includes(filters.federation)) && (!filters.format || e.format === filters.format));
 }

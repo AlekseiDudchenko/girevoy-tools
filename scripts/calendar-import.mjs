@@ -14,7 +14,7 @@ export function importSources(sources, readSource, now = new Date()) {
       const rows=validateEvents(readSource(source));
       if (!rows.length) notices.push({source:source.id,kind:'empty',url:source.url});
       records.push(...rows);
-      const checked=rows.map(e=>e.sources.filter(s=>s.organization===source.id).map(s=>s.checkedAt)).flat().sort().at(0);
+      const checked=rows.map(e=>e.sources.filter(s=>s.organization===source.id).map(s=>s.checkedAt)).flat().sort((a,b)=>Date.parse(a)-Date.parse(b)).at(0);
       if (!checked || now-Date.parse(checked)>source.frequencyDays*86400000) notices.push({source:source.id,kind:'stale',checkedAt:checked,url:source.url});
       notices.push({source:source.id,kind:'manual',url:source.url,reason:source.restriction});
     } catch (error) { notices.push({source:source.id,kind:'failure',reason:error.message,url:source.url}); }
