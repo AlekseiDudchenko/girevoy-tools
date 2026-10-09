@@ -7,7 +7,7 @@
 // { one, other } по-английски и по-немецки.
 
 /** Языки сайта в порядке переключателя. Первый — язык старых адресов без префикса. */
-export const LANGS = ['ru', 'en', 'de'];
+export const LANGS = ['en', 'de'];
 /** Язык для hreflang="x-default": версия для тех, чей язык не поддержан. */
 export const X_DEFAULT = 'en';
 /** Адрес страницы на языке lang: slug '' — главная, 'tempo/' — инструмент. */
@@ -15,7 +15,7 @@ export const langPath = (lang, slug = '') => `/${lang}/${slug}`;
 
 /** Тот же адрес на другом языке: меняется только префикс, путь и ?… сохраняются. */
 export function switchPath(pathname, lang) {
-  const rest = pathname.replace(/^\/(?:ru|en|de)(?=\/|$)/, '');
+  const rest = pathname.replace(/^\/(?:en|de)(?=\/|$)/, '');
   return `/${lang}${rest.startsWith('/') ? rest : `/${rest}`}`;
 }
 
