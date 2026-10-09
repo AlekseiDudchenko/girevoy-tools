@@ -6,6 +6,7 @@ import en from './en.js';
 import de from './de.js';
 
 export { LANGS };
+// ru is retained only for legacy test formatting; LANGS controls the public site.
 export const DICTS = { ru, en, de };
 
 /** Язык страницы для сборки: makeLocale со словарём этого языка. */

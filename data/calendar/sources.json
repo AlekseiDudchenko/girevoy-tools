@@ -1,0 +1,49 @@
+[
+  {
+    "id": "WKSF",
+    "url": "https://wksf.site/2026-informations/",
+    "method": "manual",
+    "file": "wksf.json",
+    "frequencyDays": 7,
+    "restriction": "No approved machine feed or verified scraping policy; manual review of public dates and brochure links only."
+  },
+  {
+    "id": "IKMF",
+    "url": "https://www.ikmf-world.com/calendars/ikmf-international-competitions/",
+    "method": "manual",
+    "file": "ikmf.json",
+    "frequencyDays": 7,
+    "restriction": "HTML headings and image posters; no verified machine feed or scraping policy. Manually transcribe dates, link posters; do not copy images."
+  },
+  {
+    "id": "AKLU",
+    "url": "https://www.aklu.net/sanctioned-events",
+    "method": "manual",
+    "file": "aklu.json",
+    "frequencyDays": 7,
+    "restriction": "Wix headings and organizer forms; no verified feed or scraping policy. Manual factual entries; forms are outbound links only."
+  },
+  {
+    "id": "BVDKS",
+    "url": "https://bvdks.de/events/",
+    "method": "manual",
+    "file": "bvdks.json",
+    "frequencyDays": 7,
+    "restriction": "WordPress/The Events Calendar; feed/API support and usage terms not yet verified. Manual event-page review."
+  },
+  {
+    "id": "IUKL",
+    "url": "https://giri-iukl.com/",
+    "method": "manual",
+    "frequencyDays": 7,
+    "restriction": "Homepage has exact Riga dates; annual calendar PDF and machine feeds not verified. Manual dates only.",
+    "file": "iukl.json"
+  },
+  {
+    "id": "IKO",
+    "url": "https://www.kettlebellworld.org/",
+    "method": "blocked",
+    "frequencyDays": 7,
+    "restriction": "Wix/image calendar; date and feed extraction not verified. AKLU listings retain AKLU provenance; organizer forms may supply IKO affiliation."
+  }
+]

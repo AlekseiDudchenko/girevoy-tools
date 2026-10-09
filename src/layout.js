@@ -1,4 +1,4 @@
-import { ARCHIVE_URL, BRAND, SITE_URL, pageTitle } from './brand.js';
+import { BRAND, SITE_URL, pageTitle } from './brand.js';
 import { esc } from './html.js';
 import { DICTS } from './i18n/index.js';
 import { LANGS, X_DEFAULT, langPath } from './lib/locale.js';
@@ -11,11 +11,11 @@ export function layout(L, page) {
   const { lang } = L;
   const product = L.t('site.product');
   const path = langPath(lang, page.slug);
-  const fullTitle = page.slug === '' ? `${product} | ${BRAND}` : pageTitle(L.t(`${page.key}.title`), product);
+  const fullTitle = page.slug === '' ? `${product} | ${BRAND}` : pageTitle(page.title ? page.title(L) : L.t(`${page.key}.title`), product);
   const nav = readyTools()
     .map((t) => {
       const href = langPath(lang, `${t.slug}/`);
-      return `<a href="${href}"${href === path ? ' class="on" aria-current="page"' : ''}>${esc(L.t(`${t.key}.nav`))}</a>`;
+      return `<a href="${href}"${path.startsWith(href) ? ` class="on"${href === path ? ' aria-current="page"' : ''}` : ''}>${esc(L.t(`${t.key}.nav`))}</a>`;
     })
     .join('');
   const alternates = [...LANGS, 'x-default']
@@ -38,25 +38,25 @@ export function layout(L, page) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(fullTitle)}</title>
-<meta name="description" content="${esc(L.t(`${page.key}.description`))}">
+<meta name="description" content="${esc(page.description ? page.description(L) : L.t(`${page.key}.description`))}">
 <link rel="canonical" href="${SITE_URL}${path}">
 ${alternates}
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
 <link rel="stylesheet" href="/fonts.css">
 <link rel="stylesheet" href="/style.css">${preload}
 </head>
 <body>
 <header class="site"><div class="inner">
 <a class="brand" href="${langPath(lang)}"><img class="brand-mark" src="/logo.png" alt="" width="32" height="32"><span class="brand-name">${BRAND}</span><span class="brand-sub">${esc(product.toLocaleLowerCase(lang))}</span></a>
-<nav class="tools-nav" aria-label="${esc(product)}">${nav}<a href="${ARCHIVE_URL}/"${lang === 'ru' ? '' : ' hreflang="ru"'}>${esc(L.t('site.archive'))}</a></nav>
+<nav class="tools-nav" aria-label="${esc(product)}">${nav}</nav>
 <nav class="langs" aria-label="${esc(L.t('site.lang'))}">${langs}</nav>
 </div></header>
 <main class="inner">
 ${page.body(L)}
 </main>
 <footer class="foot"><div class="inner">
-<p>${L.t('site.foot.calc', { archive: `${ARCHIVE_URL}/` })}</p>
-<p>${esc(L.t('site.foot.privacy'))}</p>
+<p>${L.t(page.key === 'calendar' ? 'calendar.foot' : 'site.foot.calc')}</p>
+<p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : 'site.foot.privacy'))}</p>
 </div></footer>
 ${scripts.map((s) => `<script type="module" src="${esc(s)}"></script>`).join('\n')}
 </body>

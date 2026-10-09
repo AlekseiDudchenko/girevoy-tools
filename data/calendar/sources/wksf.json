@@ -1,0 +1,213 @@
+[
+  {
+    "id": "wksf-americas-2025",
+    "title": "WKSF Open South & North America Championship 2025",
+    "startDate": "2025-11-20",
+    "endDate": "2025-11-22",
+    "country": "BR",
+    "city": "Ijuí",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "America/Sao_Paulo",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/06/2025-SOUTH-NORTH-AMERICA-CHAMPIONSHIP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      },
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/11/RELATORIO-WKSF-OPEN-SOUTH-NORTH-AMERICA-2025-All-Days-Protocols.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-european-2025",
+    "title": "WKSF Open European Championship 2025",
+    "startDate": "2025-12-04",
+    "endDate": "2025-12-07",
+    "country": "MD",
+    "city": "Chisinau",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Chisinau",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/06/2025-EUROPEAN-CHAMPIONSHIP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-online-africa-2026",
+    "title": "WKSF Online Open Cup Africa 2026",
+    "startDate": "2026-01-30",
+    "endDate": "2026-02-25",
+    "country": null,
+    "city": "",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "online",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": null,
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2026/01/2026-WKSF-Online-Open-Cup-Africa-Application-1-1.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-world-cup-2026",
+    "title": "WKSF World Cup 2026",
+    "startDate": "2026-03-20",
+    "endDate": "2026-03-22",
+    "country": "IT",
+    "city": "Turbigo",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Rome",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/12/2026-WORLD-CUP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-world-2026",
+    "title": "WKSF World Championship 2026",
+    "startDate": "2026-06-04",
+    "endDate": "2026-06-07",
+    "country": "MD",
+    "city": "Chisinau",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Chisinau",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2026/04/2026-WORLD-CHAMPIONSHIP-Application-1.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-asia-oceania-2026",
+    "title": "WKSF Open Asia & Oceania Championship 2026",
+    "startDate": "2026-10-23",
+    "endDate": "2026-10-25",
+    "country": "IN",
+    "city": "Panaji",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Asia/Kolkata",
+    "lastChecked": "2026-10-09T16:50:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2025/12/2026-ASIA-OCEANIA-OPEN-CHAMPIONSHIP-Application.pdf",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      },
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/",
+        "checkedAt": "2026-10-09T16:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "wksf-european-2026",
+    "title": "WKSF European Open Championship 2026",
+    "startDate": "2026-12-03",
+    "endDate": "2026-12-06",
+    "country": "IT",
+    "city": "Turbigo",
+    "organizer": "WKSF",
+    "federations": [
+      "WKSF"
+    ],
+    "format": "in-person",
+    "status": "confirmed",
+    "disciplines": [],
+    "registrationUrl": null,
+    "registrationDeadline": null,
+    "organizerUrl": null,
+    "timeZone": "Europe/Rome",
+    "lastChecked": "2026-10-09T15:00:00Z",
+    "sequence": 0,
+    "sources": [
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/2026-informations/",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      },
+      {
+        "organization": "WKSF",
+        "url": "https://wksf.site/wp-content/uploads/2026/08/BROCHURE-EUROPEAN-CHAMPIONSHIP-2026-ITALY.pdf",
+        "checkedAt": "2026-10-09T15:00:00Z"
+      }
+    ]
+  }
+]

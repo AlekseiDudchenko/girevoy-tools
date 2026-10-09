@@ -229,8 +229,8 @@ test('выбранная строка таблицы отмечена', () => {
 test('страница собрана: таблица по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-coef-'));
   execFileSync('node', ['scripts/build.mjs', out]);
-  const html = readFileSync(join(out, 'ru', 'coefficients', 'index.html'), 'utf8');
-  assert.match(html, /<h1>Коэффициенты для гирь разного веса<\/h1>/);
+  const html = readFileSync(join(out, 'en', 'coefficients', 'index.html'), 'utf8');
+  assert.match(html, /<h1>Coefficients for different kettlebell weights<\/h1>/);
   assert.match(html, /role="tablist"/);
   assert.match(html, /<svg class="chart" id="chart-score"/);
   assert.match(html, /<svg class="chart" id="chart-eq"/);
@@ -241,6 +241,6 @@ test('страница собрана: таблица по умолчанию б
   assert.ok(existsSync(join(out, 'lib', 'coefficients-view.js')));
   const script = readFileSync(join(out, 'coefficients.js'), 'utf8');
   for (const [, path] of script.matchAll(/from '\.\/(lib\/[^']+)'/g)) assert.ok(existsSync(join(out, path)), path);
-  const home = readFileSync(join(out, 'ru', 'index.html'), 'utf8');
-  assert.match(home, /href="\/ru\/coefficients\/"/);
+  const home = readFileSync(join(out, 'en', 'index.html'), 'utf8');
+  assert.match(home, /href="\/en\/coefficients\/"/);
 });

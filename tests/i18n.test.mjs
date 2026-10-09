@@ -24,16 +24,16 @@ const placeholders = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort(
 // ------------------------------------------------------------- словари
 
 test('у каждого ключа словаря есть перевод на все языки, того же вида', () => {
-  const keys = Object.keys(DICTS.ru).sort();
+  const keys = Object.keys(DICTS.en).sort();
   for (const lang of LANGS) {
     assert.deepEqual(Object.keys(DICTS[lang]).sort(), keys, `ключи ${lang} совпадают с ru`);
     const categories = new Intl.PluralRules(lang).resolvedOptions().pluralCategories;
     for (const key of keys) {
       const value = DICTS[lang][key];
-      assert.equal(typeof value, typeof DICTS.ru[key], `${lang} ${key}`);
+      assert.equal(typeof value, typeof DICTS.en[key], `${lang} ${key}`);
       if (typeof value === 'string') {
         assert.ok(value.trim(), `${lang} ${key}: пусто`);
-        assert.deepEqual([...new Set(placeholders(value))], [...new Set(placeholders(DICTS.ru[key]))], `${lang} ${key}: подстановки`);
+        assert.deepEqual([...new Set(placeholders(value))], [...new Set(placeholders(DICTS.en[key]))], `${lang} ${key}: подстановки`);
       } else {
         for (const c of categories) assert.ok(value[c], `${lang} ${key}: нет формы ${c}`);
       }
@@ -49,8 +49,6 @@ test('нет строки — ошибка, а не пустое место', ()
 });
 
 test('склонения — по правилам языка', () => {
-  const ru = locale('ru');
-  assert.deepEqual([1, 2, 5, 11, 21, 22].map((n) => ru.plural(n, 'reps')), ['подъём', 'подъёма', 'подъёмов', 'подъёмов', 'подъём', 'подъёма']);
   const en = locale('en');
   assert.deepEqual([0, 1, 2].map((n) => en.plural(n, 'reps')), ['reps', 'rep', 'reps']);
   const de = locale('de');
@@ -60,8 +58,7 @@ test('склонения — по правилам языка', () => {
 // ------------------------------------------------------------- числа
 
 test('числа — через Intl языка страницы: десятичная запятая по-русски и по-немецки', () => {
-  const [ru, en, de] = LANGS.map(locale);
-  assert.equal(ru.num(1.333, 2), '1,33');
+  const [en, de] = LANGS.map(locale);
   assert.equal(en.num(1.333, 2), '1.33');
   assert.equal(de.num(1.333, 2), '1,33');
   assert.equal(en.num(80, 1), '80.0');
@@ -87,9 +84,8 @@ test('ввод принимает и запятую, и точку на любо
 // ------------------------------------------------------------- подписи
 
 test('подписи графиков, таблиц и расшифровка зависят от языка', () => {
-  const [ru, en, de] = LANGS.map(locale);
+  const [en, de] = LANGS.map(locale);
   const st = coefState();
-  assert.match(scoreChart(ru, st), />подъёмы<.*>зачётный результат</);
   assert.match(scoreChart(en, st), />reps<.*>score</);
   assert.match(scoreChart(de, st), />Wiederholungen<.*>Punktzahl</);
   assert.equal(text(readout(en, { ...st, k: 1.6 })), 'Score 80: 80 reps with 24 kg or 50 with 32 kg (50 × 1.60 = 80.0)');
@@ -155,32 +151,34 @@ test('sitemap: все версии всех страниц', () => {
 
 // ------------------------------------------------------------- старые адреса
 
-test('_redirects: корень и старые адреса без языка — на русскую версию', () => {
+test('_redirects: корень и старые адреса без языка — на английскую версию', () => {
   const file = readFileSync(join(out, '_redirects'), 'utf8');
   assert.equal(file, redirects());
   const rules = file.split('\n').filter((l) => l && !l.startsWith('#')).map((l) => l.split(' '));
   assert.deepEqual(rules, [
-    ['/', '/ru/', '302'],
-    ['/tempo', '/ru/tempo/', '301'],
-    ['/tempo/', '/ru/tempo/', '301'],
-    ['/tempo/*', '/ru/tempo/:splat', '301'],
-    ['/coefficients', '/ru/coefficients/', '301'],
-    ['/coefficients/', '/ru/coefficients/', '301'],
-    ['/coefficients/*', '/ru/coefficients/:splat', '301'],
+    ['/', '/en/', '302'],
+    ['/calendar', '/en/calendar/', '301'],
+    ['/calendar/', '/en/calendar/', '301'],
+    ['/tempo', '/en/tempo/', '301'],
+    ['/tempo/', '/en/tempo/', '301'],
+    ['/tempo/*', '/en/tempo/:splat', '301'],
+    ['/coefficients', '/en/coefficients/', '301'],
+    ['/coefficients/', '/en/coefficients/', '301'],
+    ['/coefficients/*', '/en/coefficients/:splat', '301'],
   ]);
   for (const [from, to] of rules) {
     // ?… не переписывается в правиле: Cloudflare Pages переносит его сам.
     assert.doesNotMatch(`${from} ${to}`, /\?/);
     // Цель существует, источник — нет: правило не перекрывает страницы и файлы сайта.
     assert.ok(existsSync(join(out, to.replace(':splat', ''), 'index.html')), to);
-    if (from !== '/') assert.ok(!existsSync(join(out, from.replace('*', ''))), from);
+    if (from !== '/' && !from.endsWith('*')) assert.ok(!existsSync(join(out, from, 'index.html')), from);
     assert.ok(!LANGS.some((l) => from.startsWith(`/${l}/`)), `${from}: без петли`);
   }
 });
 
 test('переключатель языка сохраняет путь', () => {
-  assert.equal(switchPath('/ru/coefficients/', 'de'), '/de/coefficients/');
-  assert.equal(switchPath('/en/', 'ru'), '/ru/');
+  assert.equal(switchPath('/en/coefficients/', 'de'), '/de/coefficients/');
+  assert.equal(switchPath('/de/', 'en'), '/en/');
   assert.equal(switchPath('/en', 'de'), '/de/');
   assert.equal(switchPath('/tempo/', 'en'), '/en/tempo/');
 });
