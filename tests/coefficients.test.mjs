@@ -242,5 +242,5 @@ test('страница собрана: таблица по умолчанию б
   const script = readFileSync(join(out, 'coefficients.js'), 'utf8');
   for (const [, path] of script.matchAll(/from '\.\/(lib\/[^']+)'/g)) assert.ok(existsSync(join(out, path)), path);
   const home = readFileSync(join(out, 'en', 'index.html'), 'utf8');
-  assert.match(home, /href="\/ru\/coefficients\/"/);
+  assert.match(home, /href="\/en\/coefficients\/"/);
 });
