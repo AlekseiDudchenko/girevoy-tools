@@ -21,8 +21,7 @@ function calcPanel(L, st) {
   const field = (name, mode) => `<div class="field calc-${name}${st.calc.field === name ? ' src' : ''}">
       <label for="calc-${name}" id="calc-${name}-label">${labels[name]}</label>
       <input id="calc-${name}" class="n" type="text" inputmode="${mode}" autocomplete="off" value="${calcText(L, values[name])}">
-    </div>
-${coefficientsGuide(L)}`;
+    </div>`;
   return `<section class="panel calc-panel js-only" aria-labelledby="calc-title">
   <h2 id="calc-title">${L.t('coef.calc.title')}</h2>
   <p class="hint calc-intro">${L.t('coef.calc.intro')}</p>
@@ -139,6 +138,7 @@ ${calcPanel(L, st)}
   </div>
   <p class="hint">${t('tableHint')}</p>
 </section>
-</div>`;
+</div>
+${coefficientsGuide(L)}`;
   },
 };

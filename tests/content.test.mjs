@@ -49,7 +49,9 @@ test('guides are present in initial HTML and sourced edition copy survives date 
     const L = locale(lang);
     for (const slug of ['', 'tempo/', 'coefficients/']) {
       const html = layout(L, PAGES.find((p) => p.slug === slug));
-      assert.match(html, /<section class="reading"/);
+      assert.equal([...html.matchAll(/<section class="reading"/g)].length, 1);
+      assert.ok(html.indexOf('<section class="reading"') > html.lastIndexOf('class="js-only"'));
+      if (slug === 'coefficients/') assert.ok(html.indexOf('id="coef-guide"') > html.indexOf('id="table-body"'));
       assert.doesNotMatch(html, /\{(?:goal|target|perHand|date)\}/);
     }
     for (const page of PAGES.filter((p) => p.slug.startsWith('calendar/'))) {
