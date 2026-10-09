@@ -230,7 +230,7 @@ test('страница собрана: таблица по умолчанию б
   const out = mkdtempSync(join(tmpdir(), 'tools-coef-'));
   execFileSync('node', ['scripts/build.mjs', out]);
   const html = readFileSync(join(out, 'en', 'coefficients', 'index.html'), 'utf8');
-  assert.match(html, /<h1>Коэффициенты для гирь разного веса<\/h1>/);
+  assert.match(html, /<h1>Coefficients for different kettlebell weights<\/h1>/);
   assert.match(html, /role="tablist"/);
   assert.match(html, /<svg class="chart" id="chart-score"/);
   assert.match(html, /<svg class="chart" id="chart-eq"/);
