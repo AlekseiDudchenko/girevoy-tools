@@ -73,7 +73,10 @@ test('a feed is a valid calendar even when empty: name, refresh, CRLF, folded li
     assert.match(ics, /END:VCALENDAR\r\n$/);
     assert.doesNotMatch(ics, /[^\r]\n/);
     for (const line of ics.split('\r\n')) assert.ok(new TextEncoder().encode(line).length <= 75, line);
-    assert.match(unfold(ics), /\r\nX-WR-CALNAME:VseGiri — /);
+    const properties = unfold(ics);
+    const name = properties.match(/^NAME:(.+)\r$/m)?.[1];
+    assert.ok(name?.startsWith('VseGiri — '));
+    assert.equal(properties.match(/^X-WR-CALNAME:(.+)\r$/m)?.[1], name);
     assert.match(ics, /\r\nREFRESH-INTERVAL;VALUE=DURATION:PT12H\r\n/);
   }
   assert.doesNotMatch(feedICS(empty, events, '2099-01-01', SITE), /BEGIN:VEVENT/);
@@ -107,7 +110,7 @@ test('subscribe links: webcal for Apple and Outlook, Google by cid, https to cop
   assert.deepEqual(subscribeLinks(SITE, 'all'), {
     https: 'https://tools.vsegiri.com/calendar/feeds/all.ics',
     webcal: 'webcal://tools.vsegiri.com/calendar/feeds/all.ics',
-    google: 'https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Ftools.vsegiri.com%2Fcalendar%2Ffeeds%2Fall.ics',
+    google: 'https://calendar.google.com/calendar/render?cid=https%3A%2F%2Ftools.vsegiri.com%2Fcalendar%2Ffeeds%2Fall.ics',
   });
 });
 
@@ -120,5 +123,9 @@ test('the build writes every feed and serves them as text/calendar; the sitemap 
   const page = readFileSync(join(out, 'en/calendar/index.html'), 'utf8');
   assert.match(page, /href="webcal:\/\/tools\.vsegiri\.com\/calendar\/feeds\/federation\/iukl\.ics"/);
   assert.match(page, /Subscribe to calendar/);
+  assert.match(page, /href="https:\/\/calendar\.google\.com\/calendar\/render\?cid=https%3A%2F%2Ftools\.vsegiri\.com%2Fcalendar%2Ffeeds%2Fall\.ics"/);
+  const germany = unfold(readFileSync(join(out, 'calendar/feeds/country/de.ics'), 'utf8'));
+  assert.match(germany, /\r\nNAME:VseGiri — Kettlebell Competitions in Germany\r\n/);
+  assert.match(germany, /\r\nX-WR-CALNAME:VseGiri — Kettlebell Competitions in Germany\r\n/);
   assert.match(readFileSync(join(out, `de/calendar/${series[0].slug}/index.html`), 'utf8'), new RegExp(`feeds/series/${series[0].slug}\\.ics`));
 });
