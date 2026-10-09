@@ -92,6 +92,15 @@ a:hover { text-decoration-thickness: 2px; }
 .site nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.1rem; font-size: 0.92rem; }
 .site nav a { color: var(--ink-2); text-decoration: none; }
 .site nav a.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
+/* Переключатель языка: коды RU/EN/DE, полное название — для экранных чтецов. */
+.site .langs { gap: 0.15rem; margin-left: auto; font-family: "PT Mono", ui-monospace, monospace; font-size: 0.8rem; }
+.site .langs a { padding: 0.1rem 0.3rem; color: var(--ink-3); }
+.site .langs a:hover { color: var(--ink); }
+.site .langs a.on { color: var(--ink); }
+.sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ------------------------------------------------------------- страница */
 main { padding-block: 1.5rem 3rem; }

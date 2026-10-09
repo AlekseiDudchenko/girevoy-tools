@@ -5,20 +5,15 @@
 // floor(S_i) − floor(S_{i−1}), где S_i — сумма темпов первых i минут. Так сумма
 // минут равна floor(S_N) и подъёмы не теряются. Темп хранится в целых сотых:
 // 7,5 → 750, поэтому 7,5 × 4 даёт ровно 30, а не 29,999…
-import { fmt, plural } from './format.js';
+//
+// Текста здесь нет: названия, подсказки и объяснения ошибок — в словарях src/i18n/
+// по ключам tempo.ex.<id>, tempo.s.<id>, tempo.err.<code>. Функции, которые
+// показывают число, принимают L — язык страницы (locale.js).
 
-export const EXERCISES = [
-  { id: 'jerk', name: 'Толчок' },
-  { id: 'lc', name: 'Длинный цикл' },
-  { id: 'snatch', name: 'Рывок' },
-];
+export const EXERCISES = [{ id: 'jerk' }, { id: 'lc' }, { id: 'snatch' }];
 export const MINUTES = [5, 10, 30, 60];
 export const MODES = ['goal', 'pace', 'plan'];
-export const STRATEGIES = [
-  { id: 'even', name: 'Ровно', hint: 'Одинаковый темп всю дистанцию. Дробный темп раскладывается целыми: 7,5 в минуту → 7, 8, 7, 8.' },
-  { id: 'ramp', name: 'Разгон', hint: 'Темп растёт от первой минуты к последней на прибавку: ровный темп минус половина прибавки в начале, плюс половина — в конце.' },
-  { id: 'finish', name: 'Запас на финиш', hint: 'Последняя минута быстрее ровного темпа на прибавку, остальное поровну, меньшие минуты — в начале.' },
-];
+export const STRATEGIES = [{ id: 'even' }, { id: 'ramp' }, { id: 'finish' }];
 
 export const RATE_MIN = 1;
 export const RATE_MAX = 30;
@@ -35,7 +30,6 @@ export const defaultGoal = (n) => 8 * n;
 /** Смена руки в рывке по умолчанию — после половины времени. */
 export const defaultHand = (n) => Math.floor(n / 2);
 
-const REPS = ['подъём', 'подъёма', 'подъёмов'];
 const sum = (xs) => xs.reduce((a, x) => a + x, 0);
 
 // Деление целых с округлением вниз. Числители здесь меньше 2^53, и если частное
@@ -107,24 +101,21 @@ export function repsOf(state) {
 }
 
 /**
- * Почему цель не принимается: пустая строка — цель допустима.
- * Темп каждой минуты — от 1 до 30 подъёмов.
+ * Почему цель не принимается: null — цель допустима, иначе { code, …числа } для
+ * строки словаря tempo.err.<code>. Темп каждой минуты — от 1 до 30 подъёмов.
+ * В стратегиях с прибавкой совет называет и её: код с окончанием D.
  */
 export function goalError(goal, n, strategy, d) {
-  if (!Number.isInteger(goal) || goal < 1) return 'Цель — целое число подъёмов, не меньше 1.';
-  if (goal > n * RATE_MAX) return `За ${n} минут — не больше ${n * RATE_MAX} подъёмов: ${RATE_MAX} в минуту.`;
-  if (!Number.isInteger(d) || d < D_MIN || d > D_MAX) return `Прибавка — целое число от ${D_MIN} до ${D_MAX}.`;
+  if (!Number.isInteger(goal) || goal < 1) return { code: 'goalInt' };
+  if (goal > n * RATE_MAX) return { code: 'goalMax', n, max: n * RATE_MAX, rate: RATE_MAX };
+  if (!Number.isInteger(d) || d < D_MIN || d > D_MAX) return { code: 'd', min: D_MIN, max: D_MAX };
   const reps = goalReps(goal, n, strategy, d);
-  const tail = strategy === 'even' ? '' : ' или прибавку';
+  const tail = strategy === 'even' ? '' : 'D';
   const low = reps.findIndex((r) => r < RATE_MIN);
-  if (low >= 0) {
-    return `В ${low + 1}-й минуте выходит ${reps[low]} ${plural(Math.abs(reps[low]), REPS)} — меньше ${RATE_MIN} в минуту. Увеличьте цель${strategy === 'even' ? '' : ' или уменьшите прибавку'}.`;
-  }
+  if (low >= 0) return { code: `low${tail}`, m: low + 1, reps: reps[low], limit: RATE_MIN };
   const high = reps.findIndex((r) => r > RATE_MAX);
-  if (high >= 0) {
-    return `В ${high + 1}-й минуте выходит ${reps[high]} ${plural(reps[high], REPS)} — больше ${RATE_MAX} в минуту. Уменьшите цель${tail}.`;
-  }
-  return '';
+  if (high >= 0) return { code: `high${tail}`, m: high + 1, reps: reps[high], limit: RATE_MAX };
+  return null;
 }
 
 // ------------------------------------------------------------- отрезки
@@ -176,28 +167,29 @@ export function parseRate(raw) {
   return r >= RATE_MIN * 100 && r <= RATE_MAX * 100 ? r : NaN;
 }
 
-/** Темп для показа: 750 → «7,5», 700 → «7», 725 → «7,25». */
-export const rateText = (r) => String(r / 100).replace('.', ',');
+/** Темп для показа на языке страницы: 750 → «7,5» или «7.5», 700 → «7», 725 → «7,25». */
+export const rateText = (L, r) => L.dec(r / 100);
 
 /** Темп для адреса: 750 → «7.5». */
 const rateParam = (r) => String(r / 100);
 
 /**
- * Изменение одного поля отрезка: key — 'n' (минут) или 'r' (темп), raw — ввод.
- * Возвращает { seg } или { error } с объяснением.
+ * Изменение одного поля отрезка: key — 'n' (минут) или 'r' (темп), raw — ввод
+ * с запятой или точкой. Возвращает { seg } или { error: { code, …числа } }
+ * для строки словаря tempo.err.<code>.
  */
 export function editSegment(seg, idx, key, raw, n) {
   let value;
   if (key === 'r') {
     value = parseRate(raw);
-    if (Number.isNaN(value)) return { error: `Темп — от ${RATE_MIN} до ${RATE_MAX} подъёмов в минуту, до сотых: например, 7,5.` };
+    if (Number.isNaN(value)) return { error: { code: 'rate', min: RATE_MIN, max: RATE_MAX } };
   } else {
     value = /^\s*\d{1,2}\s*$/.test(String(raw)) ? Number(raw) : NaN;
-    if (!(value >= 1)) return { error: 'Минут в отрезке — целое число, не меньше 1.' };
+    if (!(value >= 1)) return { error: { code: 'segMin' } };
   }
   const out = seg.map((s, i) => (i === idx ? { ...s, [key]: value } : { ...s }));
   out[out.length - 1].n = n - segMinutes(out.slice(0, -1));
-  if (!validSegments(out, n)) return { error: `В отрезках больше ${n - 1} ${plural(n - 1, ['минуты', 'минут', 'минут'])}: последнему нужна хотя бы одна минута.` };
+  if (!validSegments(out, n)) return { error: { code: 'segOver', n: n - 1 } };
   return { seg: out };
 }
 
@@ -294,8 +286,8 @@ export function rows(state) {
   });
 }
 
-/** Секунд на подъём, один знак: 7 → «8,6», 8 → «7,5»; 0 подъёмов — «—». */
-export const secPerRep = (reps) => (reps > 0 ? fmt(60 / reps, 1) : '—');
+/** Секунд на подъём, один знак: 7 → «8,6» или «8.6»; 0 подъёмов — «—». */
+export const secPerRep = (L, reps) => (reps > 0 ? L.num(60 / reps, 1) : '—');
 
 /** Раскладка коротко: «7, 7, 8 × 7, 10» — три и больше одинаковых минуты подряд сжимаются. */
 export function planText(reps) {
@@ -321,17 +313,6 @@ export function clicks(reps) {
   });
   return out;
 }
-
-/** Что метроном говорит в начале минуты m (с 0). */
-export function announce(state, m) {
-  const reps = repsOf(state);
-  const parts = [];
-  if (state.ex === 'snatch' && m === state.hand) parts.push('Смена руки.');
-  parts.push(m === reps.length - 1 ? 'Последняя минута.' : `Минута ${m + 1}.`);
-  parts.push(`Темп ${reps[m]}.`);
-  return parts.join(' ');
-}
-export const ANNOUNCE_END = 'Стоп.';
 
 /** Время на часах метронома: 135 → «2:15». */
 export const clock = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;

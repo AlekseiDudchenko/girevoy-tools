@@ -5,11 +5,16 @@ import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  MINUTES, STRATEGIES, addSegment, announce, canAddSegment, clicks, clock, defaultState, editSegment, fitSegments,
+  MINUTES, STRATEGIES, addSegment, canAddSegment, clicks, clock, defaultState, editSegment, fitSegments,
   goalError, goalReps, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
   secPerRep, serializeState, setMinute, toMode, toSegments, withMinutes,
 } from '../src/lib/tempo.js';
-import { barChart, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
+import { announce, barChart, errorText, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
+import { locale } from '../src/i18n/index.js';
+
+const L = locale('ru');
+const goalText = (...args) => errorText(L, goalError(...args));
+const segText = (...args) => errorText(L, editSegment(...args).error);
 
 const total = (reps) => reps.reduce((a, r) => a + r, 0);
 
@@ -47,14 +52,15 @@ test('разгон не убывает, запас на финиш: меньши
 });
 
 test('цель вне пределов не принимается и объясняется', () => {
-  assert.equal(goalError(80, 10, 'finish', 2), '');
-  assert.match(goalError(0, 10, 'even', 2), /не меньше 1/);
-  assert.match(goalError(3, 5, 'even', 2), /меньше 1 в минуту/);
-  assert.match(goalError(80, 60, 'ramp', 2), /В 1-й минуте выходит 0/);
-  assert.match(goalError(301, 10, 'even', 2), /не больше 300/);
-  assert.match(goalError(300, 10, 'finish', 2), /больше 30 в минуту/);
-  assert.match(goalError(80, 10, 'finish', 11), /Прибавка/);
-  assert.match(goalError(8.5, 10, 'even', 2), /целое/);
+  assert.equal(goalError(80, 10, 'finish', 2), null);
+  assert.equal(goalText(80, 10, 'finish', 2), '');
+  assert.match(goalText(0, 10, 'even', 2), /не меньше 1/);
+  assert.match(goalText(3, 5, 'even', 2), /меньше 1 в минуту/);
+  assert.match(goalText(80, 60, 'ramp', 2), /В 1-й минуте выходит 0/);
+  assert.match(goalText(301, 10, 'even', 2), /не больше 300/);
+  assert.match(goalText(300, 10, 'finish', 2), /больше 30 в минуту/);
+  assert.match(goalText(80, 10, 'finish', 11), /Прибавка/);
+  assert.match(goalText(8.5, 10, 'even', 2), /целое/);
 });
 
 // ------------------------------------------------------------- дробный темп
@@ -72,8 +78,8 @@ test('дробный темп: целые минуты без потери по�
   assert.ok(Number.isNaN(parseRate('0,5')));
   assert.ok(Number.isNaN(parseRate('31')));
   assert.ok(Number.isNaN(parseRate('7,555')));
-  assert.equal(rateText(750), '7,5');
-  assert.equal(rateText(700), '7');
+  assert.equal(rateText(L, 750), '7,5');
+  assert.equal(rateText(L, 700), '7');
 });
 
 // ------------------------------------------------------------- таблица
@@ -82,9 +88,9 @@ test('таблица: секунд на подъём, нарастающий и�
   const data = rows(defaultState());
   assert.deepEqual(data.map((r) => r.cum), [7, 14, 22, 30, 38, 46, 54, 62, 70, 80]);
   assert.deepEqual(data.map((r) => r.dev), [-1, -2, -2, -2, -2, -2, -2, -2, -2, 0]);
-  assert.equal(secPerRep(7), '8,6');
-  assert.equal(secPerRep(8), '7,5');
-  assert.equal(secPerRep(0), '—');
+  assert.equal(secPerRep(L, 7), '8,6');
+  assert.equal(secPerRep(L, 8), '7,5');
+  assert.equal(secPerRep(L, 0), '—');
   assert.equal(planText(repsOf(defaultState())), '7, 7, 8 × 7, 10');
   assert.equal(planText([8, 8, 9, 9, 9]), '8, 8, 9 × 3');
 });
@@ -96,9 +102,9 @@ test('рывок: первая рука до смены, вторая после
   assert.equal(data[9].h1, 40);
   assert.equal(data[9].h2, 37);
   assert.equal(data[9].cum, 77);
-  assert.match(tableHead(st), /Первая рука.*Вторая рука.*Сумма/);
-  assert.match(tableFoot(st), /<td class="n">40<\/td><td class="n">37<\/td><td class="n total">77<\/td>/);
-  assert.match(summary(st), /Первая рука — <b class="n">40<\/b>/);
+  assert.match(tableHead(L, st), /Первая рука.*Вторая рука.*Сумма/);
+  assert.match(tableFoot(L, st), /<td class="n">40<\/td><td class="n">37<\/td><td class="n total">77<\/td>/);
+  assert.match(summary(L, st), /Первая рука — <b class="n">40<\/b>/);
 });
 
 // ------------------------------------------------------------- отрезки и свой план
@@ -107,9 +113,9 @@ test('отрезки: последний добирает минуты, ошиб
   const seg = [{ n: 3, r: 700 }, { n: 6, r: 800 }, { n: 1, r: 1000 }];
   assert.deepEqual(editSegment(seg, 0, 'n', '2', 10).seg, [{ n: 2, r: 700 }, { n: 6, r: 800 }, { n: 2, r: 1000 }]);
   assert.deepEqual(editSegment(seg, 2, 'r', '9,5', 10).seg[2], { n: 1, r: 950 });
-  assert.match(editSegment(seg, 0, 'n', '4', 10).error, /хотя бы одна минута/);
-  assert.match(editSegment(seg, 0, 'r', 'abc', 10).error, /Темп/);
-  assert.match(editSegment(seg, 0, 'n', '0', 10).error, /не меньше 1/);
+  assert.match(segText(seg, 0, 'n', '4', 10), /хотя бы одна минута/);
+  assert.match(segText(seg, 0, 'r', 'abc', 10), /Темп/);
+  assert.match(segText(seg, 0, 'n', '0', 10), /не меньше 1/);
   assert.deepEqual(fitSegments(seg, 5), [{ n: 3, r: 700 }, { n: 1, r: 800 }, { n: 1, r: 1000 }]);
   assert.deepEqual(fitSegments(seg, 30).at(-1), { n: 21, r: 1000 });
   assert.deepEqual(addSegment(seg), [{ n: 3, r: 700 }, { n: 5, r: 800 }, { n: 1, r: 1000 }, { n: 1, r: 1000 }]);
@@ -117,9 +123,9 @@ test('отрезки: последний добирает минуты, ошиб
   assert.equal(canAddSegment([{ n: 1, r: 700 }]), false);
   assert.deepEqual(toSegments([7, 7, 8, 8, 8, 10]), [{ n: 2, r: 700 }, { n: 3, r: 800 }, { n: 1, r: 1000 }]);
   assert.equal(toSegments(goalReps(480, 60, 'ramp', 4)).length, 1, 'больше 10 отрезков — один средний');
-  const sum = paceSum({ seg: [{ n: 3, r: 700 }, { n: 4, r: 750 }] }).replace(/<[^>]+>/g, '');
+  const sum = paceSum(L, { seg: [{ n: 3, r: 700 }, { n: 4, r: 750 }] }).replace(/<[^>]+>/g, '');
   assert.match(sum, /3 × 7 \+ 4 × 7,5 = 51\.$/);
-  assert.match(paceSum({ seg: [{ n: 3, r: 750 }] }).replace(/<[^>]+>/g, ''), /= 22,5 → 22/);
+  assert.match(paceSum(L, { seg: [{ n: 3, r: 750 }] }).replace(/<[^>]+>/g, ''), /= 22,5 → 22/);
 });
 
 test('перетаскивание столбика меняет только эту минуту, режим — свой план', () => {
@@ -158,9 +164,9 @@ test('метроном: щелчок на каждый подъём, минут�
   assert.equal(list[1].t, 60 / 7);
   assert.equal(list[8].t, 60 + 7.5);
   assert.equal(clock(135), '2:15');
-  assert.equal(announce(defaultState(), 0), 'Минута 1. Темп 7.');
-  assert.equal(announce(defaultState(), 9), 'Последняя минута. Темп 10.');
-  assert.equal(announce({ ...defaultState(), ex: 'snatch' }, 5), 'Смена руки. Минута 6. Темп 8.');
+  assert.equal(announce(L, defaultState(), 0), 'Минута 1. Темп 7.');
+  assert.equal(announce(L, defaultState(), 9), 'Последняя минута. Темп 10.');
+  assert.equal(announce(L, { ...defaultState(), ex: 'snatch' }, 5), 'Смена руки. Минута 6. Темп 8.');
 });
 
 // ------------------------------------------------------------- адрес
@@ -234,22 +240,22 @@ test('неверные параметры заменяются значения�
 
 test('графики: цвет — классами, столбики — ползунки с клавиатуры', () => {
   for (const st of [defaultState(), parseState('?ex=snatch&min=60')]) {
-    const bars = barChart(st);
+    const bars = barChart(L, st);
     assert.doesNotMatch(bars, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
     assert.equal(bars.match(/role="slider"/g).length, st.min);
     assert.equal(bars.match(/tabindex="0"/g).length, 1, 'в порядке табуляции один столбик');
   }
-  const bars = barChart(defaultState(), undefined, { focus: 3, now: 9 });
+  const bars = barChart(L, defaultState(), undefined, { focus: 3, now: 9 });
   assert.match(bars, /data-i="3"[^>]*tabindex="0"/);
   assert.match(bars, /class="bar now" data-i="9"/);
   assert.match(bars, /aria-valuenow="7" aria-valuetext="7 подъёмов, 8,6 с на подъём"/);
-  assert.match(barChart(parseState('?ex=snatch')), /class="bar bar-h2"/);
+  assert.match(barChart(L, parseState('?ex=snatch')), /class="bar bar-h2"/);
 });
 
 test('таблица на 60 минут и текущая минута метронома', () => {
   const st = parseState('?min=60');
-  assert.equal(tableBody(st).match(/<tr/g).length, 60);
-  assert.match(tableBody(defaultState(), 2), /<tr class="now"><td class="n">3<\/td>/);
+  assert.equal(tableBody(L, st).match(/<tr/g).length, 60);
+  assert.match(tableBody(L, defaultState(), 2), /<tr class="now"><td class="n">3<\/td>/);
 });
 
 // ------------------------------------------------------------- собранная страница
@@ -257,7 +263,7 @@ test('таблица на 60 минут и текущая минута метр�
 test('страница собрана: пример по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-tempo-'));
   execFileSync('node', ['scripts/build.mjs', out]);
-  const html = readFileSync(join(out, 'tempo', 'index.html'), 'utf8');
+  const html = readFileSync(join(out, 'ru', 'tempo', 'index.html'), 'utf8');
   assert.match(html, /<h1>Калькулятор темпа<\/h1>/);
   assert.match(html, /<svg class="chart" id="chart-bars"/);
   assert.match(html, /7, 7, 8 × 7, 10/);
@@ -270,6 +276,6 @@ test('страница собрана: пример по умолчанию бе
     const base = file.includes('/') ? join(out, 'lib') : out;
     for (const [, path] of script.matchAll(/from '\.\/([^']+)'/g)) assert.ok(existsSync(join(base, path)), `${file} → ${path}`);
   }
-  const home = readFileSync(join(out, 'index.html'), 'utf8');
-  assert.match(home, /href="\/tempo\/"/);
+  const home = readFileSync(join(out, 'ru', 'index.html'), 'utf8');
+  assert.match(home, /href="\/ru\/tempo\/"/);
 });
