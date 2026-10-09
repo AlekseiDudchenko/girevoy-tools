@@ -29,8 +29,8 @@ export function copyLinks(L) {
     const button = e.target.closest('[data-copy]');
     if (!button) return;
     try { await navigator.clipboard.writeText(button.dataset.copy); } catch { button.previousElementSibling?.select(); return; }
-    const text = button.textContent;
+    button.dataset.label ??= button.textContent;
     button.textContent = L.t('calendar.feed.copied');
-    setTimeout(() => { button.textContent = text; }, 1500);
+    setTimeout(() => { button.textContent = button.dataset.label; }, 1500);
   });
 }

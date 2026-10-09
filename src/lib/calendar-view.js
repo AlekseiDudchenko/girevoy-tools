@@ -1,7 +1,7 @@
 // Разметка календаря: общая для сборки (значения на дату сборки) и браузера (на сегодня).
 // Текст — только из словаря L; даты, страны и числа — через Intl.
 import {safeURL,filterEvents,FEDERATIONS,REGIONS} from './calendar.js';
-import {feedFor,feedURL,subscribeLinks} from './calendar-feeds.js';
+import {feedFor,subscribeLinks} from './calendar-feeds.js';
 import {split,nextEvent,isLive,daysUntil,seriesOf,seriesEvents,todayISO} from './calendar-series.js';
 import {langPath} from './locale.js';
 const esc = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -56,9 +56,9 @@ export function subscribeBlock(L,site,path) {
 }
 /** Подписка, совпадающая с фильтрами страницы. */
 export const filterSubscribe = (L,site,filters,events) => subscribeBlock(L,site,feedFor(filters,events));
-/** Перечень лент внизу календаря: ссылки видны и без JavaScript. Федерация × регион — только через фильтры. */
-export function feedList(L,events,series) {
-  const a=(path,text)=>`<li><a href="${feedURL(path)}">${esc(text)}</a></li>`;
+/** Перечень лент внизу календаря: ссылки webcal:// открывают подписку в календаре, видны и без JavaScript. Федерация × регион — только через фильтры. */
+export function feedList(L,site,events,series) {
+  const a=(path,text)=>`<li><a href="${esc(subscribeLinks(site,path).webcal)}">${esc(text)}</a></li>`;
   const countries=[...new Set(events.map(e=>e.country).filter(Boolean))].sort((x,y)=>countryName(L,x).localeCompare(countryName(L,y),L.lang));
   const group=(title,items)=>`<div><h3>${esc(title)}</h3><ul>${items.join('')}</ul></div>`;
   return `<details class="cal-feeds"><summary>${esc(L.t('calendar.feed.list'))}</summary><p class="hint">${esc(L.t('calendar.feed.listLead'))}</p><div class="cal-feeds-grid">

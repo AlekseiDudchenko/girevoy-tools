@@ -1,5 +1,6 @@
 import {pageLocale,replaceSearch} from './page.js';
 import {parseFilters} from './lib/calendar.js';
+import {feedFor} from './lib/calendar-feeds.js';
 import {localISO} from './lib/calendar-series.js';
 import {featureCard,seriesCards,renderBrowse,filterSubscribe} from './lib/calendar-view.js';
 import {copyLinks} from './page.js';
@@ -19,12 +20,15 @@ function fill(filters) {
     if (field instanceof RadioNodeList) { for (const r of field) r.checked=r.value===value; } else if (field) field.value=value;
   }
 }
+let shownFeed='all';
 function render() {
   const filters=Object.fromEntries([...new FormData(form)].filter(([,v])=>v));
   const result=renderBrowse(L,events,filters,{today,series});
   document.getElementById('calendar-events').innerHTML=result.html;
   for (const n of form.querySelectorAll('[data-when]')) n.textContent=L.num(result[n.dataset.when],0);
-  document.getElementById('calendar-subscribe').innerHTML=filterSubscribe(L,site,filters,events);
+  // Блок подписки перерисовывается, только когда сменилась лента: иначе открытое меню закрылось бы.
+  const feed=feedFor(filters,events);
+  if (feed!==shownFeed) { shownFeed=feed; document.getElementById('calendar-subscribe').innerHTML=filterSubscribe(L,site,filters,events); }
   document.getElementById('calendar-count').textContent=L.t('calendar.count',{n:L.num(result.shown,0)});
   replaceSearch(Object.keys(filters).length?'?'+new URLSearchParams(filters):'');
 }

@@ -15,6 +15,7 @@ const events = validateEvents(read('data/calendar/events.json'));
 const series = validateSeries(read('data/calendar/series.json'), events);
 const SITE = 'https://tools.vsegiri.com';
 const TODAY = '2026-10-09';
+const YESTERDAY = '2026-10-08';
 const uids = (ics) => [...ics.matchAll(/^UID:(.+)@tools\.vsegiri\.com\r$/gm)].map((m) => m[1]);
 const unfold = (ics) => ics.replace(/\r\n /g, '');
 
@@ -37,7 +38,7 @@ test('country feeds do not depend on events: a country keeps its address after i
 });
 
 test('each feed holds exactly the upcoming events its filter selects, past ones are left out', () => {
-  const upcoming = events.filter((e) => !isPast(e, TODAY));
+  const upcoming = events.filter((e) => !isPast(e, YESTERDAY));
   const expected = {
     all: upcoming,
     'federation/iukl': filterEvents(upcoming, {federation: 'IUKL'}),
@@ -52,6 +53,17 @@ test('each feed holds exactly the upcoming events its filter selects, past ones 
     assert.deepEqual(uids(feedICS(byPath[path], events, TODAY, SITE)).sort(), list.map((e) => e.id).sort(), path);
   }
   assert.ok(events.some((e) => isPast(e, TODAY)), 'data has past events to leave out');
+});
+
+test('an event stays one day after it ends: the build date is UTC, in the Americas its last day is still on', () => {
+  const all = feeds(events, series)[0];
+  const e = {...events.find((x) => x.country === 'US'), startDate: '2026-11-27', endDate: '2026-11-28'};
+  assert.deepEqual(uids(feedICS(all, [e], '2026-11-29', SITE)), [e.id]);
+  assert.deepEqual(uids(feedICS(all, [e], '2026-11-30', SITE)), []);
+});
+
+test('every region has an English feed name', () => {
+  for (const f of feeds(events, series)) assert.doesNotMatch(f.name, /undefined/, f.path);
 });
 
 test('a feed is a valid calendar even when empty: name, refresh, CRLF, folded lines', () => {
@@ -84,6 +96,7 @@ test('the page filters choose the matching feed; dates and the past tab do not m
   assert.equal(feedFor({federation: 'WKSF', region: 'europe'}, events), 'federation/wksf/europe');
   assert.equal(feedFor({country: 'DE'}, events), 'country/de');
   assert.equal(feedFor({format: 'online'}, events), 'online');
+  assert.equal(feedFor({format: 'hybrid'}, events), 'online');
   for (const f of [{format: 'in-person'}, {country: 'DE', federation: 'IUKL'}, {format: 'online', region: 'europe'}, {federation: 'NOPE'}]) assert.equal(feedFor(f, events), null, JSON.stringify(f));
   const L = locale('en');
   assert.match(filterSubscribe(L, SITE, {federation: 'IUKL'}, events), /webcal:\/\/tools\.vsegiri\.com\/calendar\/feeds\/federation\/iukl\.ics/);
@@ -105,7 +118,7 @@ test('the build writes every feed and serves them as text/calendar; the sitemap 
   assert.match(readFileSync(join(out, '_headers'), 'utf8'), /\/calendar\/feeds\/\*\n {2}Content-Type: text\/calendar; charset=utf-8/);
   assert.doesNotMatch(readFileSync(join(out, 'sitemap.xml'), 'utf8'), /\.ics/);
   const page = readFileSync(join(out, 'en/calendar/index.html'), 'utf8');
-  assert.match(page, /href="\/calendar\/feeds\/federation\/iukl\.ics"/);
+  assert.match(page, /href="webcal:\/\/tools\.vsegiri\.com\/calendar\/feeds\/federation\/iukl\.ics"/);
   assert.match(page, /Subscribe to calendar/);
   assert.match(readFileSync(join(out, `de/calendar/${series[0].slug}/index.html`), 'utf8'), new RegExp(`feeds/series/${series[0].slug}\\.ics`));
 });

@@ -1,7 +1,8 @@
 // Ленты подписки календаря: постоянные адреса /calendar/feeds/<path>.ics, которые
 // календарные приложения перечитывают сами. Набор лент выводится из справочников и
 // данных: новый турнир, федерация, серия или страна попадают в ленты при сборке, руками
-// ленты не ведутся. В ленте — только предстоящие и идущие события на дату сборки.
+// ленты не ведутся. В ленте — только предстоящие и идущие события на дату сборки;
+// закончившееся держится ещё день: дата сборки — по UTC, а на западе последний день ещё идёт.
 // Имена лент — свойства файла .ics, а не текст страницы: одни на всех языках, по-английски.
 import {FEDERATIONS, REGIONS, REGION_COUNTRIES, filterEvents, calendarICS, icsText} from './calendar.js';
 import {isPast, seriesEvents} from './calendar-series.js';
@@ -31,9 +32,10 @@ export function feeds(events, series = []) {
 
 export const feedURL = (path) => `${FEED_ROOT}${path}.ics`;
 
-/** Файл ленты: предстоящие и идущие события на дату today, по дате начала. */
+const dayBefore = (day) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); };
+/** Файл ленты: предстоящие и идущие события на дату today (с днём запаса), по дате начала. */
 export function feedICS(feed, events, today, site) {
-  const own = feed.select(events).filter((e) => !isPast(e, today)).sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id));
+  const own = feed.select(events).filter((e) => !isPast(e, dayBefore(today))).sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id));
   const desc = `Upcoming kettlebell sport competitions from ${site}/en/calendar/. Dates are attributed to official federation sources; check the organizer before booking.`;
   return calendarICS(own, ['METHOD:PUBLISH', `X-WR-CALNAME:${icsText(`${BRAND} — ${feed.name}`)}`, `X-WR-CALDESC:${icsText(desc)}`,
     'REFRESH-INTERVAL;VALUE=DURATION:PT12H', 'X-PUBLISHED-TTL:PT12H']);
@@ -42,7 +44,7 @@ export function feedICS(feed, events, today, site) {
 /**
  * Лента, совпадающая с фильтрами страницы, или null. Даты и вкладка не учитываются:
  * лента всегда «от сегодня». Подходят: ничего, одна федерация, один регион, федерация
- * и регион, одна страна, формат «онлайн».
+ * и регион, одна страна, формат «онлайн» или «гибрид» — лента онлайн включает оба.
  */
 export function feedFor(filters, events) {
   const {country, region, federation, format} = filters;
@@ -53,7 +55,7 @@ export function feedFor(filters, events) {
   if (set === 'region' && reg) return `region/${region}`;
   if (set === 'federation+region' && fed && reg) return `federation/${federation.toLowerCase()}/${region}`;
   if (set === 'country' && feedCountries(events).includes(country)) return `country/${country.toLowerCase()}`;
-  if (set === 'format' && format === 'online') return 'online';
+  if (set === 'format' && (format === 'online' || format === 'hybrid')) return 'online';
   return null;
 }
 

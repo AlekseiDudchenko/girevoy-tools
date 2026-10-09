@@ -28,7 +28,7 @@ export default {
       <div class="calendar-filter-actions"><p id="calendar-count" role="status" aria-live="polite">${esc(L.t('calendar.count',{n:L.num(browse.shown,0)}))}</p><button class="btn" type="reset">${esc(L.t('calendar.reset'))}</button></div>
       <div id="calendar-subscribe" class="calendar-subscribe">${filterSubscribe(L,site,{},events)}</div>
       </form><noscript><p>${esc(L.t('calendar.noscript'))}</p></noscript>
-      <div id="calendar-events">${browse.html}</div></section><section class="cal-section">${feedList(L,events,series)}</section><p class="calendar-note">${esc(L.t('calendar.note'))}</p>
+      <div id="calendar-events">${browse.html}</div></section><section class="cal-section">${feedList(L,site,events,series)}</section><p class="calendar-note">${esc(L.t('calendar.note'))}</p>
       <script type="application/json" id="calendar-data">${JSON.stringify({events,series,site}).replaceAll('<','\\u003c')}</script></section>`;
   },
 };
