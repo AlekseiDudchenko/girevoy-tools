@@ -1,14 +1,13 @@
 // Поведение страницы /<язык>/tempo/. Расчёт и разметка — чистые функции из /lib/,
-// здесь только события, поля, метроном и адрес страницы.
+// здесь только события, поля и адрес страницы.
 import {
-  COUNTDOWNS, D_MAX, D_MIN, RATE_MAX, addSegment, canAddSegment, clicks, clock,
+  D_MAX, D_MIN, RATE_MAX, addSegment, canAddSegment,
   editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
-  announce, barAxis, barChart, barGeometry, barLegend, chartSize, errorText, metroBoard, metroText, paceSum, segmentRows, summary,
+  barAxis, barChart, barGeometry, barLegend, chartSize, errorText, paceSum, segmentRows, summary,
   tableBody, tableFoot, tableHead,
 } from './lib/tempo-view.js';
-import { SPEECH_LANG } from './lib/locale.js';
 import { pageLocale, replaceSearch } from './page.js';
 
 document.documentElement.classList.add('js');
@@ -23,8 +22,7 @@ const el = {
   summary: $('summary'), boxBars: $('box-bars'),
   legendBars: $('legend-bars'),
   head: $('table-head'), body: $('table-body'), foot: $('table-foot'), status: $('status'),
-  metroStart: $('metro-start'), metroNow: $('metro-now'), voice: $('voice'), countdown: $('countdown'),
-  metro: $('metro-start').closest('.metro'), board: $('board'), full: $('metro-full'),
+  barsEdit: $('bars-edit'),
   tabs: [...document.querySelectorAll('[role="tab"]')],
 };
 
@@ -44,7 +42,7 @@ const size = () => chartSize(el.boxBars.clientWidth || 900);
 
 function renderChart() {
   const focused = el.boxBars.contains(document.activeElement);
-  html(el.boxBars, barChart(L, state, size(), { focus: focusIdx, now: metro.minute, axis: drag?.axis }));
+  html(el.boxBars, barChart(L, state, size(), { focus: focusIdx, axis: drag?.axis }));
   if (focused) el.boxBars.querySelector(`[data-i="${focusIdx}"]`)?.focus();
 }
 
@@ -88,13 +86,8 @@ function render(skip) {
   renderChart();
   html(el.legendBars, barLegend(L, state));
   html(el.head, tableHead(L, state));
-  html(el.body, tableBody(L, state, metro.minute));
+  html(el.body, tableBody(L, state));
   html(el.foot, tableFoot(L, state));
-  if (!metro.on) {
-    el.metroNow.textContent = metroIdle();
-    html(el.board, metroBoard(L, state, 0));
-  }
-  metro.resync();
   replaceSearch(serializeState(state));
 }
 
@@ -116,7 +109,6 @@ const int = (raw) => (/^\s*\d{1,4}\s*$/.test(raw) ? Number(raw) : NaN);
 el.ex.addEventListener('change', () => update({ ...state, ex: el.ex.value }));
 el.min.addEventListener('change', () => {
   const n = Number(el.min.value);
-  if (metro.on && n !== state.min) metro.stop();
   focusIdx = Math.min(focusIdx, n - 1);
   update(withMinutes(state, n));
 });
@@ -219,8 +211,26 @@ function dragTo(e) {
   if (value !== repsOf(state)[drag.i] || state.mode !== 'plan') update(setMinute(state, drag.i, value));
 }
 
+// На сенсорном экране палец, которым прокручивают страницу, не должен менять план:
+// столбики тянутся только в режиме редактирования (кнопка у графика). Мышью —
+// всегда, с клавиатуры — всегда.
+const touch = matchMedia('(pointer: coarse)');
+let editing = false;
+const canDrag = () => editing || !touch.matches;
+
+function setEditing(on) {
+  editing = on;
+  el.barsEdit.setAttribute('aria-pressed', String(on));
+  el.barsEdit.textContent = L.t(on ? 'tempo.barsDone' : 'tempo.barsEdit');
+  el.boxBars.classList.toggle('locked', !canDrag());
+  el.boxBars.classList.toggle('editing', on);
+}
+el.barsEdit.addEventListener('click', () => setEditing(!editing));
+touch.addEventListener('change', () => setEditing(false));
+setEditing(false);
+
 el.boxBars.addEventListener('pointerdown', (e) => {
-  if (e.button !== 0) return;
+  if (e.button !== 0 || !canDrag()) return;
   e.preventDefault();
   drag = { i: null, axis: barAxis(state) };
   el.boxBars.setPointerCapture(e.pointerId);
@@ -258,182 +268,6 @@ el.boxBars.addEventListener('keydown', (e) => {
     renderChart();
     el.boxBars.querySelector(`[data-i="${focusIdx}"]`)?.focus();
   }
-});
-
-// ------------------------------------------------------------- метроном
-
-const VOICE_KEY = 'tempo.voice';
-try {
-  if (localStorage.getItem(VOICE_KEY) === 'off') el.voice.checked = false;
-} catch { /* без хранилища — голос включён */ }
-el.voice.addEventListener('change', () => {
-  try { localStorage.setItem(VOICE_KEY, el.voice.checked ? 'on' : 'off'); } catch { /* не страшно */ }
-});
-
-const COUNT_KEY = 'tempo.countdown';
-try {
-  const saved = Number(localStorage.getItem(COUNT_KEY));
-  if (COUNTDOWNS.includes(saved)) el.countdown.value = String(saved);
-} catch { /* без хранилища — отсчёт по умолчанию */ }
-el.countdown.addEventListener('change', () => {
-  try { localStorage.setItem(COUNT_KEY, el.countdown.value); } catch { /* не страшно */ }
-});
-
-function speak(text) {
-  if (!el.voice.checked || !('speechSynthesis' in window)) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = SPEECH_LANG[L.lang];
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-
-/** Строка метронома до старта: время, первая минута и её темп. */
-const metroIdle = () => metroText(L, '0:00', 1, state.min, repsOf(state)[0]);
-
-const LOOKAHEAD = 0.15; // секунд: щелчки планируются заранее, таймер может опаздывать
-
-/** Звук сигнала: частота, Гц, и длительность, с. Старт и подъём — долгие. */
-const SOUND = {
-  count: { hz: 880, dur: 0.08 },
-  go: { hz: 1320, dur: 0.8 },
-  pre: { hz: 1100, dur: 0.05 },
-  rep: { hz: 1760, dur: 0.3 },
-};
-
-const metro = {
-  on: false, starting: false, ctx: null, t0: 0, count: 0, list: [], sounding: [], idx: 0, minute: -1, timer: 0, shown: '', lock: null,
-
-  async start() {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) {
-      say(L.t('tempo.metro.noAudio'));
-      return;
-    }
-    if (this.starting) return; // второе нажатие, пока звук включается
-    this.starting = true;
-    this.ctx ||= new AC();
-    await this.ctx.resume();
-    this.starting = false;
-    this.on = true;
-    this.count = Number(el.countdown.value);
-    this.t0 = this.ctx.currentTime + 0.4 + this.count;
-    this.list = clicks(repsOf(state), this.count);
-    this.idx = 0;
-    this.minute = -1;
-    this.timer = setInterval(() => this.tick(), 25);
-    el.metroStart.textContent = L.t('tempo.metro.stop');
-    el.metroStart.setAttribute('aria-pressed', 'true');
-    try { this.lock = await navigator.wakeLock?.request('screen'); } catch { /* экран может погаснуть */ }
-    this.tick();
-  },
-
-  stop(finished) {
-    if (!this.on) return;
-    this.on = false;
-    clearInterval(this.timer);
-    // Уже запланированные сигналы (долгий старт, подъём) не доигрывают после «Стоп».
-    for (const osc of this.sounding) osc.stop();
-    this.sounding = [];
-    this.minute = -1;
-    this.shown = '';
-    this.lock?.release().catch(() => {});
-    this.lock = null;
-    el.metroStart.textContent = L.t('tempo.metro.start');
-    el.metroStart.setAttribute('aria-pressed', 'false');
-    if (finished) speak(L.t('tempo.say.stop'));
-    else if ('speechSynthesis' in window) speechSynthesis.cancel();
-    render();
-  },
-
-  /** План изменили на ходу: щелчки дальше — по новому плану. */
-  resync() {
-    if (!this.on) return;
-    const now = this.ctx.currentTime - this.t0 + LOOKAHEAD;
-    this.list = clicks(repsOf(state), this.count);
-    this.idx = this.list.findIndex((c) => c.t >= now);
-    if (this.idx < 0) this.idx = this.list.length;
-  },
-
-  beep(at, kind) {
-    const { ctx } = this;
-    const { hz, dur } = SOUND[kind];
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = hz;
-    gain.gain.setValueAtTime(0.0001, at);
-    gain.gain.exponentialRampToValueAtTime(0.6, at + 0.003);
-    gain.gain.setValueAtTime(0.6, at + dur - 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, at + dur);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(at);
-    osc.stop(at + dur + 0.01);
-    this.sounding.push(osc);
-    osc.onended = () => { this.sounding = this.sounding.filter((o) => o !== osc); };
-  },
-
-  tick() {
-    const now = this.ctx.currentTime - this.t0;
-    // Последний сигнал подъёма — ровно на конце: остановка — когда он отзвучит.
-    if (now >= state.min * 60 + SOUND.rep.dur) {
-      this.stop(true);
-      return;
-    }
-    while (this.idx < this.list.length && this.list[this.idx].t < now + LOOKAHEAD) {
-      const c = this.list[this.idx];
-      if (c.t >= now - 0.05) this.beep(this.t0 + c.t, c.kind);
-      this.idx += 1;
-    }
-    const m = Math.min(state.min - 1, Math.max(0, Math.floor(now / 60)));
-    if (now >= 0 && m !== this.minute) {
-      this.minute = m;
-      speak(announce(L, state, m));
-      html(el.body, tableBody(L, state, m));
-      renderChart();
-    }
-    const reps = repsOf(state)[m];
-    const shown = Math.min(Math.max(now, -this.count), state.min * 60);
-    const text = metroText(L, clock(shown), m + 1, state.min, reps);
-    if (text !== this.shown) {
-      this.shown = text;
-      el.metroNow.textContent = text;
-      html(el.board, metroBoard(L, state, shown));
-    }
-  },
-};
-
-el.metroStart.addEventListener('click', () => (metro.on ? metro.stop() : metro.start()));
-
-// ------------------------------------------------------------- на весь экран
-
-// Табло на весь экран — для планшета на полу у помоста. Где есть Fullscreen API,
-// табло занимает весь экран; где нет (iPhone), — всё окно браузера.
-const fs = {
-  request: el.metro.requestFullscreen || el.metro.webkitRequestFullscreen,
-  exit: document.exitFullscreen || document.webkitExitFullscreen,
-  element: () => document.fullscreenElement || document.webkitFullscreenElement,
-};
-
-function setFull(on) {
-  el.metro.classList.toggle('full', on);
-  document.documentElement.classList.toggle('metro-full', on);
-  el.board.setAttribute('aria-hidden', String(!on));
-  el.full.setAttribute('aria-pressed', String(on));
-  el.full.textContent = L.t(on ? 'tempo.metro.exit' : 'tempo.metro.full');
-}
-
-el.full.addEventListener('click', async () => {
-  const on = !el.metro.classList.contains('full');
-  setFull(on);
-  try {
-    if (on && fs.request && !fs.element()) await fs.request.call(el.metro);
-    else if (!on && fs.element()) await fs.exit.call(document);
-  } catch { /* без Fullscreen API табло занимает окно */ }
-});
-const fsChange = () => { if (!fs.element() && el.metro.classList.contains('full')) setFull(false); };
-document.addEventListener('fullscreenchange', fsChange);
-document.addEventListener('webkitfullscreenchange', fsChange);
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && el.metro.classList.contains('full') && !fs.element()) setFull(false);
 });
 
 // ------------------------------------------------------------- ссылка и печать

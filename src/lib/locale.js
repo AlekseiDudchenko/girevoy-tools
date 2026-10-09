@@ -10,9 +10,6 @@
 export const LANGS = ['ru', 'en', 'de'];
 /** Язык для hreflang="x-default": версия для тех, чей язык не поддержан. */
 export const X_DEFAULT = 'en';
-/** Язык голоса метронома: SpeechSynthesisUtterance.lang. */
-export const SPEECH_LANG = { ru: 'ru-RU', en: 'en-US', de: 'de-DE' };
-
 /** Адрес страницы на языке lang: slug '' — главная, 'tempo/' — инструмент. */
 export const langPath = (lang, slug = '') => `/${lang}/${slug}`;
 

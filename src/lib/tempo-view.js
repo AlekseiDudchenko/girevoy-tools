@@ -3,7 +3,7 @@
 // умолчанию при сборке, браузер — после каждого изменения. Пользовательский текст
 // сюда не попадает: только числа из состояния и подписи из словаря языка страницы.
 // Первый аргумент каждой функции с текстом — L, язык страницы (locale.js).
-import { RATE_MAX, RATE_MIN, clock, planText, rateText, repsOf, rows, secPerRep, segSum } from './tempo.js';
+import { RATE_MAX, RATE_MIN, planText, rateText, repsOf, rows, secPerRep, segSum } from './tempo.js';
 
 const r1 = (v) => Math.round(v * 10) / 10;
 /** Отклонение со знаком: +1, 0, −2. */
@@ -60,8 +60,8 @@ export function barGeometry(n, size, axis) {
 
 /**
  * Столбики темпа по минутам. Каждый столбик — ползунок: его тянут мышью и
- * меняют стрелками. opts.focus — столбик в порядке табуляции, opts.now —
- * текущая минута метронома, opts.axis — шкала, закреплённая на время перетаскивания.
+ * меняют стрелками. opts.focus — столбик в порядке табуляции, opts.axis — шкала,
+ * закреплённая на время перетаскивания.
  */
 export function barChart(L, state, size = chartSize(900), opts = {}) {
   const data = rows(state);
@@ -86,7 +86,7 @@ export function barChart(L, state, size = chartSize(900), opts = {}) {
   const focus = Math.min(opts.focus ?? 0, n - 1);
   const labels = g.slot >= 16;
   data.forEach((r, i) => {
-    const cls = ['bar', r.hand ? `bar-h${r.hand}` : '', opts.now === i ? 'now' : ''].filter(Boolean).join(' ');
+    const cls = ['bar', r.hand ? `bar-h${r.hand}` : ''].filter(Boolean).join(' ');
     const y = g.y(r.reps);
     s += `<rect class="${cls}" data-i="${i}" x="${r1(g.cx(i) - bw / 2)}" y="${y}" width="${bw}" height="${r1(g.y(0) - y)}" tabindex="${i === focus ? 0 : -1}" role="slider" aria-label="${L.t('tempo.bar.label', { m: r.minute })}" aria-valuemin="${RATE_MIN}" aria-valuemax="${RATE_MAX}" aria-valuenow="${r.reps}" aria-valuetext="${L.t('tempo.bar.value', { reps: r.reps, word: L.plural(r.reps, 'reps'), sec: secPerRep(L, r.reps) })}"/>`;
     if (labels) s += `<text class="bar-label" x="${g.cx(i)}" y="${y - 5}" text-anchor="middle">${r.reps}</text>`;
@@ -134,7 +134,7 @@ export function summary(L, state) {
   return s;
 }
 
-// ------------------------------------------------------------- ошибки и голос
+// ------------------------------------------------------------- ошибки
 
 /** Объяснение ошибки цели или отрезка: { code, …числа } из tempo.js → строка словаря. */
 export function errorText(L, error) {
@@ -145,36 +145,6 @@ export function errorText(L, error) {
   if (error.code === 'goalMax') words.maxWord = L.plural(error.max, 'reps');
   if (error.code === 'rate') words.example = L.dec(7.5);
   return L.t(`tempo.err.${error.code}`, { ...error, ...words });
-}
-
-/** Что метроном говорит в начале минуты m (с 0). */
-export function announce(L, state, m) {
-  const reps = repsOf(state);
-  const parts = [];
-  if (state.ex === 'snatch' && m === state.hand) parts.push(L.t('tempo.say.switch'));
-  parts.push(m === reps.length - 1 ? L.t('tempo.say.last') : L.t('tempo.say.minute', { m: m + 1 }));
-  parts.push(L.t('tempo.say.rate', { r: reps[m] }));
-  return parts.join(' ');
-}
-
-/** Строка метронома: время, минута и её темп. */
-export const metroText = (L, clockText, m, n, reps) => L.t('tempo.metro.now', { clock: clockText, m, n, reps });
-
-/**
- * Табло метронома на весь экран: часы, темп текущей минуты крупно, минута из скольких,
- * рука в рывке и темп следующей минуты. sec — секунды от старта, до старта — с минусом.
- */
-export function metroBoard(L, state, sec) {
-  const reps = repsOf(state);
-  const n = reps.length;
-  const m = Math.min(n - 1, Math.max(0, Math.floor(sec / 60)));
-  const t = (key, args) => L.t(`tempo.board.${key}`, args);
-  const hand = state.ex === 'snatch' ? ` · ${L.t(`tempo.legend.${m < state.hand ? 'h1' : 'h2'}`)}` : '';
-  const next = m === n - 1 ? t('last') : t('next', { reps: reps[m + 1] });
-  return `<p class="board-clock n${sec < 0 ? ' count' : ''}">${clock(sec)}</p>
-<p class="board-rate"><span class="n">${reps[m]}</span> <span class="board-unit">${L.t('tempo.axis.perMin')}</span></p>
-<p class="board-minute">${t('minute', { m: m + 1, n })}${hand}</p>
-<p class="board-next">${next}</p>`;
 }
 
 // ------------------------------------------------------------- отрезки
@@ -211,10 +181,10 @@ export function tableHead(L, state) {
   return `<tr>${th('minute')}${th('reps')}${th('sec')}${counts}${th('dev')}</tr>`;
 }
 
-export function tableBody(L, state, now = -1) {
+export function tableBody(L, state) {
   const snatch = state.ex === 'snatch';
   return rows(state).map((r, i) => {
-    const cls = [i === now ? 'now' : '', snatch && i === state.hand ? 'switch' : ''].filter(Boolean).join(' ');
+    const cls = snatch && i === state.hand ? 'switch' : '';
     const counts = snatch
       ? `<td class="n">${r.hand === 1 ? r.h1 : ''}</td><td class="n">${r.hand === 2 ? r.h2 : ''}</td><td class="n total">${r.cum}</td>`
       : `<td class="n total">${r.cum}</td>`;

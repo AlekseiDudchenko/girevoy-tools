@@ -5,12 +5,12 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DICTS, LANGS, locale } from '../src/i18n/index.js';
-import { SPEECH_LANG, X_DEFAULT, makeLocale, switchPath } from '../src/lib/locale.js';
+import { X_DEFAULT, makeLocale, switchPath } from '../src/lib/locale.js';
 import { parseNumber } from '../src/lib/format.js';
 import { defaultState as coefState, parseState as coefParse } from '../src/lib/coefficients.js';
 import { calcText, readout, scoreChart, tableHead as coefHead } from '../src/lib/coefficients-view.js';
 import { defaultState as tempoState, goalError, parseRate, rateText, secPerRep } from '../src/lib/tempo.js';
-import { announce, barChart, errorText, summary, tableHead } from '../src/lib/tempo-view.js';
+import { barChart, errorText, summary, tableHead } from '../src/lib/tempo-view.js';
 import { PAGES } from '../src/pages/index.js';
 import { redirects } from '../src/redirects.js';
 import { BRAND } from '../src/brand.js';
@@ -103,16 +103,6 @@ test('подписи графиков, таблиц и расшифровка з
   assert.equal(errorText(en, goalError(3, 5, 'even', 2)), 'Minute 1 comes out at 0 reps, fewer than 1 per minute. Raise the goal.');
   assert.equal(errorText(de, goalError(301, 10, 'even', 2)), 'In 10 Minuten höchstens 300 Wiederholungen: 30 pro Minute.');
 });
-
-test('метроном говорит на языке страницы', () => {
-  const snatch = { ...tempoState(), ex: 'snatch' };
-  assert.equal(announce(locale('en'), snatch, 5), 'Switch hands. Minute 6. Pace 8.');
-  assert.equal(announce(locale('de'), tempoState(), 9), 'Letzte Minute. Tempo 10.');
-  assert.deepEqual(Object.keys(SPEECH_LANG), LANGS);
-  for (const lang of LANGS) assert.ok(SPEECH_LANG[lang].startsWith(`${lang}-`));
-});
-
-// ------------------------------------------------------------- собранные страницы
 
 test('каждая страница каждого языка ссылается hreflang на все версии, x-default — на английскую', () => {
   for (const lang of LANGS) {
