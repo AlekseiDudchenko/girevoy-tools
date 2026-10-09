@@ -3,6 +3,8 @@
 // названия: ключи событий сверяются вручную и не меняются. «Сегодня» передаётся
 // аргументом: сборка берёт дату сборки, браузер — свою.
 export const todayISO = (now = new Date()) => now.toISOString().slice(0, 10);
+/** Сегодня по часам зрителя — в браузере: событие заканчивается в его день, а не по UTC. */
+export const localISO = (now = new Date()) => [now.getFullYear(), now.getMonth() + 1, now.getDate()].map((n, i) => String(n).padStart(i ? 2 : 4, '0')).join('-');
 export const isPast = (e, today) => e.endDate < today;
 export const isLive = (e, today) => e.startDate <= today && today <= e.endDate;
 export const daysUntil = (date, today) => Math.round((Date.parse(date) - Date.parse(today)) / 86400000);

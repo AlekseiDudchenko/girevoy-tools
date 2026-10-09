@@ -1,13 +1,16 @@
 import {pageLocale,replaceSearch} from './page.js';
 import {parseFilters} from './lib/calendar.js';
-import {todayISO} from './lib/calendar-series.js';
-import {featureCard,renderBrowse} from './lib/calendar-view.js';
+import {localISO} from './lib/calendar-series.js';
+import {featureCard,seriesCards,renderBrowse} from './lib/calendar-view.js';
 const L=await pageLocale();
 const {events,series}=JSON.parse(document.getElementById('calendar-data').textContent);
 const form=document.getElementById('calendar-filters');
 // «Сегодня» — дата браузера: страница могла быть собрана несколько дней назад.
-const today=todayISO();
+const today=localISO();
 document.getElementById('cal-next').innerHTML=featureCard(L,events,today,series);
+document.getElementById('cal-series').innerHTML=seriesCards(L,series,events,today);
+// Вкладки и фильтры работают только со скриптом: без него форма скрыта, виден список предстоящих.
+form.classList.add('is-ready');
 function fill(filters) {
   form.reset();
   for (const [key,value] of Object.entries(filters)) {

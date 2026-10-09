@@ -42,7 +42,7 @@ function sourceLinks(L,e) {
     return urls.length===1 ? link(urls[0],o) : `${esc(o)} (${urls.map((u,i)=>link(u,L.num(i+1,0))).join(', ')})`; }).join(' · ');
 }
 const seriesLink = (L,e,series) => { const s=seriesOf(series,e); return s ? `<a class="cal-series-link" href="${seriesHref(L,s)}">${esc(L.t('calendar.series.part',{name:s.name}))}</a>` : ''; };
-const actions = (L,e) => `<div class="cal-actions">${e.registrationUrl?link(e.registrationUrl,L.t('calendar.register'),'btn btn-primary'):''}<a class="btn" href="/calendar/ics/${esc(e.id)}.ics" download>${esc(L.t('calendar.ics'))}</a></div>`;
+const actions = (L,e,today) => `<div class="cal-actions">${e.registrationUrl&&!(e.registrationDeadline&&e.registrationDeadline<today)?link(e.registrationUrl,L.t('calendar.register'),'btn btn-primary'):''}<a class="btn" href="/calendar/ics/${esc(e.id)}.ics" download>${esc(L.t('calendar.ics'))}</a></div>`;
 
 /** Ближайший старт — крупная карточка в шапке календаря. */
 export function featureCard(L,events,today,series=[]) {
@@ -50,8 +50,8 @@ export function featureCard(L,events,today,series=[]) {
   if (!e) return '';
   const when=relative(L,e,today);
   return `<article class="cal-feature${isLive(e,today)?' is-live':''}"><p class="cal-kicker">${esc(L.t('calendar.next'))}${when?` · <strong>${esc(when)}</strong>`:''}</p>
-    <div class="cal-feature-main">${leaf(L,e,'cal-leaf-lg')}<div><h2><a href="#${esc(e.id)}">${esc(e.title)}</a></h2><p class="cal-place">${esc(placeLabel(L,e))}</p><p class="cal-tags">${tags(L,e)}</p></div></div>
-    ${actions(L,e)}</article>`;
+    <div class="cal-feature-main">${leaf(L,e,'cal-leaf-lg')}<div><h2>${esc(e.title)}</h2><p class="cal-place">${esc(placeLabel(L,e))}</p><p class="cal-tags">${tags(L,e)}</p></div></div>
+    ${actions(L,e,today)}</article>`;
 }
 /** Карточки серий: число выпусков, следующий или последний. */
 export function seriesCards(L,series,events,today) {
@@ -73,11 +73,11 @@ export function eventCard(L,e,today,series=[]) {
     e.registrationDeadline?fact('calendar.deadline',`<strong>${esc(dateLabel(L,e.registrationDeadline))}</strong>`):''].join('');
   const when=relative(L,e,today);
   return `<article class="cal-event cal-is-${e.status}${isLive(e,today)?' is-live':''}" id="${esc(e.id)}">${leaf(L,e)}
-    <div class="cal-body">${when?`<p class="cal-when">${esc(when)}</p>`:''}<h3>${esc(e.title)}</h3>
+    <div class="cal-body">${when?`<p class="cal-when">${esc(when)}</p>`:''}<h4>${esc(e.title)}</h4>
     <p class="cal-place">${esc(placeLabel(L,e))}${times?` · ${esc(times)}`:''}</p>
     <p class="cal-tags">${tags(L,e)}</p><dl class="cal-facts">${facts}</dl>
     <p class="cal-source">${seriesLink(L,e,series)}<span>${esc(L.t('calendar.sources'))}: ${sourceLinks(L,e)}</span></p></div>
-    ${actions(L,e)}</article>`;
+    ${actions(L,e,today)}</article>`;
 }
 /** Прошедший турнир — строка: дата, название, место, федерация, источник. */
 export function pastRow(L,e,series=[]) {

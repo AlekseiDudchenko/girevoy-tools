@@ -24,7 +24,8 @@ Coverage: upcoming and past events (from 2024) from five independent official so
 Selection is not exhaustive. Past events are kept: they show where and when a series
 was held and are listed under “Past” and on series pages. A past event needs exact
 dates printed by an official source (announcement, application or post-event report);
-an event whose sources disagree on dates is left out until resolved (on 2026-10-09:
+WKSF applications print headline dates that include the arrival/weigh-in day; they are
+kept as printed. An event whose sources disagree on dates is left out until resolved (on 2026-10-09:
 WKSF Oceania Open Cup 2026, WKSF South & North America 2026). Country codes are ISO 3166-1 alpha-2; Scotland maps to GB
 without inventing a city. Unknown optional data remains null/empty. WKSF European
 and IUKL Riga cross-listings merge under explicitly assigned canonical IDs.

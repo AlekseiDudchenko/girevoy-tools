@@ -13,7 +13,7 @@ export default {
     return `<section class="cal">
       <header class="cal-hero"><div><h1>${esc(L.t('calendar.title'))}</h1><p class="lead">${esc(L.t('calendar.lead'))}</p></div>
       <div id="cal-next">${featureCard(L,events,today,series)}</div></header>
-      <section class="cal-section"><h2>${esc(L.t('calendar.series.title'))}</h2><p class="cal-section-lead">${esc(L.t('calendar.series.intro'))}</p><div class="cal-series-grid">${seriesCards(L,series,events,today)}</div></section>
+      <section class="cal-section"><h2>${esc(L.t('calendar.series.title'))}</h2><p class="cal-section-lead">${esc(L.t('calendar.series.intro'))}</p><div class="cal-series-grid" id="cal-series">${seriesCards(L,series,events,today)}</div></section>
       <section class="cal-section" id="list"><h2 class="sr">${esc(L.t('calendar.list'))}</h2>
       <form id="calendar-filters" class="calendar-filters" method="get">
       <div class="cal-tabs" role="radiogroup" aria-label="${esc(L.t('calendar.when'))}">${tab('','calendar.upcoming',browse.upcoming)}${tab('past','calendar.past',browse.past)}</div>
