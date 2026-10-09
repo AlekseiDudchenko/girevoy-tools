@@ -249,7 +249,7 @@ test('страница собрана: пример по умолчанию бе
   assert.match(html, /<h1>Pace calculator<\/h1>/);
   assert.match(html, /<svg class="chart" id="chart-bars"/);
   assert.match(html, /7, 7, 8 × 7, 10/);
-  assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6,0<\/td><td class="n total">80<\/td>/);
+  assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6.0<\/td><td class="n total">80<\/td>/);
   assert.match(html, /<div class="table-wrap">/);
   // Только планирование: без старта и метронома; столбики на телефоне — по кнопке.
   assert.match(html, /<button type="button" class="btn bars-edit js-only" id="bars-edit" aria-pressed="false"[^>]*>Edit bars</);
