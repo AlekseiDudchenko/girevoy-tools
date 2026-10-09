@@ -48,7 +48,7 @@ ${alternates}
 <body>
 <header class="site"><div class="inner">
 <a class="brand" href="${langPath(lang)}"><img class="brand-mark" src="/logo.png" alt="" width="32" height="32"><span class="brand-name">${BRAND}</span><span class="brand-sub">${esc(product.toLocaleLowerCase(lang))}</span></a>
-<nav class="tools-nav" aria-label="${esc(product)}">${nav}<a href="${ARCHIVE_URL}/"${lang === 'ru' ? '' : ' hreflang="ru"'}>${esc(L.t('site.archive'))}</a></nav>
+<nav class="tools-nav" aria-label="${esc(product)}">${nav}<a href="${ARCHIVE_URL}/">${esc(L.t('site.archive'))}</a></nav>
 <nav class="langs" aria-label="${esc(L.t('site.lang'))}">${langs}</nav>
 </div></header>
 <main class="inner">
