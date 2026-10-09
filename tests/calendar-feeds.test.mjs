@@ -4,7 +4,7 @@ import {readFileSync, existsSync, mkdtempSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {FEDERATIONS, REGIONS, REGION_COUNTRIES, validateEvents, filterEvents} from '../src/lib/calendar.js';
+import {FEDERATIONS, REGIONS, REGION_COUNTRIES, validateEvents, filterEvents, icsText} from '../src/lib/calendar.js';
 import {validateSeries, isPast, seriesEvents} from '../src/lib/calendar-series.js';
 import {feeds, feedICS, feedFor, feedCountries, subscribeLinks} from '../src/lib/calendar-feeds.js';
 import {filterSubscribe} from '../src/lib/calendar-view.js';
@@ -117,7 +117,17 @@ test('subscribe links: webcal for Apple and Outlook, Google by cid, https to cop
 test('the build writes every feed and serves them as text/calendar; the sitemap lists no feeds', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-feeds-'));
   execFileSync('node', ['scripts/build.mjs', out], {env: {...process.env, CALENDAR_TODAY: TODAY}});
-  for (const f of feeds(events, series)) assert.ok(existsSync(join(out, 'calendar/feeds', `${f.path}.ics`)), f.path);
+  for (const f of feeds(events, series)) {
+    const file = join(out, 'calendar/feeds', `${f.path}.ics`);
+    assert.ok(existsSync(file), f.path);
+    const properties = unfold(readFileSync(file, 'utf8'));
+    const name = icsText(`VseGiri — ${f.name}`);
+    assert.equal(properties.match(/^NAME:(.+)\r$/m)?.[1], name, f.path);
+    assert.equal(properties.match(/^X-WR-CALNAME:(.+)\r$/m)?.[1], name, f.path);
+    const links = subscribeLinks(SITE, f.path);
+    assert.equal(new URL(links.google).searchParams.get('cid'), links.https, f.path);
+    assert.equal(links.webcal.replace(/^webcal:/, 'https:'), links.https, f.path);
+  }
   assert.match(readFileSync(join(out, '_headers'), 'utf8'), /\/calendar\/feeds\/\*\n {2}Content-Type: text\/calendar; charset=utf-8/);
   assert.doesNotMatch(readFileSync(join(out, 'sitemap.xml'), 'utf8'), /\.ics/);
   const page = readFileSync(join(out, 'en/calendar/index.html'), 'utf8');
