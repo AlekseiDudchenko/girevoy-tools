@@ -9,7 +9,7 @@ import {
   goalError, goalReps, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
   secPerRep, serializeState, setMinute, toMode, toSegments, withMinutes,
 } from '../src/lib/tempo.js';
-import { announce, barChart, errorText, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
+import { announce, barChart, errorText, metroBoard, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
 import { locale } from '../src/i18n/index.js';
 
 const L = locale('ru');
@@ -259,6 +259,23 @@ test('таблица на 60 минут и текущая минута метр�
 });
 
 // ------------------------------------------------------------- собранная страница
+
+test('табло на весь экран: часы, темп минуты, следующая минута, рука в рывке', () => {
+  const st = defaultState(); // 7, 7, 8, 8, 8, 8, 8, 8, 8, 10
+  const start = metroBoard(L, st, 0);
+  assert.match(start, /board-clock n">0:00</);
+  assert.match(start, /<span class="n">7<\/span>/);
+  assert.match(start, /минута 1 из 10/);
+  assert.match(start, /дальше: 7 в минуту/);
+  const last = metroBoard(L, st, 545);
+  assert.match(last, /9:05/);
+  assert.match(last, /<span class="n">10<\/span>/);
+  assert.match(last, /последняя минута/);
+  assert.match(metroBoard(L, st, 600), /минута 10 из 10/); // конец — не за пределами плана
+  const snatch = { ...st, ex: 'snatch', hand: 5 };
+  assert.match(metroBoard(L, snatch, 0), /первая рука/);
+  assert.match(metroBoard(L, snatch, 300), /вторая рука/);
+});
 
 test('страница собрана: пример по умолчанию без JavaScript и общие функции в /lib/', () => {
   const out = mkdtempSync(join(tmpdir(), 'tools-tempo-'));

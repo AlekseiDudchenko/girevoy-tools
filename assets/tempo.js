@@ -5,7 +5,7 @@ import {
   editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
-  announce, barAxis, barChart, barGeometry, barLegend, chartSize, errorText, metroText, paceSum, segmentRows, summary,
+  announce, barAxis, barChart, barGeometry, barLegend, chartSize, errorText, metroBoard, metroText, paceSum, segmentRows, summary,
   tableBody, tableFoot, tableHead,
 } from './lib/tempo-view.js';
 import { SPEECH_LANG } from './lib/locale.js';
@@ -24,6 +24,7 @@ const el = {
   legendBars: $('legend-bars'),
   head: $('table-head'), body: $('table-body'), foot: $('table-foot'), status: $('status'),
   metroStart: $('metro-start'), metroNow: $('metro-now'), voice: $('voice'),
+  metro: $('metro-start').closest('.metro'), board: $('board'), full: $('metro-full'),
   tabs: [...document.querySelectorAll('[role="tab"]')],
 };
 
@@ -89,7 +90,10 @@ function render(skip) {
   html(el.head, tableHead(L, state));
   html(el.body, tableBody(L, state, metro.minute));
   html(el.foot, tableFoot(L, state));
-  if (!metro.on) el.metroNow.textContent = metroIdle();
+  if (!metro.on) {
+    el.metroNow.textContent = metroIdle();
+    html(el.board, metroBoard(L, state, 0));
+  }
   metro.resync();
   replaceSearch(serializeState(state));
 }
@@ -362,11 +366,45 @@ const metro = {
     if (text !== this.shown) {
       this.shown = text;
       el.metroNow.textContent = text;
+      html(el.board, metroBoard(L, state, now));
     }
   },
 };
 
 el.metroStart.addEventListener('click', () => (metro.on ? metro.stop() : metro.start()));
+
+// ------------------------------------------------------------- на весь экран
+
+// Табло на весь экран — для планшета на полу у помоста. Где есть Fullscreen API,
+// табло занимает весь экран; где нет (iPhone), — всё окно браузера.
+const fs = {
+  request: el.metro.requestFullscreen || el.metro.webkitRequestFullscreen,
+  exit: document.exitFullscreen || document.webkitExitFullscreen,
+  element: () => document.fullscreenElement || document.webkitFullscreenElement,
+};
+
+function setFull(on) {
+  el.metro.classList.toggle('full', on);
+  document.documentElement.classList.toggle('metro-full', on);
+  el.board.setAttribute('aria-hidden', String(!on));
+  el.full.setAttribute('aria-pressed', String(on));
+  el.full.textContent = L.t(on ? 'tempo.metro.exit' : 'tempo.metro.full');
+}
+
+el.full.addEventListener('click', async () => {
+  const on = !el.metro.classList.contains('full');
+  setFull(on);
+  try {
+    if (on && fs.request && !fs.element()) await fs.request.call(el.metro);
+    else if (!on && fs.element()) await fs.exit.call(document);
+  } catch { /* без Fullscreen API табло занимает окно */ }
+});
+const fsChange = () => { if (!fs.element() && el.metro.classList.contains('full')) setFull(false); };
+document.addEventListener('fullscreenchange', fsChange);
+document.addEventListener('webkitfullscreenchange', fsChange);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && el.metro.classList.contains('full') && !fs.element()) setFull(false);
+});
 
 // ------------------------------------------------------------- ссылка и печать
 

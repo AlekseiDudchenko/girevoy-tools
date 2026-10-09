@@ -3,7 +3,7 @@
 // умолчанию при сборке, браузер — после каждого изменения. Пользовательский текст
 // сюда не попадает: только числа из состояния и подписи из словаря языка страницы.
 // Первый аргумент каждой функции с текстом — L, язык страницы (locale.js).
-import { RATE_MAX, RATE_MIN, planText, rateText, repsOf, rows, secPerRep, segSum } from './tempo.js';
+import { RATE_MAX, RATE_MIN, clock, planText, rateText, repsOf, rows, secPerRep, segSum } from './tempo.js';
 
 const r1 = (v) => Math.round(v * 10) / 10;
 /** Отклонение со знаком: +1, 0, −2. */
@@ -159,6 +159,23 @@ export function announce(L, state, m) {
 
 /** Строка метронома: время, минута и её темп. */
 export const metroText = (L, clockText, m, n, reps) => L.t('tempo.metro.now', { clock: clockText, m, n, reps });
+
+/**
+ * Табло метронома на весь экран: часы, темп текущей минуты крупно, минута из скольких,
+ * рука в рывке и темп следующей минуты. sec — секунды от старта.
+ */
+export function metroBoard(L, state, sec) {
+  const reps = repsOf(state);
+  const n = reps.length;
+  const m = Math.min(n - 1, Math.max(0, Math.floor(sec / 60)));
+  const t = (key, args) => L.t(`tempo.board.${key}`, args);
+  const hand = state.ex === 'snatch' ? ` · ${L.t(`tempo.legend.${m < state.hand ? 'h1' : 'h2'}`)}` : '';
+  const next = m === n - 1 ? t('last') : t('next', { reps: reps[m + 1] });
+  return `<p class="board-clock n">${clock(Math.max(0, sec))}</p>
+<p class="board-rate"><span class="n">${reps[m]}</span> <span class="board-unit">${L.t('tempo.axis.perMin')}</span></p>
+<p class="board-minute">${t('minute', { m: m + 1, n })}${hand}</p>
+<p class="board-next">${next}</p>`;
+}
 
 // ------------------------------------------------------------- отрезки
 
