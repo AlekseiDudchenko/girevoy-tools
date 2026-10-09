@@ -34,7 +34,8 @@ jobs:
       # репозитория CLOUDFLARE_DEPLOY=true.
       - name: Deploy production to Cloudflare Pages
         # Пока секретов нет, шаг пропускается, а проверка остаётся зелёной.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY == 'true'
+        # Ручной запуск (workflow_dispatch) на main тоже публикует.
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.CLOUDFLARE_DEPLOY == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
