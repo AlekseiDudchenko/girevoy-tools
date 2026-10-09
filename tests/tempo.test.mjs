@@ -9,7 +9,7 @@ import {
   goalError, goalReps, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
   secPerRep, serializeState, setMinute, toMode, toSegments, withMinutes,
 } from '../src/lib/tempo.js';
-import { barChart, devChart, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
+import { barChart, cumChart, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
 
 const total = (reps) => reps.reduce((a, r) => a + r, 0);
 
@@ -235,7 +235,7 @@ test('неверные параметры заменяются значения�
 test('графики: цвет — классами, столбики — ползунки с клавиатуры', () => {
   for (const st of [defaultState(), parseState('?ex=snatch&min=60')]) {
     const bars = barChart(st);
-    for (const svg of [bars, devChart(st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
+    for (const svg of [bars, cumChart(st)]) assert.doesNotMatch(svg, /#[0-9a-f]{3,6}\b|fill="|stroke="/i);
     assert.equal(bars.match(/role="slider"/g).length, st.min);
     assert.equal(bars.match(/tabindex="0"/g).length, 1, 'в порядке табуляции один столбик');
   }
@@ -244,16 +244,6 @@ test('графики: цвет — классами, столбики — пол
   assert.match(bars, /class="bar now" data-i="9"/);
   assert.match(bars, /aria-valuenow="7" aria-valuetext="7 подъёмов, 8,6 с на подъём"/);
   assert.match(barChart(parseState('?ex=snatch')), /class="bar bar-h2"/);
-});
-
-test('отклонение от ровного: шкала по самому большому отклонению, подписи со знаком', () => {
-  const svg = devChart(defaultState());
-  assert.match(svg, /id="chart-dev"/);
-  assert.match(svg, /aria-label="Отклонение от ровного темпа по минутам: от −2 после 2-й минуты до 0 после 10-й;/);
-  assert.equal((svg.match(/class="mark-label"[^>]*>−2</g) || []).length, 8, 'минуты 2–9 позади на 2');
-  assert.match(svg, />\+3<\/text>/, 'шкала с запасом над отклонением');
-  const ahead = devChart(parseState('?p=12,12,8,8,8,8,8,8,4,4'));
-  assert.match(ahead, />\+5<\/text>/, 'шкала растёт с отклонением');
 });
 
 test('таблица на 60 минут и текущая минута метронома', () => {
@@ -270,7 +260,7 @@ test('страница собрана: пример по умолчанию бе
   const html = readFileSync(join(out, 'tempo', 'index.html'), 'utf8');
   assert.match(html, /<h1>Калькулятор темпа<\/h1>/);
   assert.match(html, /<svg class="chart" id="chart-bars"/);
-  assert.match(html, /<svg class="chart" id="chart-dev"/);
+  assert.match(html, /<svg class="chart" id="chart-cum"/);
   assert.match(html, /7, 7, 8 × 7, 10/);
   assert.match(html, /<tr><td class="n">10<\/td><td class="n">10<\/td><td class="n">6,0<\/td><td class="n total">80<\/td>/);
   assert.match(html, /<div class="table-wrap">/);

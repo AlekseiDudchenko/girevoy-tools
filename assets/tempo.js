@@ -5,7 +5,7 @@ import {
   editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
-  barAxis, barChart, barGeometry, barLegend, chartSize, devChart, devLegend, paceSum, segmentRows, summary,
+  barAxis, barChart, barGeometry, barLegend, chartSize, cumChart, cumLegend, paceSum, segmentRows, summary,
   tableBody, tableFoot, tableHead,
 } from './lib/tempo-view.js';
 
@@ -17,8 +17,8 @@ const el = {
   goal: $('goal'), strategy: $('strategy'), dField: $('d-field'), d: $('d'),
   goalError: $('goal-error'), strategyHint: $('strategy-hint'),
   segs: $('segs'), segAdd: $('seg-add'), segError: $('seg-error'), paceSum: $('pace-sum'),
-  summary: $('summary'), boxBars: $('box-bars'), boxDev: $('box-dev'),
-  legendBars: $('legend-bars'), legendDev: $('legend-dev'),
+  summary: $('summary'), boxBars: $('box-bars'), boxCum: $('box-cum'),
+  legendBars: $('legend-bars'), legendCum: $('legend-cum'),
   head: $('table-head'), body: $('table-body'), foot: $('table-foot'), status: $('status'),
   metroStart: $('metro-start'), metroNow: $('metro-now'), voice: $('voice'),
   tabs: [...document.querySelectorAll('[role="tab"]')],
@@ -41,7 +41,7 @@ const size = () => chartSize(el.boxBars.clientWidth || 900);
 function renderCharts() {
   const focused = el.boxBars.contains(document.activeElement);
   html(el.boxBars, barChart(state, size(), { focus: focusIdx, now: metro.minute, axis: drag?.axis }));
-  html(el.boxDev, devChart(state, size()));
+  html(el.boxCum, cumChart(state, size()));
   if (focused) el.boxBars.querySelector(`[data-i="${focusIdx}"]`)?.focus();
 }
 
@@ -84,7 +84,7 @@ function render(skip) {
   html(el.summary, summary(state));
   renderCharts();
   html(el.legendBars, barLegend(state));
-  html(el.legendDev, devLegend(state));
+  html(el.legendCum, cumLegend(state));
   html(el.head, tableHead(state));
   html(el.body, tableBody(state, metro.minute));
   html(el.foot, tableFoot(state));
