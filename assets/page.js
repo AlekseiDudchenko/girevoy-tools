@@ -22,3 +22,15 @@ export function replaceSearch(search) {
   history.replaceState(null, '', location.pathname + search + location.hash);
   syncLangLinks();
 }
+
+/** Кнопки [data-copy]: скопировать ссылку и на секунду показать «Скопировано». Делегирование — блок перерисовывается. */
+export function copyLinks(L) {
+  document.addEventListener('click', async (e) => {
+    const button = e.target.closest('[data-copy]');
+    if (!button) return;
+    try { await navigator.clipboard.writeText(button.dataset.copy); } catch { button.previousElementSibling?.select(); return; }
+    const text = button.textContent;
+    button.textContent = L.t('calendar.feed.copied');
+    setTimeout(() => { button.textContent = text; }, 1500);
+  });
+}

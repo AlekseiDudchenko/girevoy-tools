@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # Ежедневная пересборка: ленты подписки и страница календаря без JavaScript делят
+  # турниры на предстоящие и прошедшие по дате сборки — без неё прошедшие остаются в лентах.
+  schedule:
+    - cron: '17 3 * * *'
 
 permissions:
   contents: read

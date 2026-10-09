@@ -1,6 +1,7 @@
 // Разметка календаря: общая для сборки (значения на дату сборки) и браузера (на сегодня).
 // Текст — только из словаря L; даты, страны и числа — через Intl.
-import {safeURL,filterEvents} from './calendar.js';
+import {safeURL,filterEvents,FEDERATIONS,REGIONS} from './calendar.js';
+import {feedFor,feedURL,subscribeLinks} from './calendar-feeds.js';
 import {split,nextEvent,isLive,daysUntil,seriesOf,seriesEvents,todayISO} from './calendar-series.js';
 import {langPath} from './locale.js';
 const esc = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -44,6 +45,29 @@ function sourceLinks(L,e) {
 const seriesLink = (L,e,series) => { const s=seriesOf(series,e); return s ? `<a class="cal-series-link" href="${seriesHref(L,s)}">${esc(L.t('calendar.series.part',{name:s.name}))}</a>` : ''; };
 const actions = (L,e,today) => `<div class="cal-actions">${e.registrationUrl&&!(e.registrationDeadline&&e.registrationDeadline<today)?link(e.registrationUrl,L.t('calendar.register'),'btn btn-primary'):''}<a class="btn" href="/calendar/ics/${esc(e.id)}.ics" download>${esc(L.t('calendar.ics'))}</a></div>`;
 
+/** Подписка на ленту path: Google Calendar, webcal:// и ссылка для копирования. Без ленты — что можно подписать. */
+export function subscribeBlock(L,site,path) {
+  if (!path) return `<p class="cal-subscribe-none">${esc(L.t('calendar.feed.none'))}</p>`;
+  const l=subscribeLinks(site,path);
+  return `<details class="cal-subscribe"><summary class="btn">${esc(L.t('calendar.feed.subscribe'))}</summary><div class="cal-subscribe-menu">
+    <a class="btn" href="${esc(l.google)}" rel="noopener noreferrer">${esc(L.t('calendar.feed.google'))}</a><a class="btn" href="${esc(l.webcal)}">${esc(L.t('calendar.feed.apple'))}</a>
+    <label>${esc(L.t('calendar.feed.link'))}<span class="cal-subscribe-copy"><input type="text" readonly value="${esc(l.https)}"><button class="btn" type="button" data-copy="${esc(l.https)}">${esc(L.t('calendar.feed.copy'))}</button></span></label>
+    <p class="hint">${esc(L.t('calendar.feed.hint'))}</p></div></details>`;
+}
+/** Подписка, совпадающая с фильтрами страницы. */
+export const filterSubscribe = (L,site,filters,events) => subscribeBlock(L,site,feedFor(filters,events));
+/** Перечень лент внизу календаря: ссылки видны и без JavaScript. Федерация × регион — только через фильтры. */
+export function feedList(L,events,series) {
+  const a=(path,text)=>`<li><a href="${feedURL(path)}">${esc(text)}</a></li>`;
+  const countries=[...new Set(events.map(e=>e.country).filter(Boolean))].sort((x,y)=>countryName(L,x).localeCompare(countryName(L,y),L.lang));
+  const group=(title,items)=>`<div><h3>${esc(title)}</h3><ul>${items.join('')}</ul></div>`;
+  return `<details class="cal-feeds"><summary>${esc(L.t('calendar.feed.list'))}</summary><p class="hint">${esc(L.t('calendar.feed.listLead'))}</p><div class="cal-feeds-grid">
+    ${group(L.t('calendar.all'),[a('all',L.t('calendar.feed.all')),a('online',L.t('calendar.feed.online'))])}
+    ${group(L.t('calendar.federation'),FEDERATIONS.map(f=>a(`federation/${f.toLowerCase()}`,f)))}
+    ${group(L.t('calendar.region'),REGIONS.map(r=>a(`region/${r}`,L.t(`calendar.region.${r}`))))}
+    ${group(L.t('calendar.series.title'),series.map(s=>a(`series/${s.slug}`,s.name)))}
+    ${group(L.t('calendar.country'),countries.map(c=>a(`country/${c.toLowerCase()}`,countryName(L,c))))}</div></details>`;
+}
 /** Ближайший старт — крупная карточка в шапке календаря. */
 export function featureCard(L,events,today,series=[]) {
   const e=nextEvent(events,today);
@@ -112,7 +136,7 @@ export function renderBrowse(L,events,filters,{today,series=[]}) {
   return {html:renderEvents(L,matched,{today,when,series}),upcoming:parts.upcoming.length,past:parts.past.length,shown:(when==='past'?parts.past:parts.upcoming).length};
 }
 /** Тело посадочной страницы серии. */
-export function seriesBody(L,s,events,today,series) {
+export function seriesBody(L,s,events,today,series,site) {
   const own=split(seriesEvents(s,events),today);
   const all=[...own.upcoming,...own.past].sort((a,b)=>b.startDate.localeCompare(a.startDate));
   const edition=e=>`<li class="cal-edition${isLive(e,today)?' is-live':''}" id="${esc(e.id)}"><span class="cal-edition-year">${esc(e.startDate.slice(0,4))}</span>
@@ -123,6 +147,7 @@ export function seriesBody(L,s,events,today,series) {
     <header class="cal-hero"><div><p class="cal-kicker">${esc(s.federation)}</p><h1>${esc(s.name)}</h1><p class="lead">${esc(L.t('calendar.series.lead',{name:s.name,federation:s.federation}))}</p></div>
     <div id="cal-next">${featureCard(L,own.upcoming,today,series)}</div></header>
     <h2>${esc(L.t('calendar.series.editions'))}</h2><ol class="cal-editions">${all.map(edition).join('')}</ol>
+    <div class="cal-series-subscribe">${subscribeBlock(L,site,`series/${s.slug}`)}</div>
     <p class="cal-more"><a href="${calendarHref(L,`?federation=${s.federation}`)}#list">${esc(L.t('calendar.series.federation',{federation:s.federation}))}</a> · <a href="${calendarHref(L)}">${esc(L.t('calendar.series.back'))}</a></p>
     <p class="calendar-note">${esc(L.t('calendar.note'))}</p></section>`;
 }

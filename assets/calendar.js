@@ -1,9 +1,10 @@
 import {pageLocale,replaceSearch} from './page.js';
 import {parseFilters} from './lib/calendar.js';
 import {localISO} from './lib/calendar-series.js';
-import {featureCard,seriesCards,renderBrowse} from './lib/calendar-view.js';
+import {featureCard,seriesCards,renderBrowse,filterSubscribe} from './lib/calendar-view.js';
+import {copyLinks} from './page.js';
 const L=await pageLocale();
-const {events,series}=JSON.parse(document.getElementById('calendar-data').textContent);
+const {events,series,site}=JSON.parse(document.getElementById('calendar-data').textContent);
 const form=document.getElementById('calendar-filters');
 // «Сегодня» — дата браузера: страница могла быть собрана несколько дней назад.
 const today=localISO();
@@ -23,6 +24,7 @@ function render() {
   const result=renderBrowse(L,events,filters,{today,series});
   document.getElementById('calendar-events').innerHTML=result.html;
   for (const n of form.querySelectorAll('[data-when]')) n.textContent=L.num(result[n.dataset.when],0);
+  document.getElementById('calendar-subscribe').innerHTML=filterSubscribe(L,site,filters,events);
   document.getElementById('calendar-count').textContent=L.t('calendar.count',{n:L.num(result.shown,0)});
   replaceSearch(Object.keys(filters).length?'?'+new URLSearchParams(filters):'');
 }
@@ -32,3 +34,4 @@ form.addEventListener('change',render);
 form.addEventListener('reset',()=>{setTimeout(render,0);});
 window.addEventListener('popstate',()=>{fill(parseFilters(location.search));render();});
 render();
+copyLinks(L);

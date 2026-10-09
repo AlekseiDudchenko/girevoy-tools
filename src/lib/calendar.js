@@ -110,21 +110,28 @@ export function parseFilters(search) {
   if (result.when && result.when !== 'past') delete result.when;
   return result;
 }
-const icsText = value => String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
+export const icsText = value => String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
 function fold(line) {
   const chunks = []; let part = '', count = 0;
   for (const char of line) { const n = new TextEncoder().encode(char).length; if (count+n > 75) { chunks.push(part); part=' '; count=1; } part+=char; count+=n; }
   chunks.push(part); return chunks.join('\r\n');
 }
 const utc = timestamp => new Date(timestamp).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
-export function eventICS(e) {
+/** Строки VEVENT одного события: общие для отдельного .ics и лент подписки. */
+export function eventLines(e) {
   const errors = validateEvent(e); if (errors.length) throw new Error(errors.join(','));
-  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//vsegiri//Competition calendar//EN','CALSCALE:GREGORIAN','BEGIN:VEVENT',`UID:${e.id}@tools.vsegiri.com`,`DTSTAMP:${utc(e.lastChecked)}`,`SEQUENCE:${e.sequence}`];
+  const lines = ['BEGIN:VEVENT',`UID:${e.id}@tools.vsegiri.com`,`DTSTAMP:${utc(e.lastChecked)}`,`SEQUENCE:${e.sequence}`];
   if (e.startAt) lines.push(`DTSTART:${utc(e.startAt)}`,`DTEND:${utc(e.endAt)}`);
   else {
     const end = new Date(`${e.endDate}T00:00:00Z`); end.setUTCDate(end.getUTCDate()+1);
     lines.push(`DTSTART;VALUE=DATE:${e.startDate.replaceAll('-','')}`,`DTEND;VALUE=DATE:${end.toISOString().slice(0,10).replaceAll('-','')}`);
   }
-  lines.push(`SUMMARY:${icsText(e.title)}`,`LOCATION:${icsText([e.city,e.country].filter(Boolean).join(', '))}`,`URL:${e.sources[0].url}`,`DESCRIPTION:${icsText(e.sources.map(s=>s.url).join('\n'))}`,`STATUS:${e.status==='cancelled'?'CANCELLED':e.status==='confirmed'?'CONFIRMED':'TENTATIVE'}`,'END:VEVENT','END:VCALENDAR');
+  lines.push(`SUMMARY:${icsText(e.title)}`,`LOCATION:${icsText([e.city,e.country].filter(Boolean).join(', '))}`,`URL:${e.sources[0].url}`,`DESCRIPTION:${icsText(e.sources.map(s=>s.url).join('\n'))}`,`STATUS:${e.status==='cancelled'?'CANCELLED':e.status==='confirmed'?'CONFIRMED':'TENTATIVE'}`,'END:VEVENT');
+  return lines;
+}
+/** Календарь из событий; header — готовые строки свойств календаря (текст — через icsText). */
+export function calendarICS(events, header = []) {
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//vsegiri//Competition calendar//EN','CALSCALE:GREGORIAN',...header,...events.flatMap(eventLines),'END:VCALENDAR'];
   return lines.map(fold).join('\r\n')+'\r\n';
 }
+export const eventICS = e => calendarICS([e]);

@@ -9,6 +9,8 @@ import { schemaErrors } from '../src/lib/calendar-schema.js';
 import { validateEvents, eventICS } from '../src/lib/calendar.js';
 import { layout } from '../src/layout.js';
 import { SITE_URL } from '../src/brand.js';
+import { feeds, feedICS } from '../src/lib/calendar-feeds.js';
+import { SERIES, BUILD_DAY } from '../src/calendar-data.js';
 import { LANGS, locale } from '../src/i18n/index.js';
 import { X_DEFAULT, langPath } from '../src/lib/locale.js';
 import { PAGES } from '../src/pages/index.js';
@@ -40,6 +42,14 @@ mkdirSync(join(dist, 'calendar/ics'), {recursive:true});
 cpSync(join(root, 'data/calendar/event.schema.json'), join(dist, 'calendar/event.schema.json'));
 writeFileSync(join(dist, 'calendar/events.json'), JSON.stringify(events));
 for (const event of events) writeFileSync(join(dist, 'calendar/ics', event.id + '.ics'), eventICS(event));
+// Ленты подписки: весь набор выводится из данных на дату сборки, руками не ведётся.
+const feedList = feeds(events, SERIES);
+for (const feed of feedList) {
+  const file = join(dist, 'calendar/feeds', `${feed.path}.ics`);
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, feedICS(feed, events, BUILD_DAY, SITE_URL));
+}
+writeFileSync(join(dist, '_headers'), '/calendar/feeds/*\n  Content-Type: text/calendar; charset=utf-8\n  Cache-Control: public, max-age=3600\n/calendar/ics/*\n  Content-Type: text/calendar; charset=utf-8\n');
 
 // sitemap: каждая версия со ссылками на остальные языки.
 const loc = (lang, slug) => `${SITE_URL}${langPath(lang, slug)}`;
@@ -57,4 +67,4 @@ ${urls}
 writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 writeFileSync(join(dist, '_redirects'), redirects());
 
-console.log(`dist: ${PAGES.length} страниц × ${LANGS.length} языка`);
+console.log(`dist: ${PAGES.length} страниц × ${LANGS.length} языка, ${feedList.length} лент календаря`);
