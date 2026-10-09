@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   MINUTES, STRATEGIES, addSegment, canAddSegment, defaultState, editSegment, fitSegments,
-  goalError, goalReps, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
+  goalError, goalReps, minutesError, paceReps, parseRate, parseState, planText, rateText, removeSegment, repsOf, rows,
   secPerRep, serializeState, setMinute, toMode, toSegments, withMinutes,
 } from '../src/lib/tempo.js';
 import { barChart, errorText, paceSum, summary, tableBody, tableFoot, tableHead } from '../src/lib/tempo-view.js';
@@ -184,11 +184,30 @@ test('адрес ⇄ состояние: примеры из задачи', () =
   }
 });
 
+test('своё время: от 2 до 120 минут, в адресе как есть', () => {
+  assert.equal(minutesError(17), null);
+  assert.equal(minutesError(2), null);
+  assert.equal(minutesError(120), null);
+  for (const n of [1, 121, 7.5, NaN]) assert.deepEqual(minutesError(n), { code: 'min', min: 2, max: 120 });
+  assert.equal(errorText(L, minutesError(1)), 'Время — целое число минут от 2 до 120.');
+  const st = parseState('?min=17');
+  assert.equal(st.min, 17);
+  assert.equal(st.goal, 136);
+  assert.equal(repsOf(st).length, 17);
+  assert.equal(serializeState(st), '?min=17');
+  assert.equal(serializeState(withMinutes(defaultState(), 7)), '?min=7'); // цель 80 → 56 — по умолчанию для 7 минут
+  const snatch = parseState('?ex=snatch&min=2');
+  assert.equal(snatch.hand, 1);
+  assert.equal(repsOf(parseState('?min=120')).length, 120);
+});
+
 test('неверные параметры заменяются значениями по умолчанию', () => {
   const d = defaultState();
   const cases = [
     ['?ex=press', { ex: 'lc' }],
-    ['?min=7', { min: 10 }],
+    ['?min=1', { min: 10 }],
+    ['?min=121', { min: 10 }],
+    ['?min=7.5', { min: 10 }],
     ['?goal=0', { goal: 80 }],
     ['?goal=abc', { goal: 80 }],
     ['?goal=3&min=5', { goal: 40, min: 5 }],

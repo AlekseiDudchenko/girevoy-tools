@@ -1,8 +1,8 @@
 // Поведение страницы /<язык>/tempo/. Расчёт и разметка — чистые функции из /lib/,
 // здесь только события, поля и адрес страницы.
 import {
-  D_MAX, D_MIN, RATE_MAX, addSegment, canAddSegment,
-  editSegment, goalError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
+  D_MAX, D_MIN, MINUTES, RATE_MAX, addSegment, canAddSegment,
+  editSegment, goalError, minutesError, parseState, removeSegment, repsOf, serializeState, setMinute, toMode, withMinutes,
 } from './lib/tempo.js';
 import {
   barAxis, barChart, barGeometry, barLegend, chartSize, errorText, paceSum, segmentRows, summary,
@@ -16,6 +16,7 @@ const L = await pageLocale();
 const $ = (id) => document.getElementById(id);
 const el = {
   ex: $('ex'), min: $('min'), handField: $('hand-field'), hand: $('hand'),
+  minField: $('min-custom-field'), minCustom: $('min-custom'), minError: $('min-error'),
   goal: $('goal'), strategy: $('strategy'), dField: $('d-field'), d: $('d'),
   goalError: $('goal-error'), strategyHint: $('strategy-hint'),
   segs: $('segs'), segAdd: $('seg-add'), segError: $('seg-error'), paceSum: $('pace-sum'),
@@ -27,6 +28,8 @@ const el = {
 };
 
 let state = parseState(location.search);
+/** Выбрано «Своё»: поле минут видно, даже если число совпало с вариантом из списка. */
+let customMin = !MINUTES.includes(state.min);
 let focusIdx = 0; // столбик в порядке табуляции
 let drag = null; // { i, axis } — пока тянут столбик, шкала не меняется
 
@@ -49,7 +52,13 @@ function renderChart() {
 /** Перерисовать всё по состоянию. skip — поле, которое сейчас вводят: его не трогаем. */
 function render(skip) {
   el.ex.value = state.ex;
-  el.min.value = String(state.min);
+  el.min.value = customMin ? 'custom' : String(state.min);
+  el.minField.hidden = !customMin;
+  if (skip !== 'min') {
+    el.minCustom.value = String(state.min);
+    el.minCustom.removeAttribute('aria-invalid');
+    el.minError.textContent = '';
+  }
   el.handField.hidden = state.ex !== 'snatch';
   el.hand.max = String(state.min - 1);
   if (skip !== 'hand') el.hand.value = String(state.hand);
@@ -107,11 +116,32 @@ const int = (raw) => (/^\s*\d{1,4}\s*$/.test(raw) ? Number(raw) : NaN);
 // ------------------------------------------------------------- упражнение и время
 
 el.ex.addEventListener('change', () => update({ ...state, ex: el.ex.value }));
-el.min.addEventListener('change', () => {
-  const n = Number(el.min.value);
+function setMinutes(n, skip) {
   focusIdx = Math.min(focusIdx, n - 1);
-  update(withMinutes(state, n));
+  update(withMinutes(state, n), skip);
+}
+el.min.addEventListener('change', () => {
+  customMin = el.min.value === 'custom';
+  if (customMin) {
+    render(); // поле минут появляется с текущим временем
+    el.minCustom.focus();
+    el.minCustom.select();
+  } else setMinutes(Number(el.min.value));
 });
+el.minCustom.addEventListener('input', () => {
+  const n = int(el.minCustom.value);
+  const error = minutesError(n);
+  if (error) {
+    el.minError.textContent = errorText(L, error);
+    el.minCustom.setAttribute('aria-invalid', 'true');
+    return;
+  }
+  el.minCustom.removeAttribute('aria-invalid');
+  el.minError.textContent = '';
+  setMinutes(n, 'min');
+});
+// Ушли из поля с неверным числом — вернуть время из состояния.
+el.minCustom.addEventListener('change', () => { if (minutesError(int(el.minCustom.value))) render(); });
 el.hand.addEventListener('input', () => {
   const hand = int(el.hand.value);
   if (hand >= 1 && hand <= state.min - 1) update({ ...state, hand }, 'hand');

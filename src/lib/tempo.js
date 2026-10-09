@@ -11,7 +11,11 @@
 // показывают число, принимают L — язык страницы (locale.js).
 
 export const EXERCISES = [{ id: 'jerk' }, { id: 'lc' }, { id: 'snatch' }];
+/** Время в списке; своё — целое число минут от MIN_MIN до MIN_MAX. */
 export const MINUTES = [5, 10, 30, 60];
+/** От 2: в рывке руку меняют после одной из минут. До 120 — марафонские дистанции. */
+export const MIN_MIN = 2;
+export const MIN_MAX = 120;
 export const MODES = ['goal', 'pace', 'plan'];
 export const STRATEGIES = [{ id: 'even' }, { id: 'ramp' }, { id: 'finish' }];
 
@@ -27,6 +31,9 @@ export const DEFAULT_STRATEGY = 'finish';
 export const DEFAULT_D = 2;
 /** Цель по умолчанию — 8 подъёмов в минуту: 80 за 10 минут. */
 export const defaultGoal = (n) => 8 * n;
+/** Своё время — ошибка { code, min, max } или null. */
+export const minutesError = (n) => (Number.isInteger(n) && n >= MIN_MIN && n <= MIN_MAX
+  ? null : { code: 'min', min: MIN_MIN, max: MIN_MAX });
 /** Смена руки в рывке по умолчанию — после половины времени. */
 export const defaultHand = (n) => Math.floor(n / 2);
 
@@ -356,7 +363,7 @@ export function parseState(search) {
   const ex = params.get('ex');
   if (EXERCISES.some((e) => e.id === ex)) state.ex = ex;
   const n = intParam(params, 'min');
-  if (MINUTES.includes(n)) state.min = n;
+  if (n !== null && !minutesError(n)) state.min = n;
   state.goal = defaultGoal(state.min);
   state.hand = defaultHand(state.min);
 
