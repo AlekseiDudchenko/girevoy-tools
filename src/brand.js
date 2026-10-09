@@ -3,7 +3,6 @@
 // переводится — ключ site.product словаря.
 export const BRAND = 'VseGiri';
 export const SITE_URL = 'https://tools.vsegiri.com';
-export const ARCHIVE_URL = 'https://vsegiri.com';
 
 // Единый шаблон <title>: «<раздел> — <продукт> | VseGiri».
 export const pageTitle = (section, product) => `${section} — ${product} | ${BRAND}`;

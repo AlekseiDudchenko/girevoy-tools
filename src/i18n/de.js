@@ -36,7 +36,7 @@ export default {
   "calendar.count": "Wettkämpfe: {n}",
   "calendar.note": "Die erste Auswahl ist nicht vollständig. Termine und Teilnahmebedingungen können sich ändern: vor der Buchung beim Ausrichter prüfen. Einträge werden manuell geprüft; ein fehlender Eintrag bedeutet keine Absage. ICS-Dateien enthalten einzelne Termine, kein Abonnement.",
   "calendar.noscript": "Alle Wettkämpfe stehen unten. JavaScript aktivieren, um diese statische Liste zu filtern.",
-  "calendar.foot": "Kalendertermine verweisen auf ihre offiziellen Quellen. Ergebnisse stehen im <a href=\"{archive}\" hreflang=\"ru\">Wettkampfarchiv</a>.",
+  "calendar.foot": "Kalendertermine verweisen auf ihre offiziellen Quellen.",
   "calendar.privacy": "Filter bleiben in der Adresse dieser Seite. Die Anmeldung öffnet die Website des Ausrichters.",
   "calendar.next": "Als Nächstes",
   "calendar.live": "Läuft gerade",
@@ -69,8 +69,7 @@ export default {
   "calendar.discipline.military-snatch": "Military Snatch",
   // ----------------------------------------------------------- allgemein
   'site.product': 'Tools',
-  'site.archive': 'Wettkampfarchiv',
-  'site.foot.calc': 'Die Berechnungen auf diesen Seiten beruhen auf Ihren Eingaben und einfacher Arithmetik, nicht auf Daten aus Ergebnisprotokollen. Wettkampfergebnisse finden Sie im <a href="{archive}" hreflang="ru">Wettkampfarchiv</a> (auf Russisch).',
+  'site.foot.calc': 'Die Berechnungen auf diesen Seiten beruhen auf Ihren Eingaben und einfacher Arithmetik, nicht auf Daten aus Ergebnisprotokollen.',
   'site.foot.privacy': 'Ihre Eingaben werden an keinen Server gesendet.',
   'site.lang': 'Sprache',
   'site.langName': 'Deutsch',
