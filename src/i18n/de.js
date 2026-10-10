@@ -133,7 +133,7 @@ export default {
   "workout.deleted": "Gespeichertes Training gelöscht.",
   "workout.error.invalid": "Ungültige Trainingsdaten. Prüfe die Felder oder importiere eine gültige Trainings-JSON-Datei.",
   "workout.error.version": "Diese Version des Trainingsformats wird nicht unterstützt.",
-  "workout.error.size": "Das Training ist zu groß. Die Datei muss kleiner als 250 KB sein.",
+  "workout.error.size": "Das Training ist zu groß: Links unterstützen 250 KB Daten, JSON-Dateien bis zu 16 MB. Für größere Trainings eine JSON-Datei verwenden.",
   "workout.error.compression": "Dieser Browser kann komprimierte Links nicht öffnen. Importiere stattdessen die JSON-Datei.",
   "workout.error.pending": "Erfasse offene Übungssätze oder markiere sie als ausgelassen, bevor du abschließt.",
   "workout.error.time": "Gib die Zeit als m:ss ein, zum Beispiel 2:00 (höchstens 180:00).",

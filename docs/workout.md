@@ -48,12 +48,16 @@ schema and limits expanded payloads to 250 KB. Links longer than 12,000 characte
 suggest JSON file transfer; links are never silently truncated. Sharing choices
 are plan only or plan plus execution. Old sent snapshots do not change.
 
-Language links carry current data. Opening a snapshot imports a local copy;
+Language switches flush pending edits and reopen the saved local document;
+when local storage is unavailable, they create a fresh snapshot. Opening a snapshot imports a local copy;
 identical snapshots already stored on the same device reuse the existing local
 ID. The received fragment is then removed from the current address so reloading
 uses the saved local document rather than repeatedly importing snapshots.
 
-JSON can be reimported. Files from the initial interface prototype
+JSON can be reimported. The file limit is 16 MB, covering every schema-valid
+workout even with maximal set comments, JSON escaping and indentation. The
+separate URL payload limit remains 250 KB. All saved workouts are accessible
+in the local list. Files from the initial interface prototype
 (`version: 1`, numeric set counts) are migrated before validation. TXT is a
 localized human-readable export, including set comments/rest and all recorded
 facts. PDF export is deliberately disabled and labeled as a later feature.

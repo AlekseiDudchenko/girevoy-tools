@@ -15,7 +15,7 @@ import {
 import {
   validateWorkout,
   parseWorkoutJSON,
-  MAX_BYTES,
+  MAX_FILE_BYTES,
 } from './lib/workout-schema.js';
 import {
   workoutShell,
@@ -87,7 +87,6 @@ async function renderSide() {
   try {
     const rows = await store.list();
     $('wk-library').innerHTML = rows
-      .slice(0, 20)
       .map(
         (x) =>
           `<div class="wk-saved-row"><button type="button" data-action="load" data-id="${esc(x.id)}"><strong>${esc(workoutTitle(L, x))}</strong><small>${esc(x.date || '—')} · ${textStatus(x)}</small></button><button type="button" class="wk-icon" data-action="delete" data-id="${esc(x.id)}" aria-label="${esc(t('remove'))}">×</button></div>`,
@@ -371,7 +370,7 @@ function download(kind) {
 async function importFile(file) {
   if (!file) return;
   try {
-    if (file.size > MAX_BYTES) {
+    if (file.size > MAX_FILE_BYTES) {
       const e = new Error();
       e.code = 'size';
       throw e;
@@ -488,6 +487,31 @@ async function action(a, id) {
   render();
   changed(true);
 }
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[data-lang]');
+  if (
+    !ready || !link || e.button !== 0 ||
+    e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+  ) return;
+  e.preventDefault();
+  (async () => {
+    await flush();
+    const target = new URL(link.href);
+    // Same-origin language pages can reopen the just-saved document without
+    // creating another snapshot copy or imposing URL size limits.
+    const saved = store && await store.load(w.id).catch(() => null);
+    let last;
+    try {
+      last = localStorage.getItem('vsegiri-workout-last');
+    } catch {}
+    if (last === w.id && JSON.stringify(saved) === JSON.stringify(w)) {
+      target.hash = '';
+      location.assign(target.href);
+    } else {
+      location.assign(await workoutLink(w, 'all', target.href));
+    }
+  })().catch(error);
+});
 document.addEventListener('click', (e) => {
   const el = e.target.closest('#workout [data-action]');
   if (!ready || !el || el.disabled) return;

@@ -132,7 +132,7 @@ export default {
   "workout.deleted": "Saved workout deleted.",
   "workout.error.invalid": "Invalid workout data. Check the fields or import a valid workout JSON.",
   "workout.error.version": "This workout format version is not supported.",
-  "workout.error.size": "Workout is too large. Keep the file below 250 KB.",
+  "workout.error.size": "Workout is too large: links support 250 KB of data, JSON files up to 16 MB. Use a JSON file for larger workouts.",
   "workout.error.compression": "This browser cannot open compressed links. Import the JSON file instead.",
   "workout.error.pending": "Record pending exercise sets or mark them skipped before completing.",
   "workout.error.time": "Enter time as m:ss, for example 2:00 (maximum 180:00).",

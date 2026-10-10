@@ -17,6 +17,7 @@ import {
   validateWorkout,
   parseWorkoutJSON,
   MAX_BYTES,
+  MAX_FILE_BYTES,
 } from '../src/lib/workout-schema.js';
 import {
   encodeWorkout,
@@ -135,7 +136,7 @@ test('schema rejects version mismatch, invalid dates, duplicate IDs, orphan fact
   w.execution.status = 'completed';
   assert.throws(() => validateWorkout(w));
   assert.throws(
-    () => parseWorkoutJSON(' '.repeat(MAX_BYTES + 1)),
+    () => parseWorkoutJSON(' '.repeat(MAX_FILE_BYTES + 1)),
     (e) => e.code === 'size',
   );
 });
@@ -149,6 +150,29 @@ test('oversized expanded gzip payload and malformed links fail without fallback 
     (e) => e.code === 'size',
   );
   await assert.rejects(decodeWorkout('z.invalid'));
+  await assert.rejects(
+    decodeWorkout('j.' + Buffer.from(data).toString('base64url')),
+    (e) => e.code === 'size',
+  );
+});
+test('large valid JSON exports round-trip even with maximal escaped set comments', async () => {
+  const w = exampleWorkout(),
+    template = w.blocks[1];
+  w.blocks = Array.from({ length: 30 }, (_, i) => ({
+    ...structuredClone(template),
+    id: `block-${i}`,
+    sets: Array.from({ length: 30 }, (_, j) => ({ id: `set-${i}-${j}` })),
+  }));
+  for (const b of w.blocks)
+    for (const s of b.sets)
+      updateRecord(w, s.id, {
+        status: 'done', reps: 0, note: '\udfff'.repeat(2000),
+      });
+  const json = workoutJSON(w);
+  assert(new TextEncoder().encode(json).length > MAX_BYTES);
+  assert(new TextEncoder().encode(json).length < MAX_FILE_BYTES);
+  assert.deepEqual(parseWorkoutJSON(json), w);
+  await assert.rejects(encodeWorkout(w), (e) => e.code === 'size');
 });
 test('TXT and all views are localized; user text cannot become HTML', () => {
   const w = exampleWorkout();

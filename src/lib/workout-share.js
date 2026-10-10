@@ -53,6 +53,7 @@ export async function decodeWorkout(encoded) {
         offset += chunk.length;
       }
     }
+    if (bytes.length > MAX_BYTES) throw new WorkoutError('size');
     return parseWorkoutJSON(
       new TextDecoder('utf-8', { fatal: true }).decode(bytes),
     );

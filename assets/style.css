@@ -523,6 +523,7 @@ input[aria-invalid="true"] { border-color: var(--error); box-shadow: inset 0 0 0
 .wk-notes { margin:20px 0; }
 .wk-sidebar { display:flex; flex-direction:column; gap:14px; }
 #wk-summary,.wk-library { padding:17px; }
+#wk-library { max-height:32rem; overflow-y:auto; }
 #wk-summary h2,.wk-library h2 { font-size:.75rem; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
 .wk-total strong { font-size:2.7rem; letter-spacing:-.08rem; line-height:1.2; }
 .wk-total span { display:block; font-size:.75rem; color:var(--ink-3); }

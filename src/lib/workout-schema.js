@@ -1,5 +1,8 @@
 import { FORMAT, VERSION, exerciseSets } from './workout.js';
 export const MAX_BYTES = 250000;
+// Files must round-trip every schema-valid workout, including JSON escaping
+// and indentation. URL snapshots retain their smaller decompression bound.
+export const MAX_FILE_BYTES = 16000000;
 export class WorkoutError extends Error {
   constructor(code = 'invalid') {
     super(code);
@@ -229,7 +232,7 @@ export function migratePrototype(v) {
   };
 }
 export function parseWorkoutJSON(raw) {
-  if (new TextEncoder().encode(raw).length > MAX_BYTES)
+  if (new TextEncoder().encode(raw).length > MAX_FILE_BYTES)
     throw new WorkoutError('size');
   try {
     return validateWorkout(migratePrototype(JSON.parse(raw)));
