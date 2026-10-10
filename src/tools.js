@@ -5,6 +5,7 @@ export const TOOLS = [
   { slug: 'calendar', key: 'calendar', status: 'ready' },
   { slug: 'tempo', key: 'tempo', status: 'ready' },
   { slug: 'coefficients', key: 'coef', status: 'ready' },
+  { slug: 'workout', key: 'workout', status: 'ready' },
 ];
 
 export const readyTools = () => TOOLS.filter((t) => t.status === 'ready');

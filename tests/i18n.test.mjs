@@ -165,6 +165,9 @@ test('_redirects: корень и старые адреса без языка �
     ['/coefficients', '/en/coefficients/', '301'],
     ['/coefficients/', '/en/coefficients/', '301'],
     ['/coefficients/*', '/en/coefficients/:splat', '301'],
+    ['/workout', '/en/workout/', '301'],
+    ['/workout/', '/en/workout/', '301'],
+    ['/workout/*', '/en/workout/:splat', '301'],
   ]);
   for (const [from, to] of rules) {
     // ?… не переписывается в правиле: Cloudflare Pages переносит его сам.

@@ -14,7 +14,10 @@ export async function pageLocale() {
  * каждого изменения адреса к ним дописывается текущий ?….
  */
 export function syncLangLinks() {
-  for (const a of document.querySelectorAll('a[data-lang]')) a.search = location.search;
+  for (const a of document.querySelectorAll('a[data-lang]')) {
+    a.search = location.search;
+    a.hash = location.hash;
+  }
 }
 
 /** Заменить адрес страницы на состояние и обновить переключатель языка. */

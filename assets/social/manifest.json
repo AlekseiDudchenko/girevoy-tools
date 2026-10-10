@@ -41,6 +41,18 @@
     },
     {
       "lang": "en",
+      "slug": "workout/",
+      "title": "Kettlebell Sport Workout Builder",
+      "brand": "VseGiri",
+      "product": "Tools",
+      "language": "English",
+      "site": "tools.vsegiri.com",
+      "url": "https://tools.vsegiri.com/en/workout/",
+      "image": "/social/en/workout.png",
+      "alt": "VseGiri tools logo and Kettlebell Sport Workout Builder"
+    },
+    {
+      "lang": "en",
       "slug": "calendar/",
       "title": "Kettlebell Sport Competition Calendar",
       "brand": "VseGiri",
@@ -158,6 +170,18 @@
       "url": "https://tools.vsegiri.com/de/coefficients/",
       "image": "/social/de/coefficients.png",
       "alt": "VseGiri-Tools-Logo und Koeffizienten-Rechner für Kettlebells"
+    },
+    {
+      "lang": "de",
+      "slug": "workout/",
+      "title": "Trainingsplaner für Kettlebell-Sport",
+      "brand": "VseGiri",
+      "product": "Tools",
+      "language": "Deutsch",
+      "site": "tools.vsegiri.com",
+      "url": "https://tools.vsegiri.com/de/workout/",
+      "image": "/social/de/workout.png",
+      "alt": "VseGiri-Tools-Logo und Trainingsplaner für Kettlebell-Sport"
     },
     {
       "lang": "de",
