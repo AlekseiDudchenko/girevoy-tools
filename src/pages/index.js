@@ -6,5 +6,6 @@ import calendarSeries from './calendar-series.js';
 import home from './home.js';
 import tempo from './tempo.js';
 import coefficients from './coefficients.js';
+import workout from './workout.js';
 
-export const PAGES = [home, tempo, coefficients, calendar, ...calendarSeries];
+export const PAGES = [home, tempo, coefficients, workout, calendar, ...calendarSeries];
