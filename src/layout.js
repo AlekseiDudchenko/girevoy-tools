@@ -80,8 +80,8 @@ ${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternat
 ${page.body(L)}
 </main>
 <footer class="foot"><div class="inner">
-<p>${L.t(page.key === 'calendar' ? 'calendar.foot' : 'site.foot.calc')}</p>
-<p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : 'site.foot.privacy'))}</p>
+<p>${L.t(page.key === 'calendar' ? 'calendar.foot' : page.key === 'workout' ? 'workout.foot' : 'site.foot.calc')}</p>
+<p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : page.key === 'workout' ? 'workout.privacy' : 'site.foot.privacy'))}</p>
 </div></footer>
 ${importMap}${scripts.map((s) => `<script type="module" src="${esc(v(s))}"></script>`).join('\n')}
 </body>
