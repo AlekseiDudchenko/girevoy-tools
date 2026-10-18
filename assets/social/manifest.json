@@ -136,6 +136,30 @@
       "alt": "VseGiri tools logo and Weihnachts-Snatch Berlin — dates and venues"
     },
     {
+      "lang": "en",
+      "slug": "legal/",
+      "title": "Legal notice and contact",
+      "brand": "VseGiri",
+      "product": "Tools",
+      "language": "English",
+      "site": "tools.vsegiri.com",
+      "url": "https://tools.vsegiri.com/en/legal/",
+      "image": "/social/en/legal.png",
+      "alt": "VseGiri tools logo and Legal notice and contact"
+    },
+    {
+      "lang": "en",
+      "slug": "privacy/",
+      "title": "Privacy and local workout storage",
+      "brand": "VseGiri",
+      "product": "Tools",
+      "language": "English",
+      "site": "tools.vsegiri.com",
+      "url": "https://tools.vsegiri.com/en/privacy/",
+      "image": "/social/en/privacy.png",
+      "alt": "VseGiri tools logo and Privacy and local workout storage"
+    },
+    {
       "lang": "de",
       "slug": "",
       "title": "Tools und Rechner für Kettlebell-Sport",
@@ -266,6 +290,30 @@
       "url": "https://tools.vsegiri.com/de/calendar/weihnachts-snatch-berlin/",
       "image": "/social/de/calendar/weihnachts-snatch-berlin.png",
       "alt": "VseGiri-Tools-Logo und Weihnachts-Snatch Berlin – Termine und Austragungsorte"
+    },
+    {
+      "lang": "de",
+      "slug": "legal/",
+      "title": "Impressum und Kontakt",
+      "brand": "VseGiri",
+      "product": "Tools",
+      "language": "Deutsch",
+      "site": "tools.vsegiri.com",
+      "url": "https://tools.vsegiri.com/de/legal/",
+      "image": "/social/de/legal.png",
+      "alt": "VseGiri-Tools-Logo und Impressum und Kontakt"
+    },
+    {
+      "lang": "de",
+      "slug": "privacy/",
+      "title": "Datenschutz und lokale Trainingsspeicherung",
+      "brand": "VseGiri",
+      "product": "Tools",
+      "language": "Deutsch",
+      "site": "tools.vsegiri.com",
+      "url": "https://tools.vsegiri.com/de/privacy/",
+      "image": "/social/de/privacy.png",
+      "alt": "VseGiri-Tools-Logo und Datenschutz und lokale Trainingsspeicherung"
     }
   ]
 }

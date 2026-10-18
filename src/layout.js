@@ -80,6 +80,7 @@ ${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternat
 ${page.body(L)}
 </main>
 <footer class="foot"><div class="inner">
+<nav aria-label="${esc(L.t('site.legalLinks'))}"><a href="${langPath(lang, 'legal/')}">${esc(L.t('legal.title'))}</a> · <a href="${langPath(lang, 'privacy/')}">${esc(L.t('privacy.title'))}</a> · <a href="mailto:info@vsegiri.com">info@vsegiri.com</a></nav>
 <p>${L.t(page.key === 'calendar' ? 'calendar.foot' : page.key === 'workout' ? 'workout.foot' : 'site.foot.calc')}</p>
 <p>${esc(L.t(page.key === 'calendar' ? 'calendar.privacy' : page.key === 'workout' ? 'workout.privacy' : 'site.foot.privacy'))}</p>
 </div></footer>
