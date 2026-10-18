@@ -7,5 +7,6 @@ import home from './home.js';
 import tempo from './tempo.js';
 import coefficients from './coefficients.js';
 import workout from './workout.js';
+import { legalPages } from './legal.js';
 
-export const PAGES = [home, tempo, coefficients, workout, calendar, ...calendarSeries];
+export const PAGES = [home, tempo, coefficients, workout, calendar, ...calendarSeries, ...legalPages];
