@@ -118,10 +118,20 @@ action. Those services process data under their own privacy notices.
 ### Analytics and cookies
 
 The reviewed application code contains no advertising or analytics script and
-does not set application cookies. This does not establish the configuration of
-Cloudflare or its security features. [Verify live requests, any Cloudflare-injected
-analytics and cookies, and describe their purposes, legal bases and retention
-before publishing. Do not reuse the archive's analytics statement without checking.]
+does not set application cookies. A live response checked on 18 October 2026
+included Cloudflare's JavaScript Detections security code. This collects
+client-side signals to identify automated requests and can set a `cf_clearance`
+cookie. The response also enabled Network Error Logging to Cloudflare, which
+allows supported browsers to send connection-error reports.
+
+[Confirm the actual Cloudflare security settings, cookie lifetimes, collected
+signals, error-report contents and retention; document their legal bases,
+including the applicable Section 25 TDDDG assessment. Verify whether any
+additional analytics is enabled. Do not claim that the whole website uses no
+cookies or transmits no visitor data.]
+
+Security feature documentation:
+https://developers.cloudflare.com/cloudflare-challenges/challenge-types/javascript-detections/.
 
 ### Contact by email
 

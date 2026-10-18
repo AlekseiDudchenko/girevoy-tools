@@ -133,11 +133,21 @@ Aktion die Feed-URL. Für diese Dienste gelten deren eigene Datenschutzhinweise.
 ### Analyse und Cookies
 
 Der geprüfte Anwendungscode enthält keine Werbe- oder Analyseskripte und setzt
-keine eigenen Anwendungscookies. Daraus lässt sich die Konfiguration von
-Cloudflare und dessen Sicherheitsfunktionen nicht ableiten. [Live-Anfragen,
-gegebenenfalls von Cloudflare eingebundene Analyse und Cookies prüfen und
-Zwecke, Rechtsgrundlagen sowie Speicherdauer vor Veröffentlichung ergänzen.
-Die Analysebeschreibung des Archivs nicht ungeprüft übernehmen.]
+keine eigenen Anwendungscookies. Eine am 18. Oktober 2026 geprüfte Live-Antwort
+enthielt jedoch Cloudflares Sicherheitscode JavaScript Detections. Dieser erfasst
+Signale aus dem Browser zur Erkennung automatisierter Anfragen und kann ein
+`cf_clearance`-Cookie setzen. Die Antwort aktivierte außerdem Network Error
+Logging an Cloudflare. Unterstützte Browser können dadurch Berichte über
+Verbindungsfehler senden.
+
+[Tatsächliche Cloudflare-Sicherheitseinstellungen, Cookie-Laufzeiten, erfasste
+Signale, Inhalte der Fehlerberichte und Speicherdauer bestätigen sowie die
+Rechtsgrundlagen einschließlich der Bewertung nach § 25 TDDDG dokumentieren.
+Prüfen, ob zusätzliche Analyse aktiviert ist. Nicht behaupten, die gesamte
+Website verwende keine Cookies oder übermittle keine Besucherdaten.]
+
+Dokumentation der Sicherheitsfunktion:
+https://developers.cloudflare.com/cloudflare-challenges/challenge-types/javascript-detections/.
 
 ### E-Mail-Kontakt
 
